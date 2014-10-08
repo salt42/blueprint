@@ -32,12 +32,15 @@
 	background: #343434;
 	border: #000;
 }
+#mySidePanelRight .headline .minimap {
+	display: none;
+}
 #mySidePanelRight .content {
 	position: relative;
 	top: 0px;
 	left: 0px;
-	overflow: auto;
-	height: calc(100% - 22px - 32px);
+	overflow: hidden;
+	height: calc(100% - 54px);
 }
 #mySidePanelRight .content.minimap {
 	zoom: 25%;

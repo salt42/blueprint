@@ -79,7 +79,9 @@ define(function (require, exports, modul) {
 		$root.html('');
 		var recBuild = function (data) {
 			var html = '',
-				paramStr = '';
+				paramStr = '',
+				cssClasses = 'toggle',
+				mouseOverText = 'Attributes: &nbsp;&nbsp;';
 
 			html = '<span class="type">' + data.type + '&nbsp;</span><span class="func-name">' + data.name + '</span><span class="func-params"> ( ';
 			for (k = 0; k < data.params.length; k++) {
@@ -87,6 +89,7 @@ define(function (require, exports, modul) {
 				if (data.params[k].type === '') {
 					type = '';
 				}
+				mouseOverText += '\n ' + type + ' ' + data.params[k].name;
 				paramStr += ', ' + type + data.params[k].name;
 				if (type !== '') {
 					html += '<span class="type">' + type + '</span>';
@@ -98,12 +101,11 @@ define(function (require, exports, modul) {
 			}
 			html += ' )   </span>';
 			paramStr = paramStr.substr(1);
-			var lineString = ' ' + data.type + ' ' + data.name + ' (' + paramStr + ' )',
-				cssClasses = 'toggle';
+
 			if (data.childs.length === 0) {
 				cssClasses += ' no-childs';
 			}
-			var $ele = $('<li><div class="' + cssClasses + '">&nbsp;</div><span class="line" title="' + lineString + '">' + html + '</span><ul class="childs"></ul></li>');
+			var $ele = $('<li><div class="' + cssClasses + '">&nbsp;</div><span class="line" title="' + mouseOverText + '">' + html + '</span><ul class="childs"></ul></li>');
 
 			$ele.click(function (e) {
 				if ($(e.target).hasClass('toggle')) {
@@ -152,7 +154,6 @@ define(function (require, exports, modul) {
 				$ele.click(i + 1, onClickOnLine);
 			}
 		}
-
 	}
 
 
@@ -177,16 +178,19 @@ define(function (require, exports, modul) {
 
 
 	};
-	exports.update = function (content, language) {
-		if (language === 'javascript') {
-			JsWorker.postMessage(content);
+	exports.update = function (doc) {
+		var mode = doc.getLanguage().getMode(),
+			text = doc.getText();
+
+		if (mode === 'javascript') {
+			JsWorker.postMessage(text);
 			//changeTab('outline');
-		} else if (language === 'css') {
-			updateCss(content);
+		} else if (mode === 'css') {
+			updateCss(text);
 			//changeTab('outline');
 		} else {
 			//changeTab('minimap');
-			$outlineRoot.html('I don\'t understand "' + language + '"<br>for the moment i only now JavaScript and CSS ');
+			$outlineRoot.html('I don\'t understand "' + mode + '"<br>for the moment i only now JavaScript and CSS ');
 		}
 	};
 });

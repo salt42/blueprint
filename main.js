@@ -1,7 +1,6 @@
 define(function (require, exports, modul) {
     "use strict";
     var AppInit         = brackets.getModule("utils/AppInit"),
-		EditorManager   = brackets.getModule("editor/EditorManager"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
@@ -18,9 +17,6 @@ define(function (require, exports, modul) {
 		$footer,
 		currDoc,
 		$headline;
-
-
-
 
 
 	function changeTab(tabName) {
@@ -49,10 +45,8 @@ define(function (require, exports, modul) {
 		//console.log(newPaneId + ' now active')
 	});
 	function parseDoc() {
-		var mode = currDoc.getLanguage().getMode(),
-			text = currDoc.getText();
-		Minimap.update(text, mode);
-		Outliner.update(text, mode)
+		//Minimap.update(currDoc);
+		Outliner.update(currDoc)
 /*		$outlineRoot.html('');
 		if (mode === 'javascript') {
 			myWorker.postMessage(text);
