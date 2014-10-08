@@ -14,7 +14,7 @@ define(function (require, exports, modul) {
 		$panelRight,
 		$content,
 		$outlineRoot,
-		$minimap,
+		$minimapRoot,
 		$footer,
 		currDoc,
 		$headline;
@@ -25,12 +25,12 @@ define(function (require, exports, modul) {
 
 	function changeTab(tabName) {
 		if (tabName === 'outline') {
-			$minimap.hide();
+			$minimapRoot.hide();
 			$outlineRoot.show();
 			$content.removeClass('minimap').addClass('outline');//@todo pointless ?
 		} else if (tabName === 'minimap') {
 			$outlineRoot.hide();
-			$minimap.show();
+			$minimapRoot.show();
 			$content.removeClass('outline').addClass('minimap'); //@todo pointless ?
 		}
 	}
@@ -46,12 +46,12 @@ define(function (require, exports, modul) {
 	});
 	//(e, newPaneId:string, oldPaneId:string)
 	$(MainViewManager).on('activePaneChange', function(e, newPaneId, oldPaneId) {
-		console.log(newPaneId + ' now active')
+		//console.log(newPaneId + ' now active')
 	});
 	function parseDoc() {
 		var mode = currDoc.getLanguage().getMode(),
 			text = currDoc.getText();
-		Minimap.update(text);
+		Minimap.update(text, mode);
 		Outliner.update(text, mode)
 /*		$outlineRoot.html('');
 		if (mode === 'javascript') {
@@ -96,9 +96,9 @@ define(function (require, exports, modul) {
 		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + '/css.css">');
 		$panelRight = $('<div id="mySidePanelRight"></div>');
 			$headline = $('<div class="headline"><span class="outline tab">Outline</span><span class="minimap tab">Minimap</span></div>');
-			$content = $('<div class="content outline"></div>');
+			$content = $('<div class="content"></div>');
 				$outlineRoot = $('<ul class="outline-root childs"></ul>');
-				$minimap = $('<div class="minimap"></div>');
+				$minimapRoot = $('<div class="minimap"></div>');
 			$footer = $('<div class="footer"></div>');
 
 		$panelRight.hide();
@@ -110,7 +110,7 @@ define(function (require, exports, modul) {
 
 
 		$content.append($outlineRoot);
-		$content.append($minimap);
+		$content.append($minimapRoot);
 
 
 		Resizer.makeResizable($panelRight[0], Resizer.DIRECTION_HORIZONTAL, 'left', 100, true);
@@ -133,7 +133,7 @@ define(function (require, exports, modul) {
 		initHtml();
 
 		Outliner.init($outlineRoot);
-		Minimap.init($minimap);
+		Minimap.init($minimapRoot);
 
 
 		$('.tab', $headline).click(function (e) {
@@ -149,6 +149,6 @@ define(function (require, exports, modul) {
 				}
 			}
 		});
-		//parseDoc();
+		changeTab('outline');
     });
 });

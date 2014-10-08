@@ -4,6 +4,7 @@ define(function (require, exports, modul) {
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
+		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 
 		$root,
 		JsWorker;
@@ -119,8 +120,6 @@ define(function (require, exports, modul) {
 				return false;
 			});
 			if (parents.length === 0) {
-				//add it to $root
-				console.log('siehst mich nich')
 				$root.append($ele);
 			} else {
 				parents[parents.length - 1].children('.childs').append($ele);
