@@ -1,0 +1,148 @@
+#mySidePanelRight {
+	position: absolute;
+	top: 0px;
+	right: 30px;
+	height: 100%;
+	background-color: rgb(29, 31, 33);
+	z-index: 18;
+	width: 200px;
+}
+#mySidePanelRight .headline {
+	position: static;
+	white-space: nowrap;
+	padding: 3px;
+	height: 20px;
+	width: 100%;
+	border: 1px solid #000;
+	color: #adb9bd;
+	background: #1c1c1e;
+	border-bottom: 1px solid #343434;
+}
+#mySidePanelRight .headline .tab{
+	display: inline-block;
+	border: 2px solid #343434;
+	border-bottom: 0px;
+	border-radius: 5px;
+	border-bottom-left-radius: 0px;
+	border-bottom-right-radius: 0px;
+	margin-right: 10px;
+	padding: 3px 3px 0px 3px;
+}
+#mySidePanelRight .headline .active {
+	background: #343434;
+	border: #000;
+}
+#mySidePanelRight .content {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	overflow: auto;
+	height: calc(100% - 22px - 32px);
+}
+#mySidePanelRight .content.minimap {
+	zoom: 25%;
+}
+#mySidePanelRight .content.outline {
+	white-space: nowrap;
+}
+#mySidePanelRight .content .minimap-overlay {
+	position: absolute;
+	z-index: 300;
+	width: 100%;
+	background-color: rgba(95, 95, 95, 0.35);
+}
+#mySidePanelRight .content .minimap-root {
+	position: relative;
+	top: 0px;
+	width: 100%;
+	/*-webkit-transform-origin: top left;
+	-webkit-transform: scale(0.25);*/
+	word-wrap: normal;
+	word-break: normal;
+	white-space: pre;
+	overflow: hidden;
+	padding: 0;
+	line-height: 20px;
+	font-size: 16px;
+	padding: 15px 0;
+	tab-size: 4;
+	background: transparent;
+	border: none;
+	font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
+	height: auto;
+}
+
+#mySidePanelRight .footer {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+    width: 100%;
+	height: 25px;
+	font-family: 'SourceSansPro',Helvetica,Arial,"Meiryo UI","ＭＳ Ｐゴシック","MS PGothic",sans-serif;
+	font-size: 11px;
+	line-height: 25px;
+	overflow: hidden;
+	/*from style*/
+	background: #1c1c1e;
+	border-top: 1px solid #343434;
+	border-left: 1px solid #343434;
+	color: #ccc;
+}
+
+#mySidePanelRight .outline-root {
+    list-style: none;
+	padding: 3px;
+	margin: 0px;
+	border-left: 1px solid #000;
+	color: #fff;
+	font-size: 13px;
+	cursor: default;
+}
+#mySidePanelRight .outline-root ul {
+    list-style: none;
+    width: auto;
+}
+#mySidePanelRight .outline-root li {
+    width: auto;
+}
+#mySidePanelRight .outline-root li .toggle {
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+
+	background-image: url("jsTreeSprites.svg");
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-position: 7px -8px;
+	-webkit-transform: translateZ(0) rotate(90deg);
+	-webkit-transition: -webkit-transform 190ms cubic-bezier(.01, .91, 0, .99);
+}
+#mySidePanelRight .outline-root li .toggle.colapsed {
+	background-position: 4px -8px;
+	-webkit-transform: translateZ(0);
+	-webkit-transition: -webkit-transform 90ms cubic-bezier(.01, .91, 0, .99);
+}
+#mySidePanelRight .outline-root li .toggle.no-childs {
+	pointer-events: none;
+	background: transparent;
+}
+
+/*<span class="line" title="">
+	<span class="func-name">Module define</span>
+	<span class="func-params"> (
+		<span class="name">require</span>,
+		<span class="name">exports</span>,
+		<span class="name">modul</span> )
+	</span>
+</span>*/
+
+
+#mySidePanelRight .outline-root li .line { line-height: 20px }
+/*css*/
+#mySidePanelRight .outline-root li .line .selector { color: #8fddff; }
+/*js*/
+#mySidePanelRight .outline-root li .line .type { color: #adb9bd; }
+#mySidePanelRight .outline-root li .line .func-name { color: #8fddff; }
+#mySidePanelRight .outline-root li .line .func-params {}
+#mySidePanelRight .outline-root li .line .func-params .type { color: #adb9bd; }
+#mySidePanelRight .outline-root li .line .func-params .name { }
