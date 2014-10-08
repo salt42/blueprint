@@ -5,6 +5,6 @@
     "homepage": "http://github.com/salt42/devServer",
     "version": "0.2.0",
     "engines": {
-        "brackets": ">=0.42.0"
+        "brackets": "==0.42.0"
     }
 }

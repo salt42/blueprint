@@ -150,7 +150,7 @@ define(function (require, exports, modul) {
 			if (re !== null) {
 				var selectorText = re[1].trim();
 				var $ele = $('<li><span class="line" title="' + selectorText + '"><span class="selector">' + selectorText + '</span></span></li>');
-				$ele.appendTo($outlineRoot);
+				$ele.appendTo($root);
 				$ele.click(i + 1, onClickOnLine);
 			}
 		}
@@ -190,7 +190,7 @@ define(function (require, exports, modul) {
 			//changeTab('outline');
 		} else {
 			//changeTab('minimap');
-			$outlineRoot.html('I don\'t understand "' + mode + '"<br>for the moment i only now JavaScript and CSS ');
+			$root.html('I don\'t understand "' + mode + '"<br>for the moment i only now JavaScript and CSS ');
 		}
 	};
 });
