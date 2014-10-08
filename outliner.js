@@ -75,6 +75,7 @@ define(function (require, exports, modul) {
 	function updateJsTree(dataTree) {
 		var parents = [],
 			k;
+		$root.html('');
 		var recBuild = function (data) {
 			var html = '',
 				paramStr = '';
@@ -119,6 +120,7 @@ define(function (require, exports, modul) {
 			});
 			if (parents.length === 0) {
 				//add it to $root
+				console.log('siehst mich nich')
 				$root.append($ele);
 			} else {
 				parents[parents.length - 1].children('.childs').append($ele);
@@ -141,6 +143,7 @@ define(function (require, exports, modul) {
 				setEditorLine(e.data);
 			};
 
+		$root.html('');
 		for (i = 0; i < lines.length; i++) {
 			re = lines[i].match(/^(.*?){/);
 			if (re !== null) {
@@ -176,7 +179,6 @@ define(function (require, exports, modul) {
 
 	};
 	exports.update = function (content, language) {
-		$root.html('');
 		if (language === 'javascript') {
 			JsWorker.postMessage(content);
 			//changeTab('outline');
