@@ -144,15 +144,25 @@ define(function (require, exports, modul) {
 	}
 	function moveOverlay (y) {
 		var contentHeight = $content[0].parentNode.clientHeight - 54,
-			hundertPro = contentHeight - $minimapOverlay.height() / 4,
-			perCent = (parseInt($minimapOverlay.css('top')) / 4 + y) / hundertPro,
+			hundertPro,
+			perCent;
 
-			currentEditor = CurrentDocument._masterEditor,
+		var lines = ($minimapRoot.height() + 18) / 20;
+
+
+		if ((lines * 5) > contentHeight) {
+			hundertPro = contentHeight - $minimapOverlay.height() / 4;
+		} else {
+			hundertPro = (lines * 5) - $minimapOverlay.height() / 4
+		}
+		perCent = (parseInt($minimapOverlay.css('top')) / 4 + y) / hundertPro;
+//if (($minimapRoot.height() / 4) > contentHeight) {
+
+		var currentEditor = CurrentDocument._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
 		if (perCent > 1) {
-			console.log('bäm')
-			return false;
+			perCent = 1;
 		}
 		//set scroll pos
 		var newY = Math.round(perCent * (currentEditor.totalHeight() - 18 - editorHeight));
@@ -164,6 +174,7 @@ define(function (require, exports, modul) {
 	//api
 	var dragState = false,
 		lastEvent;
+
 	exports.init = function ($parent) {
 		$root = $parent;
 		$minimapOverlay = $('<div class="minimap-overlay"></div>');
@@ -203,10 +214,9 @@ define(function (require, exports, modul) {
 			}
 		});
 
-//		$parent.on('mousewheel', function(e) {
-//			scrollTo(e.originalEvent.wheelDeltaY * -1, true);
-//			return false;
-//		});
+		$parent.on('mousewheel', function(e) {
+			moveOverlay(e.originalEvent.wheelDeltaY * -1);
+		});
 		$parent.append($minimapOverlay);
 		$parent.append($minimapRoot);
 	};
