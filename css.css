@@ -34,7 +34,7 @@
 	border: #000;
 }
 #mySidePanelRight .headline .minimap {
-	display: none;
+	/*display: none;*/
 }
 #mySidePanelRight .content {
 	border-left: 1px solid #000;
@@ -101,6 +101,8 @@
 	color: #fff;
 	font-size: 13px;
 	cursor: default;
+	overflow: scroll;
+	height: calc(100% - 5px);
 }
 #mySidePanelRight .outline-root ul {
     list-style: none;

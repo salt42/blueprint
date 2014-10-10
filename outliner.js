@@ -174,7 +174,7 @@ define(function (require, exports, modul) {
 				updateJsTree(e.data);
 			}
 		};
-
+		JsWorker.addEventListener('error', function() {}, false);
 
 
 	};

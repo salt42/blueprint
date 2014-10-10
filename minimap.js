@@ -5,7 +5,6 @@ define(function (require, exports, modul) {
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
-		dragState 		= false,
 		CurrentDocument,
 		$content,
 		$root,
@@ -20,7 +19,9 @@ define(function (require, exports, modul) {
 
 		if (callback.nodeType == 1) {
 			var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize;
-			var node = callback, col = 0;
+			var node = callback,
+				col = 0;
+
 			node.innerHTML = "";
 			callback = function(text, style) {
 				if (text == "\n") {
@@ -56,7 +57,9 @@ define(function (require, exports, modul) {
 				}
 			};
 	  	}
-		var lines = CodeMirror.splitLines(string), state = CodeMirror.startState(mode);
+		var lines = CodeMirror.splitLines(string),
+			state = CodeMirror.startState(mode);
+
 		for (var i = 0, e = lines.length; i < e; ++i) {
 			if (i) callback("\n");
 			var stream = new CodeMirror.StringStream(lines[i].substr(0,100));
@@ -87,7 +90,7 @@ define(function (require, exports, modul) {
 		updateScrollOverlay();
 	}
 	//pixel based
-	function updateScrollOverlay() {
+	function updateScrollOverlay2() {
 		var currentEditor = CurrentDocument._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			firstLine = Math.round(currentEditor.getScrollPos().y / currentEditor.getTextHeight()),
@@ -95,14 +98,12 @@ define(function (require, exports, modul) {
 			contentHeight = $content[0].parentNode.clientHeight - 54,
 			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 30 - editorHeight);
 
-
 		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight);
 		$minimapOverlay.css('height', overlayHeight + 'px');
 
 		if (($minimapRoot.height() / 4) > contentHeight) {
 			var overageLines = $minimapRoot.height() / 4 - contentHeight;
-			console.log(overageLines, overageLines *4)
-			// -2326
+
 			overageLines = overageLines *4;
 			$minimapRoot.css('top', 0 - scrollPercent * overageLines + 'px');
 			var t = scrollPercent * (contentHeight - $minimapOverlay.height() / 4) * 4;// - overlayHeight;//(overlayHeight / 4)) * 4;
@@ -112,8 +113,57 @@ define(function (require, exports, modul) {
 		}
 		$minimapOverlay.css('top', t + 'px');
 	}
+	//line based
+	function updateScrollOverlay() {
+		var currentEditor = CurrentDocument._masterEditor,
+			editorHeight = $(currentEditor.getScrollerElement()).height(),
+			firstLine = Math.round(currentEditor.getScrollPos().y / currentEditor.getTextHeight()),
+			lineHight = 20,
+	   /*k*/contentHeight = $content[0].parentNode.clientHeight - 54,
+	   /*k*/scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
 
 
+		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight);
+		$minimapOverlay.css('height', overlayHeight + 'px');
+		//frag nich wo die 18 her kommen ich weiß es noch nich aber scheint wichtig zu sein ;)
+   /*k*/var lines = ($minimapRoot.height() + 18) / lineHight;
+
+
+		//es macht einen unterschied ob in der letzten zeile was steht oder nich
+
+		if ((lines * 5) > contentHeight) {
+			var overageLines = lines - contentHeight / 5;
+
+	/*k*/	$minimapRoot.css('top', 0 - (scrollPercent * (overageLines) * 20 + 18) + 'px');
+			var t = scrollPercent * (contentHeight - $minimapOverlay.height() / 4) * 4;// - overlayHeight;//(overlayHeight / 4)) * 4;
+		} else {
+			$minimapRoot.css('top', 0 + 'px');
+			var t = scrollPercent * ($minimapRoot.height() / 4 - $minimapOverlay.height() / 4) * 4;// - overlayHeight;//(overlayHeight / 4)) * 4;
+		}
+		$minimapOverlay.css('top', t + 'px');
+	}
+	function moveOverlay (y) {
+		var contentHeight = $content[0].parentNode.clientHeight - 54,
+			hundertPro = contentHeight - $minimapOverlay.height() / 4,
+			perCent = (parseInt($minimapOverlay.css('top')) / 4 + y) / hundertPro,
+
+			currentEditor = CurrentDocument._masterEditor,
+			editorHeight = $(currentEditor.getScrollerElement()).height(),
+			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
+		if (perCent > 1) {
+			console.log('bäm')
+			return false;
+		}
+		//set scroll pos
+		var newY = Math.round(perCent * (currentEditor.totalHeight() - 18 - editorHeight));
+
+		currentEditor.setScrollPos(0, newY);
+		updateScrollOverlay();
+		//console.log(currentEditor.getScrollPos().y , newY)
+	};
+	//api
+	var dragState = false,
+		lastEvent;
 	exports.init = function ($parent) {
 		$root = $parent;
 		$minimapOverlay = $('<div class="minimap-overlay"></div>');
@@ -123,9 +173,9 @@ define(function (require, exports, modul) {
 
 
 		$parent.on('mousedown', function(e) {
-			console.log(e)
 			if (e.target === $minimapOverlay[0]) {
 				dragState = 'possible';
+				lastEvent = e;
 			} else if (e.target === $minimapRoot[0] || e.target.offsetParent === $minimapRoot[0]) {
 				//console.log(e.offsetY);
 				//scrollTo(e.offsetY);
@@ -138,10 +188,12 @@ define(function (require, exports, modul) {
 				dragState = 'dragging';
 			}
 			if (dragState == 'dragging') {
-				console.log(e);
 				var minimapRootTop = parseInt($minimapRoot.css('top')),
 					minimapOverlayTop = parseInt($minimapOverlay.css('top'));
-				jumpTo(minimapRootTop + minimapOverlayTop + e.offsetY, false);
+				//scroll in %
+				moveOverlay(e.clientY - lastEvent.clientY);
+				//jumpTo(minimapRootTop + minimapOverlayTop + e.offsetY, false);
+				lastEvent = e;
 			}
 		});
 		//mouseup on document
@@ -163,6 +215,7 @@ define(function (require, exports, modul) {
 			text = doc.getText();
 		CurrentDocument = doc;
 		$minimapRoot.html('');
+		console.dir($minimapRoot[0]);
 		CodeMirror.runMode(text, mode, $minimapRoot[0]);
 
 		var currentEditor = doc._masterEditor;
@@ -173,4 +226,8 @@ define(function (require, exports, modul) {
 		});
 		updateScrollOverlay();
 	};
+
+
+
+
 });

@@ -45,7 +45,7 @@ define(function (require, exports, modul) {
 		//console.log(newPaneId + ' now active')
 	});
 	function parseDoc() {
-		//Minimap.update(currDoc);
+		Minimap.update(currDoc);
 		Outliner.update(currDoc)
 /*		$outlineRoot.html('');
 		if (mode === 'javascript') {
@@ -142,6 +142,17 @@ define(function (require, exports, modul) {
 					changeTab('minimap');
 				}
 			}
+		});
+		$(DocumentManager).on('documentSaved', function (e, document) {
+			//if (!Resizer.isVisible($panelRight)) return true;
+			if (currDoc === document) {
+				parseDoc();
+			}
+		});
+		$(DocumentManager).on('currentDocumentChange', function (e, cd, prevDoc) {
+			//if (!Resizer.isVisible($panelRight)) return true;
+			currDoc = cd;
+			parseDoc();
 		});
 		changeTab('outline');
     });
