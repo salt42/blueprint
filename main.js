@@ -1,5 +1,31 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Stefan Schulz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+*/
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
+/*global define, $, brackets, window */
 define(function (require, exports, modul) {
     "use strict";
+
     var AppInit         = brackets.getModule("utils/AppInit"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
 		Resizer			= brackets.getModule('utils/Resizer'),
@@ -7,26 +33,42 @@ define(function (require, exports, modul) {
 		MainViewManager	= brackets.getModule('view/MainViewManager'),
 		Outliner		= require('./outliner'),
 		Minimap			= require('./minimap'),
-
 		$quickButton,
 		$panelRight,
 		$content,
 		$outlineRoot,
 		$minimapRoot,
 		$footer,
+		$headline,
 		currDoc,
-		$headline;
-
+		sidebarOpen,
+		activeTab;
 
 	function changeTab(tabName) {
 		if (tabName === 'outline') {
 			$minimapRoot.hide();
 			$outlineRoot.show();
-			$content.removeClass('minimap').addClass('outline');//@todo pointless ?
+			activeTab = tabName;
+			//$content.removeClass('minimap').addClass('outline');//@todo pointless ?
 		} else if (tabName === 'minimap') {
 			$outlineRoot.hide();
 			$minimapRoot.show();
-			$content.removeClass('outline').addClass('minimap'); //@todo pointless ?
+			activeTab = tabName;
+			//$content.removeClass('outline').addClass('minimap'); //@todo pointless ?
+		}
+	}
+	function toggleSidebar(flag) {
+		if(flag) {
+			//show
+			sidebarOpen = true;
+			Resizer.show($panelRight);
+			parseDoc();
+			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
+		} else {
+			//hide
+			sidebarOpen = false;
+			Resizer.hide($panelRight);
+			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
 		}
 	}
 	//(e, newFile:File, newPaneId:string, oldFile:File, oldPaneId:string)
@@ -43,28 +85,12 @@ define(function (require, exports, modul) {
 	$(MainViewManager).on('activePaneChange', function(e, newPaneId, oldPaneId) {
 		//console.log(newPaneId + ' now active')
 	});
+
 	function parseDoc() {
-		Minimap.update(currDoc);
-		Outliner.update(currDoc)
-/*		$outlineRoot.html('');
-		if (mode === 'javascript') {
-			myWorker.postMessage(text);
-			//changeTab('outline');
-/*			DocumentManager.getDocumentText(currDoc.file).done(function (content) {
-				myWorker.postMessage(content);
-			});
-		} else if (mode === 'css') {
-			updateCss(text);
-			//changeTab('outline');
-/*			DocumentManager.getDocumentText(currDoc.file).done(function (content) {
-				updateCss(content);
-			});
-		} else {
-			//changeTab('minimap');
-			$outlineRoot.html('I don\'t understand "' + mode + '"<br>for the moment i only now JavaScript and CSS ');
+		if (sidebarOpen) {
+			Outliner.update(currDoc);
+			Minimap.update(currDoc);
 		}
-		//update minimap
-		updateMap(text, mode);*/
 	}
 
 	function initHtml() {
@@ -76,10 +102,12 @@ define(function (require, exports, modul) {
         $($quickButton).click(function () {
 			if (Resizer.isVisible($panelRight)) {
 				//hide
+				sidebarOpen = false;
 				Resizer.hide($panelRight);
 				$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
 			} else {
 				//show
+				sidebarOpen = true;
 				Resizer.show($panelRight);
 				$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
 			}
@@ -131,15 +159,9 @@ define(function (require, exports, modul) {
 
 		$('.tab', $headline).click(function (e) {
 			if ($(this).hasClass('outline')) {
-				if ($content.hasClass('minimap')) {
-					//show outline
-					changeTab('outline');
-				}
+				changeTab('outline');
 			} else {
-				if ($content.hasClass('outline')) {
-					//show minimap
-					changeTab('minimap');
-				}
+				changeTab('minimap');
 			}
 		});
 		$(DocumentManager).on('documentSaved', function (e, document) {
@@ -154,5 +176,7 @@ define(function (require, exports, modul) {
 			parseDoc();
 		});
 		changeTab('outline');
+		sidebarOpen = false;
+//		toggleSidebar(true); muss später passieren
     });
 });

@@ -219,4 +219,3 @@ onmessage = function (e) {
 	});
 	postMessage(root);
 };
-

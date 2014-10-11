@@ -1,3 +1,28 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2014 Stefan Schulz
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+*/
+/*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
+/*global define, $, brackets, window, Worker */
 define(function (require, exports, modul) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
@@ -111,34 +136,32 @@ define(function (require, exports, modul) {
 	   /*k*/lines = currentEditor.lineCount();
 
 
-		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight);
+		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight / 4);
 		$minimapOverlay.css('height', overlayHeight + 'px');
-
 		if ((lines * 5) > contentHeight) {
 			var overageLines = lines - contentHeight / 5;
 
 	/*k*/	$minimapRoot.css('top', 0 - (scrollPercent * (overageLines) * 20 + 18) + 'px');
-			var t = scrollPercent * (contentHeight - $minimapOverlay.height() / 4) * 4;// - overlayHeight;//(overlayHeight / 4)) * 4;
+			var t = scrollPercent * (contentHeight - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
 		} else {
 			$minimapRoot.css('top', 0 + 'px');
-			var t = scrollPercent * ($minimapRoot.height() / 4 - $minimapOverlay.height() / 4) * 4;// - overlayHeight;//(overlayHeight / 4)) * 4;
+			var t = scrollPercent * ($minimapRoot.height() / 4 - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
 		}
 		$minimapOverlay.css('top', t + 'px');
 	}
-	function moveOverlay (y) {
+	function moveOverlay(y) {
 		var contentHeight = $content[0].parentNode.clientHeight - 54,
 			hundertPro,
-			perCent;
-
-		var lines = ($minimapRoot.height() + 18) / 20;
+			perCent,
+			lines = CurrentDocument._masterEditor.lineCount();
 
 
 		if ((lines * 5) > contentHeight) {
-			hundertPro = contentHeight - $minimapOverlay.height() / 4;
+			hundertPro = contentHeight - $minimapOverlay.height();
 		} else {
-			hundertPro = (lines * 5) - $minimapOverlay.height() / 4
+			hundertPro = (lines * 5) - $minimapOverlay.height();
 		}
-		perCent = (parseInt($minimapOverlay.css('top')) / 4 + y) / hundertPro;
+		perCent = (parseInt($minimapOverlay.css('top')) + y) / hundertPro;
 		var currentEditor = CurrentDocument._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
@@ -153,18 +176,18 @@ define(function (require, exports, modul) {
 		//console.log(currentEditor.getScrollPos().y , newY)
 	};
 
-function appendStringAsNodes(element, html) {
-    var frag = document.createDocumentFragment(),
-        tmp = document.createElement('body'), child;
-    tmp.innerHTML = html;
-    // Append elements in a loop to a DocumentFragment, so that the browser does
-    // not re-render the document for each node
-    while (child = tmp.firstChild) {
-        frag.appendChild(child);
-    }
-    element.appendChild(frag); // Now, append all elements at once
-    frag = tmp = null;
-}
+	function appendStringAsNodes(element, html) {
+		var frag = document.createDocumentFragment(),
+			tmp = document.createElement('body'), child;
+		tmp.innerHTML = html;
+		// Append elements in a loop to a DocumentFragment, so that the browser does
+		// not re-render the document for each node
+		while (child = tmp.firstChild) {
+			frag.appendChild(child);
+		}
+		element.appendChild(frag); // Now, append all elements at once
+		frag = tmp = null;
+	}
 	//api
 	var dragState = false,
 		lastEvent,
