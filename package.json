@@ -1,8 +1,8 @@
 {
     "name": "blueprint.outliner",
     "title": "BluePrint Beta",
-    "description": "Hierarchic outline viewer for JavaScript and CSS.",
-    "homepage": "http://github.com/salt42/devServer",
+    "description": "Code minimap and hierarchic outline viewer for JavaScript and CSS.",
+    "homepage": "http://github.com/salt42/blueprint",
     "version": "0.2.0",
     "engines": {
         "brackets": "=0.44.0"
