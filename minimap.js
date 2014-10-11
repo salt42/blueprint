@@ -10,53 +10,57 @@ define(function (require, exports, modul) {
 		$root,
 		$minimapOverlay,
 		$minimapRoot;
+
+
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
-	CodeMirror.runMode = function(string, modespec, callback, options) {
-		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec);
-		var ie = /MSIE \d/.test(navigator.userAgent);
-		var ie_lt9 = ie && (document.documentMode == null || document.documentMode < 9);
+	CodeMirror.runMode = function(string, modespec) {
+		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
+			options,
+			ie = /MSIE \d/.test(navigator.userAgent),
+			ie_lt9 = ie && (document.documentMode == null || document.documentMode < 9),
+			html = '',
+			tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
+			col = 0;
 
-		if (callback.nodeType == 1) {
-			var tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize;
-			var node = callback,
+		var callback = function(text, style) {
+			if (text == "\n") {
+				// Emitting LF or CRLF on IE8 or earlier results in an incorrect display.
+				// Emitting a carriage return makes everything ok.
+				html += '\n';
+				//node.appendChild(document.createTextNode(ie_lt9 ? '\r' : text));
 				col = 0;
-
-			node.innerHTML = "";
-			callback = function(text, style) {
-				if (text == "\n") {
-					// Emitting LF or CRLF on IE8 or earlier results in an incorrect display.
-					// Emitting a carriage return makes everything ok.
-					node.appendChild(document.createTextNode(ie_lt9 ? '\r' : text));
-					col = 0;
-					return;
-				}
-				var content = "";
-				// replace tabs
-				for (var pos = 0;;) {
-					var idx = text.indexOf("\t", pos);
-					if (idx == -1) {
-						content += text.slice(pos);
-						col += text.length - pos;
-						break;
-					} else {
-						col += idx - pos;
-						content += text.slice(pos, idx);
-						var size = tabSize - col % tabSize;
-						col += size;
-						for (var i = 0; i < size; ++i) content += " ";
-						pos = idx + 1;
-					}
-				}
-				if (style) {
-					var sp = node.appendChild(document.createElement("span"));
-					sp.className = "cm-" + style.replace(/ +/g, " cm-");
-					sp.appendChild(document.createTextNode(content));
+				return;
+			}
+			var content = "";
+			// replace tabs
+			for (var pos = 0;;) {
+				var idx = text.indexOf("\t", pos);
+				if (idx == -1) {
+					content += text.slice(pos);
+					col += text.length - pos;
+					break;
 				} else {
-					node.appendChild(document.createTextNode(content));
+					col += idx - pos;
+					content += text.slice(pos, idx);
+					var size = tabSize - col % tabSize;
+					col += size;
+					for (var i = 0; i < size; ++i) content += " ";
+					pos = idx + 1;
 				}
-			};
-	  	}
+			}
+			if (style) {
+				var className = "cm-" + style.replace(/ +/g, " cm-");
+				html += '<span class="' + className + '">' + content + '</span>';
+				//sp.className = "cm-" + style.replace(/ +/g, " cm-");
+				//var sp = node.appendChild(document.createElement("span"));
+				//sp.appendChild(document.createTextNode(content));
+			} else {
+				html += content;
+				//node.appendChild(document.createTextNode(content));
+			}
+		};
+
 		var lines = CodeMirror.splitLines(string),
 			state = CodeMirror.startState(mode);
 
@@ -69,7 +73,9 @@ define(function (require, exports, modul) {
 				stream.start = stream.pos;
 			}
 		}
+		return html;
 	};
+
 	function jumpTo(y, setCursor) {
 		//y == mouse.y relative 2 minimap
 //		var t = $minimapRoot.css('top');
@@ -89,47 +95,24 @@ define(function (require, exports, modul) {
 		currentEditor.focus();
 		updateScrollOverlay();
 	}
-	//pixel based
-	function updateScrollOverlay2() {
-		var currentEditor = CurrentDocument._masterEditor,
-			editorHeight = $(currentEditor.getScrollerElement()).height(),
-			firstLine = Math.round(currentEditor.getScrollPos().y / currentEditor.getTextHeight()),
-			lineHight = 20,
-			contentHeight = $content[0].parentNode.clientHeight - 54,
-			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 30 - editorHeight);
-
-		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight);
-		$minimapOverlay.css('height', overlayHeight + 'px');
-
-		if (($minimapRoot.height() / 4) > contentHeight) {
-			var overageLines = $minimapRoot.height() / 4 - contentHeight;
-
-			overageLines = overageLines *4;
-			$minimapRoot.css('top', 0 - scrollPercent * overageLines + 'px');
-			var t = scrollPercent * (contentHeight - $minimapOverlay.height() / 4) * 4;// - overlayHeight;//(overlayHeight / 4)) * 4;
-		} else {
-			$minimapRoot.css('top', 0 + 'px');
-			var t = scrollPercent * ($minimapRoot.height() / 4 - $minimapOverlay.height() / 4) * 4;// - overlayHeight;//(overlayHeight / 4)) * 4;
-		}
-		$minimapOverlay.css('top', t + 'px');
+	function setEditorLine(line) {
+		var currentEditor = EditorManager.getActiveEditor();
+        currentEditor.setCursorPos(line - 1, 0, true);
+        currentEditor.focus();
+        //setTimeout(function(){currentEditor.focus()}, 10);
 	}
-	//line based
 	function updateScrollOverlay() {
 		var currentEditor = CurrentDocument._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			firstLine = Math.round(currentEditor.getScrollPos().y / currentEditor.getTextHeight()),
 			lineHight = 20,
 	   /*k*/contentHeight = $content[0].parentNode.clientHeight - 54,
-	   /*k*/scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
+	   /*k*/scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight),
+	   /*k*/lines = currentEditor.lineCount();
 
 
 		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight);
 		$minimapOverlay.css('height', overlayHeight + 'px');
-		//frag nich wo die 18 her kommen ich weiß es noch nich aber scheint wichtig zu sein ;)
-   /*k*/var lines = ($minimapRoot.height() + 18) / lineHight;
-
-
-		//es macht einen unterschied ob in der letzten zeile was steht oder nich
 
 		if ((lines * 5) > contentHeight) {
 			var overageLines = lines - contentHeight / 5;
@@ -156,8 +139,6 @@ define(function (require, exports, modul) {
 			hundertPro = (lines * 5) - $minimapOverlay.height() / 4
 		}
 		perCent = (parseInt($minimapOverlay.css('top')) / 4 + y) / hundertPro;
-//if (($minimapRoot.height() / 4) > contentHeight) {
-
 		var currentEditor = CurrentDocument._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
@@ -171,9 +152,23 @@ define(function (require, exports, modul) {
 		updateScrollOverlay();
 		//console.log(currentEditor.getScrollPos().y , newY)
 	};
+
+function appendStringAsNodes(element, html) {
+    var frag = document.createDocumentFragment(),
+        tmp = document.createElement('body'), child;
+    tmp.innerHTML = html;
+    // Append elements in a loop to a DocumentFragment, so that the browser does
+    // not re-render the document for each node
+    while (child = tmp.firstChild) {
+        frag.appendChild(child);
+    }
+    element.appendChild(frag); // Now, append all elements at once
+    frag = tmp = null;
+}
 	//api
 	var dragState = false,
-		lastEvent;
+		lastEvent,
+		JsWorker;
 
 	exports.init = function ($parent) {
 		$root = $parent;
@@ -219,25 +214,40 @@ define(function (require, exports, modul) {
 		});
 		$parent.append($minimapOverlay);
 		$parent.append($minimapRoot);
+//		var modulePath = ExtensionUtils.getModulePath(modul);
+//		JsWorker = new Worker(modulePath + "minimapWorker.js");
+//		JsWorker.onmessage = function (e) {
+//			if (e.data.type === 'log') {
+//				console.log(e.data.value[0], e.data.value[1]);
+//			} else if (e.data.type === 'data') {
+//				$minimapRoot.append('<div class="wrap"></div>');
+//				appendStringAsNodes($('.wrap' ,$minimapRoot)[0], e.data.value)
+//				updateScrollOverlay();
+//			}
+//		};
+//		JsWorker.addEventListener('error', function(e) {
+//			console.log(['filename: ', e.filename, ' lineno: ', e.lineno, ' error: ', e.message].join(' '));
+//		}, false);
 	};
 	exports.update = function (doc) {
 		var mode = doc.getLanguage().getMode(),
 			text = doc.getText();
+//		JsWorker.postMessage({
+//			mode : mode,
+//			content : text
+//		});
+		$('.wrap' ,$minimapRoot).remove();
 		CurrentDocument = doc;
-		$minimapRoot.html('');
-		console.dir($minimapRoot[0]);
-		CodeMirror.runMode(text, mode, $minimapRoot[0]);
 
+		var html = CodeMirror.runMode(text, mode);
+		$minimapRoot.append('<div class="wrap"></div>');
+		appendStringAsNodes($('.wrap' ,$minimapRoot)[0], html);
+//
 		var currentEditor = doc._masterEditor;
 		$(currentEditor).on('scroll', function(e) {
 			if (dragState === false) {
 				updateScrollOverlay();
 			}
 		});
-		updateScrollOverlay();
 	};
-
-
-
-
 });

@@ -5,7 +5,6 @@ define(function (require, exports, modul) {
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
 		MainViewManager	= brackets.getModule('view/MainViewManager'),
-
 		Outliner		= require('./outliner'),
 		Minimap			= require('./minimap'),
 

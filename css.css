@@ -67,8 +67,8 @@
 	white-space: pre;
 	overflow: hidden;
 	padding: 0;
-	line-height: 20px;
-	font-size: 16px;
+	line-height: 20px!important;
+	font-size: 16px!important;
 	padding: 15px 0;
 	tab-size: 4;
 	background: transparent;
@@ -152,3 +152,17 @@
 #mySidePanelRight .outline-root li .line .func-params {}
 #mySidePanelRight .outline-root li .line .func-params .type { color: #adb9bd; }
 #mySidePanelRight .outline-root li .line .func-params .name { }
+
+
+
+#mySidePanelRight .cm-variable,
+#mySidePanelRight .cm-variable-2,
+#mySidePanelRight .cm-variable-3,
+#mySidePanelRight .cm-operator,
+#mySidePanelRight .cm-meta,
+#mySidePanelRight .cm-bracket {
+	color: #dddddd;
+}
+#mySidePanelRight .cm-comment {
+	color: #767676;
+}
