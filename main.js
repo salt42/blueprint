@@ -1,4 +1,12 @@
 /*
+glob:
+-conf
+-switch if outliner cant show
+
+
+*/
+
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Stefan Schulz
@@ -39,36 +47,33 @@ define(function (require, exports, modul) {
 		$outlineRoot,
 		$minimapRoot,
 		$footer,
+		$footerOutline,
 		$headline,
 		currDoc,
 		sidebarOpen,
-		activeTab;
+		activeTab,
+		parsed = false;
 
 	function changeTab(tabName) {
 		if (tabName === 'outline') {
 			$minimapRoot.hide();
 			$outlineRoot.show();
+			Outliner.setViewState(true);
+			Minimap.setViewState(false);
 			activeTab = tabName;
-			//$content.removeClass('minimap').addClass('outline');//@todo pointless ?
 		} else if (tabName === 'minimap') {
 			$outlineRoot.hide();
+			Outliner.setViewState(false);
+			Minimap.setViewState(true);
 			$minimapRoot.show();
 			activeTab = tabName;
-			//$content.removeClass('outline').addClass('minimap'); //@todo pointless ?
 		}
 	}
 	function toggleSidebar(flag) {
 		if(flag) {
-			//show
-			sidebarOpen = true;
 			Resizer.show($panelRight);
-			parseDoc();
-			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
 		} else {
-			//hide
-			sidebarOpen = false;
 			Resizer.hide($panelRight);
-			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
 		}
 	}
 	//(e, newFile:File, newPaneId:string, oldFile:File, oldPaneId:string)
@@ -77,6 +82,7 @@ define(function (require, exports, modul) {
 			var doc = DocumentManager.getDocumentForPath(newFile._path);
 			doc.done(function(doc) {
 				currDoc = doc;
+				parsed = false;
 				parseDoc();
 			});
 		}
@@ -90,6 +96,9 @@ define(function (require, exports, modul) {
 		if (sidebarOpen) {
 			Outliner.update(currDoc);
 			Minimap.update(currDoc);
+			parsed = true;
+		} else {
+			parsed = false;
 		}
 	}
 
@@ -121,18 +130,14 @@ define(function (require, exports, modul) {
 				$outlineRoot = $('<ul class="outline-root childs"></ul>');
 				$minimapRoot = $('<div class="minimap"></div>');
 			$footer = $('<div class="footer"></div>');
-
 		$panelRight.hide();
 		$('#main-toolbar').before($panelRight);
 		$panelRight.append($headline);
 		$panelRight.append($content);
 		$panelRight.append($footer);
 
-
-
 		$content.append($outlineRoot);
 		$content.append($minimapRoot);
-
 
 		Resizer.makeResizable($panelRight[0], Resizer.DIRECTION_HORIZONTAL, 'left', 100, true);
 
@@ -146,11 +151,77 @@ define(function (require, exports, modul) {
 		$panelRight.on('panelCollapsed', function () {
 			$('.main-view .content').css('right', '30px');
 		});
+		$panelRight.on('panelCollapsed panelExpanded', function (e) {
+			if (e.type === 'panelExpanded') {
+				//show
+				sidebarOpen = true;
+				if (!parsed) parseDoc();
+				$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
+			} else {
+				//hide
+				sidebarOpen = false;
+				$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
+			}
+		});
+
 	}
 
+//extention rating ping
+    var trackingServiceUrl = 'http://brackets-online.herokuapp.com/',
+        // http://brackets-online.herokuapp.com/ is an address of default tracking service
+        // Change it if you use self-hosting instance of online tracking service
+        appToken = '543d126e454c6181ea000118',
+        // read https://github.com/dnbard/brackets-extension-rating/wiki/Online-and-max-users-counters-in-this-extension
+        // to learn on how to obtain an application token for your extension
+        mins60 = 60 * 60 * 1000,
+        mins5 = 5 * 60 * 1000,
+        keyId = 'blueprint.outliner';
+
+    function tick(){
+        var userId = getUserId(appToken, keyId),
+            url;
+
+        if (userId){
+            url = trackingServiceUrl + 'tick/' + appToken + '/' + userId;
+        } else {
+            url = trackingServiceUrl + 'tick/' + appToken;
+        }
+
+        $.ajax({ url: url })
+            .success(function(data){
+                //TODO: create complex model of data in local storage to support any number of extensions
+                if (data && data !== 'OK' && data !== 'ERROR'){
+                    saveUserId(data, appToken, keyId);
+                }
+            }).error(function(){
+                console.log('Can\'t track online status, retry in 5 mins') ;
+                setTimeout(tick, mins5);
+            });
+    }
+
+
+    function getUserId(appToken, keyId){
+        if (typeof appToken !== 'string' || typeof keyId !== 'string'){
+            throw new Error('Invalid argument');
+        }
+
+        return JSON.parse(localStorage.getItem(keyId) || '{ }')[appToken];
+    }
+
+    function saveUserId(id, appToken, keyId){
+        if (typeof id !== 'string' || typeof appToken !== 'string' || typeof keyId !== 'string'){
+            throw new Error('Invalid argument');
+        }
+
+        var obj = JSON.parse(localStorage.getItem(keyId) || '{ }');
+        obj[appToken] = id;
+        localStorage.setItem(keyId, JSON.stringify(obj));
+    }
 	AppInit.appReady(function () {
 		var modulePath = ExtensionUtils.getModulePath(modul);
 		//create html
+		tick();
+        setInterval(tick, mins60);
 		initHtml();
 
 		Outliner.init($outlineRoot);
@@ -167,12 +238,14 @@ define(function (require, exports, modul) {
 		$(DocumentManager).on('documentSaved', function (e, document) {
 			//if (!Resizer.isVisible($panelRight)) return true;
 			if (currDoc === document) {
+				parsed = false;
 				parseDoc();
 			}
 		});
 		$(DocumentManager).on('currentDocumentChange', function (e, cd, prevDoc) {
 			//if (!Resizer.isVisible($panelRight)) return true;
 			currDoc = cd;
+			parsed = false;
 			parseDoc();
 		});
 		changeTab('outline');

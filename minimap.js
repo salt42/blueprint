@@ -1,4 +1,10 @@
 /*
+minimap:
+-seitenweise bei mousewheel
+-html pre tag
+-?zoom
+*/
+/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Stefan Schulz
@@ -22,7 +28,7 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets, window, Worker */
+/*global define, $, brackets, window, Worker, document */
 define(function (require, exports, modul) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
@@ -68,6 +74,7 @@ define(function (require, exports, modul) {
 				} else {
 					col += idx - pos;
 					content += text.slice(pos, idx);
+
 					var size = tabSize - col % tabSize;
 					col += size;
 					for (var i = 0; i < size; ++i) content += " ";
@@ -109,7 +116,6 @@ define(function (require, exports, modul) {
 		if (setCursor) {
 			setEditorLine(clickedLine);
 		} else {
-			console.log(clickedLine, y);
 			setEditorView(clickedLine);
 		}
 	}
@@ -133,21 +139,20 @@ define(function (require, exports, modul) {
 			lineHight = 20,
 	   /*k*/contentHeight = $content[0].parentNode.clientHeight - 54,
 	   /*k*/scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight),
-	   /*k*/lines = currentEditor.lineCount();
-
+	   /*k*/lines = currentEditor.lineCount() + 1,
+			overlayTop;
 
 		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight / 4);
 		$minimapOverlay.css('height', overlayHeight + 'px');
-		if ((lines * 5) > contentHeight) {
+		if ($minimapRoot.height() / 4 + 5 > contentHeight) {
 			var overageLines = lines - contentHeight / 5;
-
-	/*k*/	$minimapRoot.css('top', 0 - (scrollPercent * (overageLines) * 20 + 18) + 'px');
-			var t = scrollPercent * (contentHeight - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
+	/*k*/	$minimapRoot.css('top', 0 - (scrollPercent * (overageLines) * 20) + 'px');
+			overlayTop = scrollPercent * (contentHeight - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
 		} else {
 			$minimapRoot.css('top', 0 + 'px');
-			var t = scrollPercent * ($minimapRoot.height() / 4 - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
+			overlayTop = scrollPercent * ((lines * 5) - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
 		}
-		$minimapOverlay.css('top', t + 'px');
+		$minimapOverlay.css('top', overlayTop + 'px');
 	}
 	function moveOverlay(y) {
 		var contentHeight = $content[0].parentNode.clientHeight - 54,
@@ -173,7 +178,6 @@ define(function (require, exports, modul) {
 
 		currentEditor.setScrollPos(0, newY);
 		updateScrollOverlay();
-		//console.log(currentEditor.getScrollPos().y , newY)
 	};
 
 	function appendStringAsNodes(element, html) {
@@ -206,8 +210,6 @@ define(function (require, exports, modul) {
 				dragState = 'possible';
 				lastEvent = e;
 			} else if (e.target === $minimapRoot[0] || e.target.offsetParent === $minimapRoot[0]) {
-				//console.log(e.offsetY);
-				//scrollTo(e.offsetY);
 				jumpTo(e.offsetY , true);
 			}
 		});
@@ -217,11 +219,7 @@ define(function (require, exports, modul) {
 				dragState = 'dragging';
 			}
 			if (dragState == 'dragging') {
-				var minimapRootTop = parseInt($minimapRoot.css('top')),
-					minimapOverlayTop = parseInt($minimapOverlay.css('top'));
-				//scroll in %
 				moveOverlay(e.clientY - lastEvent.clientY);
-				//jumpTo(minimapRootTop + minimapOverlayTop + e.offsetY, false);
 				lastEvent = e;
 			}
 		});
@@ -241,7 +239,6 @@ define(function (require, exports, modul) {
 //		JsWorker = new Worker(modulePath + "minimapWorker.js");
 //		JsWorker.onmessage = function (e) {
 //			if (e.data.type === 'log') {
-//				console.log(e.data.value[0], e.data.value[1]);
 //			} else if (e.data.type === 'data') {
 //				$minimapRoot.append('<div class="wrap"></div>');
 //				appendStringAsNodes($('.wrap' ,$minimapRoot)[0], e.data.value)
@@ -272,5 +269,12 @@ define(function (require, exports, modul) {
 				updateScrollOverlay();
 			}
 		});
+	};
+	exports.setViewState = function (state) {
+		if (state) {
+
+		} else {
+
+		}
 	};
 });

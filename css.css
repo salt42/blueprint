@@ -95,7 +95,6 @@
 	overflow: hidden;
 	padding: 0;
 	line-height: 20px!important;
-	font-size: 16px!important;
 	padding: 15px 0;
 	tab-size: 4;
 	background: transparent;
@@ -120,7 +119,19 @@
 	border-left: 1px solid #343434;
 	color: #ccc;
 }
-
+#mySidePanelRight .footer .button {
+	width: 20px;
+	height: 20px;
+	overflow: hidden;
+	margin: 2px 2px 2px 2px;
+	display: inline-block;
+	background-repeat: no-repeat;
+	float: right;
+}
+#mySidePanelRight .footer .button.sort {
+	background-image: url('az.png');
+	background-size: 15px 15px;
+}
 #mySidePanelRight .outline-root {
     list-style: none;
 	padding: 3px;
@@ -176,7 +187,7 @@
 #mySidePanelRight .outline-root li .line .selector { color: #8fddff; }
 /*js*/
 #mySidePanelRight .outline-root li .line .type { color: #adb9bd; }
-#mySidePanelRight .outline-root li .line .func-name { color: #8fddff; }
+#mySidePanelRight .outline-root li .line .name { color: #8fddff; }
 #mySidePanelRight .outline-root li .line .func-params {}
 #mySidePanelRight .outline-root li .line .func-params .type { color: #adb9bd; }
 #mySidePanelRight .outline-root li .line .func-params .name { }

@@ -3,6 +3,8 @@
     "title": "BluePrint Beta",
     "description": "Code minimap and hierarchic outline viewer for JavaScript and CSS.",
     "homepage": "http://github.com/salt42/blueprint",
+	"author": "salt",
+    "license": "MIT",
     "version": "0.2.0",
     "engines": {
         "brackets": "=0.44.0"
