@@ -43,6 +43,20 @@ define(function (require, exports, modul) {
 		$minimapRoot;
 
 
+var entityMap = {
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+	'"': '&quot;',
+	"'": '&#39;',
+	"/": '&#x2F;'
+};
+
+function escapeHtml(string) {
+	return String(string).replace(/[&<>"'\/]/g, function (s) {
+		return entityMap[s];
+	});
+}
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
 	CodeMirror.runMode = function(string, modespec) {
@@ -63,7 +77,7 @@ define(function (require, exports, modul) {
 				col = 0;
 				return;
 			}
-			var content = "";
+			var content = '';
 			// replace tabs
 			for (var pos = 0;;) {
 				var idx = text.indexOf("\t", pos);
@@ -84,9 +98,10 @@ define(function (require, exports, modul) {
 			if (style) {
 				if (style === 'string') {
 					console.log(content)
+					content = escapeHtml(content);
 				}
 				var className = "cm-" + style.replace(/ +/g, " cm-");
-				html += '<span class="' + className + '"> ' + content + '</span>';
+				html += '<span class="' + className + '">' + content + '</span>';
 //				html += '&#60;span class=&#34;' + className + '&#34;&#62; ' + content + '&#60;/span&#62; ';
 				//sp.className = "cm-" + style.replace(/ +/g, " cm-");
 				//var sp = node.appendChild(document.createElement("span"));
@@ -103,7 +118,7 @@ define(function (require, exports, modul) {
 
 		for (var i = 0, e = lines.length; i < e; ++i) {
 			if (i) callback("\n");
-			var stream = new CodeMirror.StringStream(lines[i].substr(0,300));
+			var stream = new CodeMirror.StringStream(lines[i]);
 			while (!stream.eol()) {
 				var style = mode.token(stream, state);
 				callback(stream.current(), style);
@@ -142,16 +157,21 @@ define(function (require, exports, modul) {
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			firstLine = Math.round(currentEditor.getScrollPos().y / currentEditor.getTextHeight()),
 			lineHight = 20,
-	   /*k*/contentHeight = $content[0].parentNode.clientHeight - 54,
-	   /*k*/scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight),
-	   /*k*/lines = currentEditor.lineCount() + 1,
+			contentHeight = $content[0].parentNode.clientHeight - 54,
+			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight),
+			lines = currentEditor.lineCount() + 1,
 			overlayTop;
+
+
+		//sidescroll
+		//$minimapRoot.css('left', 0 - (currentEditor.getScrollPos().x / ($minimapRoot.width() - $content[0].parentNode.clientWidth)) * $minimapRoot.width() + 'px');
+
 
 		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight / 4);
 		$minimapOverlay.css('height', overlayHeight + 'px');
 		if ($minimapRoot.height() / 4 + 5 > contentHeight) {
 			var overageLines = lines - contentHeight / 5;
-	/*k*/	$minimapRoot.css('top', 0 - (scrollPercent * (overageLines) * 20) + 'px');
+			$minimapRoot.css('top', 0 - (scrollPercent * (overageLines) * 20) + 'px');
 			overlayTop = scrollPercent * (contentHeight - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
 		} else {
 			$minimapRoot.css('top', 0 + 'px');
@@ -207,8 +227,6 @@ define(function (require, exports, modul) {
 		$minimapOverlay = $('<div class="minimap-overlay"></div>');
 		$minimapRoot = $('<div class="minimap-root cm-s-dark-theme"></div>');
 		$content = $($parent.parent('.content')[0]);
-
-
 
 		$parent.on('mousedown', function(e) {
 			if (e.target === $minimapOverlay[0]) {

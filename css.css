@@ -187,10 +187,10 @@
 #mySidePanelRight .outline-root li .line .selector { color: #8fddff; }
 /*js*/
 #mySidePanelRight .outline-root li .line .type { color: #adb9bd; }
-#mySidePanelRight .outline-root li .line .name { color: #8fddff; }
+#mySidePanelRight .outline-root li .line .name { color: #6eb5d4; }
 #mySidePanelRight .outline-root li .line .func-params {}
 #mySidePanelRight .outline-root li .line .func-params .type { color: #adb9bd; }
-#mySidePanelRight .outline-root li .line .func-params .name { }
+#mySidePanelRight .outline-root li .line .func-params .name { color: #4f7e20; }
 
 
 
