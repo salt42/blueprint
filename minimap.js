@@ -82,12 +82,17 @@ define(function (require, exports, modul) {
 				}
 			}
 			if (style) {
+				if (style === 'string') {
+					console.log(content)
+				}
 				var className = "cm-" + style.replace(/ +/g, " cm-");
-				html += '<span class="' + className + '">' + content + '</span>';
+				html += '<span class="' + className + '"> ' + content + '</span>';
+//				html += '&#60;span class=&#34;' + className + '&#34;&#62; ' + content + '&#60;/span&#62; ';
 				//sp.className = "cm-" + style.replace(/ +/g, " cm-");
 				//var sp = node.appendChild(document.createElement("span"));
 				//sp.appendChild(document.createTextNode(content));
 			} else {
+				//var StrippedString = content.replace(/(<([^>]+)>)/ig,"");
 				html += content;
 				//node.appendChild(document.createTextNode(content));
 			}
@@ -98,10 +103,10 @@ define(function (require, exports, modul) {
 
 		for (var i = 0, e = lines.length; i < e; ++i) {
 			if (i) callback("\n");
-			var stream = new CodeMirror.StringStream(lines[i].substr(0,100));
+			var stream = new CodeMirror.StringStream(lines[i].substr(0,300));
 			while (!stream.eol()) {
 				var style = mode.token(stream, state);
-				callback(stream.current(), style, i, stream.start, state);
+				callback(stream.current(), style);
 				stream.start = stream.pos;
 			}
 		}
