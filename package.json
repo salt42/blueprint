@@ -8,7 +8,7 @@
     "homepage": "http://github.com/salt42/blueprint",
 	"author": "salt42 <boluuuu@gmail.com>",
 	"license": "MIT",
-    "version": "0.3.0",
+    "version": "0.5.0",
     "engines": {
         "brackets": ">=0.44.0"
     }
