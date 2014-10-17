@@ -63,17 +63,13 @@ function escapeHtml(string) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
 			options,
 			ie = /MSIE \d/.test(navigator.userAgent),
-			ie_lt9 = ie && (document.documentMode == null || document.documentMode < 9),
 			html = '',
 			tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
 			col = 0;
 
 		var callback = function(text, style) {
 			if (text == "\n") {
-				// Emitting LF or CRLF on IE8 or earlier results in an incorrect display.
-				// Emitting a carriage return makes everything ok.
 				html += '\n';
-				//node.appendChild(document.createTextNode(ie_lt9 ? '\r' : text));
 				col = 0;
 				return;
 			}
@@ -97,19 +93,12 @@ function escapeHtml(string) {
 			}
 			if (style) {
 				if (style === 'string') {
-					console.log(content)
 					content = escapeHtml(content);
 				}
 				var className = "cm-" + style.replace(/ +/g, " cm-");
 				html += '<span class="' + className + '">' + content + '</span>';
-//				html += '&#60;span class=&#34;' + className + '&#34;&#62; ' + content + '&#60;/span&#62; ';
-				//sp.className = "cm-" + style.replace(/ +/g, " cm-");
-				//var sp = node.appendChild(document.createElement("span"));
-				//sp.appendChild(document.createTextNode(content));
 			} else {
-				//var StrippedString = content.replace(/(<([^>]+)>)/ig,"");
 				html += content;
-				//node.appendChild(document.createTextNode(content));
 			}
 		};
 
@@ -129,9 +118,6 @@ function escapeHtml(string) {
 	};
 
 	function jumpTo(y, setCursor) {
-		//y == mouse.y relative 2 minimap
-//		var t = $minimapRoot.css('top');
-//		var top = Math.abs(parseInt(t.replace('px', '')));
 		var clickedLine = Math.round(y / 20 * 4);
 		if (setCursor) {
 			setEditorLine(clickedLine);
@@ -140,7 +126,7 @@ function escapeHtml(string) {
 		}
 	}
 	function setEditorView(firstLine) {
-		var currentEditor = EditorManager.getActiveEditor(), //egal welcher editor für getTextHeight
+		var currentEditor = EditorManager.getActiveEditor(),
 			scrollPosition = firstLine * currentEditor.getTextHeight();
 		currentEditor.setScrollPos(0, scrollPosition);
 		currentEditor.focus();
@@ -150,7 +136,6 @@ function escapeHtml(string) {
 		var currentEditor = EditorManager.getActiveEditor();
         currentEditor.setCursorPos(line - 1, 0, true);
         currentEditor.focus();
-        //setTimeout(function(){currentEditor.focus()}, 10);
 	}
 	function updateScrollOverlay() {
 		var currentEditor = CurrentDocument._masterEditor,
@@ -162,14 +147,10 @@ function escapeHtml(string) {
 			lines = currentEditor.lineCount() + 1,
 			overlayTop;
 
-
-		//sidescroll
-		//$minimapRoot.css('left', 0 - (currentEditor.getScrollPos().x / ($minimapRoot.width() - $content[0].parentNode.clientWidth)) * $minimapRoot.width() + 'px');
-
-
 		var overlayHeight = Math.round(editorHeight / currentEditor.getTextHeight() * lineHight / 4);
 		$minimapOverlay.css('height', overlayHeight + 'px');
-		if ($minimapRoot.height() / 4 + 5 > contentHeight) {
+//		if ($minimapRoot.height() / 4 + 5 > contentHeight) {
+		if ((lines + 1) * 5 > contentHeight) {
 			var overageLines = lines - contentHeight / 5;
 			$minimapRoot.css('top', 0 - (scrollPercent * (overageLines) * 20) + 'px');
 			overlayTop = scrollPercent * (contentHeight - $minimapOverlay.height());// - overlayHeight;//(overlayHeight / 4)) * 4;
@@ -193,8 +174,8 @@ function escapeHtml(string) {
 		}
 		perCent = (parseInt($minimapOverlay.css('top')) + y) / hundertPro;
 		var currentEditor = CurrentDocument._masterEditor,
-			editorHeight = $(currentEditor.getScrollerElement()).height(),
-			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
+			editorHeight = $(currentEditor.getScrollerElement()).height();
+			//scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
 		if (perCent > 1) {
 			perCent = 1;
 		}
@@ -219,8 +200,8 @@ function escapeHtml(string) {
 	}
 	//api
 	var dragState = false,
-		lastEvent,
-		JsWorker;
+		lastEvent;
+		//JsWorker;
 
 	exports.init = function ($parent) {
 		$root = $parent;
@@ -295,7 +276,7 @@ function escapeHtml(string) {
 	};
 	exports.setViewState = function (state) {
 		if (state) {
-
+			updateScrollOverlay();
 		} else {
 
 		}

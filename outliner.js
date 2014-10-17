@@ -38,7 +38,9 @@ define(function (require, exports, modul) {
 		var $list = $parent.children('ul').children('li'),
 			list = $list.get(),
 			i;
-		sortMode = mode;
+		if (typeof mode === 'string') {
+			sortMode = mode;
+		}
 		var sort_by_name = function(a, b) {
 			var sa = $(a).children('.line').children('.name').html(),
 				sb = $(b).children('.line').children('.name').html();
@@ -134,6 +136,7 @@ define(function (require, exports, modul) {
 		for (k in dataTree.childs) {
 			recBuild(dataTree.childs[k]);
 		}
+		sort($content);
 	}
 	function updateCss(content) {
 		var lines = content.split("\n"),
@@ -153,6 +156,7 @@ define(function (require, exports, modul) {
 				$ele.click(i + 1, onClickOnLine);
 			}
 		}
+		sort($content);
 	}
 	exports.init = function ($parent) {
 		$root = $parent;
@@ -180,7 +184,6 @@ define(function (require, exports, modul) {
 				console.log(e.data.value[0], e.data.value[1]);
 			} else if (e.data.type === 'data') {
 				updateJsTree(e.data);
-				//sort($content);
 			}
 		};
 		JsWorker.addEventListener('error', function(e) {
