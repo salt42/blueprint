@@ -21,6 +21,59 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 */
+#blueprint-prefs-ui {
+	position: relative;
+	width: 500px;
+	height: 400px;
+	background: rgb(60, 63, 65);
+	z-index: 1200!important;
+	clear: both;
+}
+#blueprint-prefs-ui li {
+	padding: 10px 10px 10px 0;
+	/*border-bottom: 1px solid #000;*/
+	list-style: none;
+}
+#blueprint-prefs-ui .description {
+	float: left;
+}
+#blueprint-prefs-ui .switch {
+	display: inline-block;
+	width: 50px;
+	float: right;
+	border-radius: 15px;
+	text-align: center;
+}
+#blueprint-prefs-ui .switch.on {
+	background: #91cc41;
+}
+#blueprint-prefs-ui .switch.off {
+	background: #c93c3c;
+}
+#blueprint-prefs-ui .switch span{
+	border-radius: 15px;
+}
+#blueprint-prefs-ui .switch span:first-child{
+	color: #000;
+}
+#blueprint-prefs-ui .switch span:last-child{
+	color: #fff;
+}
+#blueprint-prefs-ui .switch.off span:first-child {
+	display: none;
+	/*float: left;*/
+}
+#blueprint-prefs-ui .switch.on span:last-child {
+	display: none;
+	/*float: right;*/
+}
+
+#blueprint-prefs-ui .select select {
+	float: right;
+}
+
+
+
 #mySidePanelRight {
 	position: absolute;
 	top: 0px;
@@ -128,6 +181,16 @@
 	background-repeat: no-repeat;
 	float: right;
 }
+#mySidePanelRight .footer .button.prefs {
+	position: relative;
+	right: 0px;
+	top: 0px;
+	padding: 0;
+	content: "";
+	background-position: center;
+	opacity: 0.8;
+	background-size: 15px 15px;
+}
 #mySidePanelRight .footer .button.sort {
 	background-image: url('az.png');
 	background-size: 15px 15px;
@@ -171,15 +234,6 @@
 	pointer-events: none;
 	background: transparent;
 }
-
-/*<span class="line" title="">
-	<span class="func-name">Module define</span>
-	<span class="func-params"> (
-		<span class="name">require</span>,
-		<span class="name">exports</span>,
-		<span class="name">modul</span> )
-	</span>
-</span>*/
 
 
 #mySidePanelRight .outline-root li .line { line-height: 20px }

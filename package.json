@@ -5,8 +5,16 @@
 	"keywords": [
        "outline", "outliner", "outline viewer", "minimap", "sublime like minimap", "JSdocs", "overview", "sort", "hierarchic"
     ],
-    "homepage": "http://github.com/salt42/blueprint",
-	"author": "salt42 <boluuuu@gmail.com>",
+	"repository": {
+        "type": "git",
+        "url": "https://github.com/salt42/blueprint.git"
+    },
+    "homepage": "https://github.com/salt42/blueprint",
+    "author": {
+        "name": "salt42",
+        "email": "boluuuu@gmail.com",
+        "url": "https://github.com/salt42"
+    },
 	"license": "MIT",
     "version": "0.5.0",
     "engines": {

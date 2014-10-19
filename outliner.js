@@ -27,11 +27,14 @@ define(function (require, exports, modul) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
+		prefs = require('./preferences'),
 		$root,
 		$content,
 		$footerOutline,
 		JsWorker,
-		sortMode = 'clear';
+		_document,
+		sortMode = 'none',
+		newDocFlag = true;
 
 
 	function sort($parent, mode) {
@@ -51,7 +54,7 @@ define(function (require, exports, modul) {
 				sb = $(b).attr('sort');
 			return sa.toLowerCase().localeCompare(sb.toLowerCase());
 		};
-		if (sortMode === 'clear') {
+		if (sortMode === 'none') {
 			list.sort(sort_by_filesorting);
 		} else if (sortMode === 'asc') {
 			list.sort(sort_by_name);
@@ -59,7 +62,7 @@ define(function (require, exports, modul) {
 		for (i = 0; i < list.length; i++) {
 			list[i].parentNode.appendChild(list[i]);
 		}
-		$list.each(function(e) {
+		$list.each(function() {
 			if ($(this).children('ul').children('li').length >= 0) {
 				sort($(this), mode);
 			}
@@ -79,7 +82,8 @@ define(function (require, exports, modul) {
 			var html = '',
 				paramStr = '',
 				cssClasses = 'toggle',
-				mouseOverText = 'Attributes: &nbsp;&nbsp;';
+				mouseOverText = 'Attributes: &nbsp;&nbsp;',
+				k;
 
 			sortStack[sortStack.length-1] = sortStack[sortStack.length-1] + 1;
 			html = '<span class="type">' + data.type + '&nbsp;</span><span class="name">' + data.name + '</span><span class="func-params"> ( ';
@@ -170,10 +174,10 @@ define(function (require, exports, modul) {
 		$footerOutline = $('<div class="outline-buttons"><span class="button sort" alt="Switch sort mode"></span></div>');
 		$('#mySidePanelRight .footer').append($footerOutline);
         $('.sort', $footerOutline).click(function () {
-			if (sortMode === 'clear') {
+			if (sortMode === 'none') {
 				sort($content, 'asc');
 			} else if (sortMode === 'asc') {
-				sort($content, 'clear');
+				sort($content, 'none');
 			}
 		});
 
@@ -184,6 +188,7 @@ define(function (require, exports, modul) {
 				console.log(e.data.value[0], e.data.value[1]);
 			} else if (e.data.type === 'data') {
 				updateJsTree(e.data);
+				checkSorting();
 			}
 		};
 		JsWorker.addEventListener('error', function(e) {
@@ -191,9 +196,23 @@ define(function (require, exports, modul) {
 		}, false);
 
 	};
+	function checkSorting () {
+		if (newDocFlag) {
+			sort($content, prefs.get('outline/defaultSorting'));
+		} else {
+			sort($content);
+		}
+	}
 	exports.update = function (doc) {
 		var mode = doc.getLanguage().getMode(),
 			text = doc.getText();
+
+		newDocFlag = (_document == doc)? false: true;
+		_document = doc;
+
+		if (newDocFlag) {
+			sortMode = prefs.get('outline/defaultSorting');
+		}
 
 		if (mode === 'javascript') {
 			JsWorker.postMessage(text);
@@ -201,7 +220,9 @@ define(function (require, exports, modul) {
 			updateCss(text);
 		} else {
 			$root.html('I don\'t understand "' + mode + '"<br>for the moment i only now JavaScript and CSS ');
+			return false;
 		}
+		return true;
 	};
 	exports.setViewState = function (state) {
 		if (state) {

@@ -30,9 +30,13 @@ glob:
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets, window */
+/*global define, $, brackets, setTimeout, localStorage, setInterval */
 define(function (require, exports, modul) {
     "use strict";
+
+	//first of all init preferences 2 ensure that at load all perfs are exists
+	var prefs = require('./preferences');
+	prefs.init();
 
     var AppInit         = brackets.getModule("utils/AppInit"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
@@ -47,10 +51,9 @@ define(function (require, exports, modul) {
 		$outlineRoot,
 		$minimapRoot,
 		$footer,
-		$footerOutline,
 		$headline,
 		currDoc,
-		sidebarOpen,
+		sidebarOpen = false,
 		activeTab,
 		parsed = false;
 
@@ -70,15 +73,15 @@ define(function (require, exports, modul) {
 		}
 	}
 	function toggleSidebar(flag) {
-		if(flag) {
+		if(flag || !sidebarOpen) {
 			Resizer.show($panelRight);
 		} else {
 			Resizer.hide($panelRight);
 		}
 	}
 	//(e, newFile:File, newPaneId:string, oldFile:File, oldPaneId:string)
-	$(MainViewManager).on('currentFileChange ', function(e, newFile, newPaneId, oldFile, oldPaneId) {
-		if (newFile != null) {
+	$(MainViewManager).on('currentFileChange ', function(e, newFile) {
+		if (newFile !== null) {
 			var doc = DocumentManager.getDocumentForPath(newFile._path);
 			doc.done(function(doc) {
 				currDoc = doc;
@@ -88,13 +91,15 @@ define(function (require, exports, modul) {
 		}
 	});
 	//(e, newPaneId:string, oldPaneId:string)
-	$(MainViewManager).on('activePaneChange', function(e, newPaneId, oldPaneId) {
+	$(MainViewManager).on('activePaneChange', function() {
 		//console.log(newPaneId + ' now active')
 	});
 
 	function parseDoc() {
 		if (sidebarOpen) {
-			Outliner.update(currDoc);
+			if (!Outliner.update(currDoc) && prefs.get('outline/unknownTypeChangeTab')) {
+				changeTab('minimap');
+			}
 			Minimap.update(currDoc);
 			parsed = true;
 		} else {
@@ -109,17 +114,7 @@ define(function (require, exports, modul) {
         $quickButton = $('<a id="toolbar-blueprint-outline" title="toggle outline" href="#" style="font-size:22px;"><img src="' + modulePath + '/blueprint_dark.png"></a>');
 		$("#main-toolbar .buttons").find("#toolbar-extension-manager").after($quickButton);
         $($quickButton).click(function () {
-			if (Resizer.isVisible($panelRight)) {
-				//hide
-				sidebarOpen = false;
-				Resizer.hide($panelRight);
-				$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
-			} else {
-				//show
-				sidebarOpen = true;
-				Resizer.show($panelRight);
-				$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
-			}
+			toggleSidebar();
 		});
 
 		//create html
@@ -130,14 +125,23 @@ define(function (require, exports, modul) {
 				$outlineRoot = $('<ul class="outline-root childs"></ul>');
 				$minimapRoot = $('<div class="minimap"></div>');
 			$footer = $('<div class="footer"></div>');
+
 		$panelRight.hide();
 		$('#main-toolbar').before($panelRight);
 		$panelRight.append($headline);
 		$panelRight.append($content);
 		$panelRight.append($footer);
 
+		$footer.append('<div class="working-set-option-btn button prefs"></div>');
+
 		$content.append($outlineRoot);
 		$content.append($minimapRoot);
+
+
+		$('.button.prefs', $footer).click(function () {
+			prefs.openUI();
+		});
+
 
 		Resizer.makeResizable($panelRight[0], Resizer.DIRECTION_HORIZONTAL, 'left', 100, true);
 
@@ -155,7 +159,9 @@ define(function (require, exports, modul) {
 			if (e.type === 'panelExpanded') {
 				//show
 				sidebarOpen = true;
-				if (!parsed) parseDoc();
+				if (!parsed) {
+					parseDoc();
+				}
 				$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
 			} else {
 				//hide
@@ -180,7 +186,6 @@ define(function (require, exports, modul) {
     function tick(){
         var userId = getUserId(appToken, keyId),
             url;
-
         if (userId){
             url = trackingServiceUrl + 'tick/' + appToken + '/' + userId;
         } else {
@@ -218,7 +223,6 @@ define(function (require, exports, modul) {
         localStorage.setItem(keyId, JSON.stringify(obj));
     }
 	AppInit.appReady(function () {
-		var modulePath = ExtensionUtils.getModulePath(modul);
 		//create html
 		tick();
         setInterval(tick, mins60);
@@ -228,7 +232,7 @@ define(function (require, exports, modul) {
 		Minimap.init($minimapRoot);
 
 
-		$('.tab', $headline).click(function (e) {
+		$('.tab', $headline).click(function () {
 			if ($(this).hasClass('outline')) {
 				changeTab('outline');
 			} else {
@@ -242,14 +246,17 @@ define(function (require, exports, modul) {
 				parseDoc();
 			}
 		});
-		$(DocumentManager).on('currentDocumentChange', function (e, cd, prevDoc) {
+		$(DocumentManager).on('currentDocumentChange', function (e, cd) {
 			//if (!Resizer.isVisible($panelRight)) return true;
 			currDoc = cd;
 			parsed = false;
+			changeTab(prefs.get('generel/autoChangeTab'));
 			parseDoc();
 		});
-		changeTab('outline');
-		sidebarOpen = false;
-//		toggleSidebar(true); muss später passieren
+		setTimeout(function () {
+			if (prefs.get('generel/opneOnStart')) {
+				toggleSidebar(true);
+			}
+		}, 500);
     });
 });

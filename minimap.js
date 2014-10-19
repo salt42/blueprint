@@ -1,10 +1,4 @@
 /*
-minimap:
--seitenweise bei mousewheel
--html pre tag
--?zoom
-*/
-/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Stefan Schulz
@@ -28,13 +22,10 @@ minimap:
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets, window, Worker, document */
-define(function (require, exports, modul) {
+/*global define, $, brackets, document */
+define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
-        ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
-		Resizer			= brackets.getModule('utils/Resizer'),
-		DocumentManager = brackets.getModule('document/DocumentManager'),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		CurrentDocument,
 		$content,
@@ -62,7 +53,6 @@ function escapeHtml(string) {
 	CodeMirror.runMode = function(string, modespec) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
 			options,
-			ie = /MSIE \d/.test(navigator.userAgent),
 			html = '',
 			tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
 			col = 0;
@@ -87,7 +77,9 @@ function escapeHtml(string) {
 
 					var size = tabSize - col % tabSize;
 					col += size;
-					for (var i = 0; i < size; ++i) content += " ";
+					for (var i = 0; i < size; ++i) {
+						content += " ";
+					}
 					pos = idx + 1;
 				}
 			}
@@ -106,7 +98,9 @@ function escapeHtml(string) {
 			state = CodeMirror.startState(mode);
 
 		for (var i = 0, e = lines.length; i < e; ++i) {
-			if (i) callback("\n");
+			if (i) {
+				callback("\n");
+			}
 			var stream = new CodeMirror.StringStream(lines[i]);
 			while (!stream.eol()) {
 				var style = mode.token(stream, state);
@@ -140,7 +134,6 @@ function escapeHtml(string) {
 	function updateScrollOverlay() {
 		var currentEditor = CurrentDocument._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
-			firstLine = Math.round(currentEditor.getScrollPos().y / currentEditor.getTextHeight()),
 			lineHight = 20,
 			contentHeight = $content[0].parentNode.clientHeight - 54,
 			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight),
@@ -184,19 +177,26 @@ function escapeHtml(string) {
 
 		currentEditor.setScrollPos(0, newY);
 		updateScrollOverlay();
-	};
+	}
 
-	function appendStringAsNodes(element, html) {
+	function appendStringAsNodes() {
+		/* jslint ignore:start */
 		var frag = document.createDocumentFragment(),
-			tmp = document.createElement('body'), child;
+			element = arguments[0],
+			html = arguments[1],
+			tmp = document.createElement('body'),
+			child;
+
 		tmp.innerHTML = html;
 		// Append elements in a loop to a DocumentFragment, so that the browser does
 		// not re-render the document for each node
+
 		while (child = tmp.firstChild) {
 			frag.appendChild(child);
 		}
 		element.appendChild(frag); // Now, append all elements at once
 		frag = tmp = null;
+		/* jslint ignore:end */
 	}
 	//api
 	var dragState = false,
@@ -228,7 +228,7 @@ function escapeHtml(string) {
 			}
 		});
 		//mouseup on document
-		$(document).on('mouseup', function(e) {
+		$(document).on('mouseup', function() {
 			if (dragState === 'dragging' || dragState === 'possible') {
 				dragState = false;
 			}
@@ -239,36 +239,20 @@ function escapeHtml(string) {
 		});
 		$parent.append($minimapOverlay);
 		$parent.append($minimapRoot);
-//		var modulePath = ExtensionUtils.getModulePath(modul);
-//		JsWorker = new Worker(modulePath + "minimapWorker.js");
-//		JsWorker.onmessage = function (e) {
-//			if (e.data.type === 'log') {
-//			} else if (e.data.type === 'data') {
-//				$minimapRoot.append('<div class="wrap"></div>');
-//				appendStringAsNodes($('.wrap' ,$minimapRoot)[0], e.data.value)
-//				updateScrollOverlay();
-//			}
-//		};
-//		JsWorker.addEventListener('error', function(e) {
-//			console.log(['filename: ', e.filename, ' lineno: ', e.lineno, ' error: ', e.message].join(' '));
-//		}, false);
 	};
 	exports.update = function (doc) {
 		var mode = doc.getLanguage().getMode(),
 			text = doc.getText();
-//		JsWorker.postMessage({
-//			mode : mode,
-//			content : text
-//		});
+
 		$('.wrap' ,$minimapRoot).remove();
 		CurrentDocument = doc;
 
 		var html = CodeMirror.runMode(text, mode);
 		$minimapRoot.append('<div class="wrap"></div>');
 		appendStringAsNodes($('.wrap' ,$minimapRoot)[0], html);
-//
+
 		var currentEditor = doc._masterEditor;
-		$(currentEditor).on('scroll', function(e) {
+		$(currentEditor).on('scroll', function() {
 			if (dragState === false) {
 				updateScrollOverlay();
 			}
