@@ -1,12 +1,4 @@
 /*
-glob:
--conf
--switch if outliner cant show
-
-
-*/
-
-/*
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Stefan Schulz
@@ -52,6 +44,7 @@ define(function (require, exports, modul) {
 		$minimapRoot,
 		$footer,
 		$headline,
+		lastDoc,
 		currDoc,
 		sidebarOpen = false,
 		activeTab,
@@ -72,6 +65,9 @@ define(function (require, exports, modul) {
 			activeTab = tabName;
 		}
 	}
+	/*
+	 *	@param {boolean} flag true=open, false=close
+	 */
 	function toggleSidebar(flag) {
 		if(flag || !sidebarOpen) {
 			Resizer.show($panelRight);
@@ -80,16 +76,16 @@ define(function (require, exports, modul) {
 		}
 	}
 	//(e, newFile:File, newPaneId:string, oldFile:File, oldPaneId:string)
-	$(MainViewManager).on('currentFileChange ', function(e, newFile) {
-		if (newFile !== null) {
-			var doc = DocumentManager.getDocumentForPath(newFile._path);
-			doc.done(function(doc) {
-				currDoc = doc;
-				parsed = false;
-				parseDoc();
-			});
-		}
-	});
+//	$(MainViewManager).on('currentFileChange ', function(e, newFile) {
+//		if (newFile !== null) {
+//			var doc = DocumentManager.getDocumentForPath(newFile._path);
+//			doc.done(function(doc) {
+//				currDoc = doc;
+//				parsed = false;
+//				parseDoc();
+//			});
+//		}
+//	});
 	//(e, newPaneId:string, oldPaneId:string)
 	$(MainViewManager).on('activePaneChange', function() {
 		//console.log(newPaneId + ' now active')
@@ -104,6 +100,11 @@ define(function (require, exports, modul) {
 			parsed = true;
 		} else {
 			parsed = false;
+		}
+		if (!currDoc) {
+			toggleSidebar(false);
+		} else if (!lastDoc) {
+			toggleSidebar(true);
 		}
 	}
 
@@ -151,7 +152,10 @@ define(function (require, exports, modul) {
 			$('.main-view .content').css('right', 'calc(' + width + 'px + 30px)');
 		};
 		$panelRight.on('panelResizeUpdate', allroundHandler);
-		$panelRight.on('panelExpanded', allroundHandler);
+		$panelRight.on('panelExpanded', function(e,w) {
+
+			allroundHandler(e,w);
+		});
 		$panelRight.on('panelCollapsed', function () {
 			$('.main-view .content').css('right', '30px');
 		});
@@ -222,6 +226,13 @@ define(function (require, exports, modul) {
         obj[appToken] = id;
         localStorage.setItem(keyId, JSON.stringify(obj));
     }
+	function changeDocument(doc) {
+		lastDoc = currDoc;
+		currDoc = doc;
+		parsed = false;
+		changeTab(prefs.get('generel/autoChangeTab'));
+		parseDoc();
+	}
 	AppInit.appReady(function () {
 		//create html
 		tick();
@@ -248,10 +259,7 @@ define(function (require, exports, modul) {
 		});
 		$(DocumentManager).on('currentDocumentChange', function (e, cd) {
 			//if (!Resizer.isVisible($panelRight)) return true;
-			currDoc = cd;
-			parsed = false;
-			changeTab(prefs.get('generel/autoChangeTab'));
-			parseDoc();
+			changeDocument(cd);
 		});
 		setTimeout(function () {
 			if (prefs.get('generel/opneOnStart')) {

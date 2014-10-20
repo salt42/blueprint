@@ -27,7 +27,7 @@ define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
-		CurrentDocument,
+		_document,
 		$content,
 		$root,
 		$minimapOverlay,
@@ -132,7 +132,8 @@ function escapeHtml(string) {
         currentEditor.focus();
 	}
 	function updateScrollOverlay() {
-		var currentEditor = CurrentDocument._masterEditor,
+		if (!_document) { return false;}
+		var currentEditor = _document._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			lineHight = 20,
 			contentHeight = $content[0].parentNode.clientHeight - 54,
@@ -154,10 +155,11 @@ function escapeHtml(string) {
 		$minimapOverlay.css('top', overlayTop + 'px');
 	}
 	function moveOverlay(y) {
+		if (!_document) { return false;}
 		var contentHeight = $content[0].parentNode.clientHeight - 54,
 			hundertPro,
 			perCent,
-			lines = CurrentDocument._masterEditor.lineCount();
+			lines = _document._masterEditor.lineCount();
 
 
 		if ((lines * 5) > contentHeight) {
@@ -166,7 +168,7 @@ function escapeHtml(string) {
 			hundertPro = (lines * 5) - $minimapOverlay.height();
 		}
 		perCent = (parseInt($minimapOverlay.css('top')) + y) / hundertPro;
-		var currentEditor = CurrentDocument._masterEditor,
+		var currentEditor = _document._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height();
 			//scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
 		if (perCent > 1) {
@@ -241,11 +243,17 @@ function escapeHtml(string) {
 		$parent.append($minimapRoot);
 	};
 	exports.update = function (doc) {
+		if (!doc) {
+			//clear
+			$('.wrap' ,$minimapRoot).remove();
+			_document = null;
+			return true;
+		}
 		var mode = doc.getLanguage().getMode(),
 			text = doc.getText();
 
 		$('.wrap' ,$minimapRoot).remove();
-		CurrentDocument = doc;
+		_document = doc;
 
 		var html = CodeMirror.runMode(text, mode);
 		$minimapRoot.append('<div class="wrap"></div>');

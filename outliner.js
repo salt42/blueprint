@@ -36,6 +36,36 @@ define(function (require, exports, modul) {
 		sortMode = 'none',
 		newDocFlag = true;
 
+//	var listElement = function () {
+//		var private;
+//
+//		return {
+//			new : function (type) {
+//				var $el = $('<li></li>'),
+//					asd;
+//
+//				switch (type) {
+//					case 'jsFunction':
+//						break;
+//					case 'jsClass':
+//						break;
+//					case 'jsModule':
+//						break;
+//					case 'cssSelector':
+//						break;
+//					case 'cssQuery':
+//						break;
+//				}
+//				return this;
+//			},
+//			addChild : function () {
+//
+//			}
+//		};
+//	}();
+//	listElement.new('selector')
+//	.addChild();
+
 
 	function sort($parent, mode) {
 		var $list = $parent.children('ul').children('li'),
@@ -111,6 +141,7 @@ define(function (require, exports, modul) {
 			var $ele = $('<li sort="' + sortStack[sortStack.length-1] + '"><div class="' + cssClasses + '">&nbsp;</div><span class="line" title="' + mouseOverText + '">' + html + '</span><ul class="childs"></ul></li>');
 
 			$ele.click(function (e) {
+				if (!_document) { return false;}
 				if ($(e.target).hasClass('toggle')) {
 					//hide/show
 					if ($(e.target).hasClass('colapsed')) {
@@ -204,6 +235,12 @@ define(function (require, exports, modul) {
 		}
 	}
 	exports.update = function (doc) {
+		if (!doc) {
+			//clear
+			$root.html('');
+			_document = null;
+			return true;
+		}
 		var mode = doc.getLanguage().getMode(),
 			text = doc.getText();
 
