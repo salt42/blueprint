@@ -1,26 +1,4 @@
 /*
-outliner
--html
--css querys
--colapse/open all
--filter /prototypes,anonym,
-
-minimap
--aware inline editor/view
-	-line integration
--scroll speed
-
-
-!!!!!!!!!!!!!!!!!!!!!
-next version features
-alle extensions können ein fenster mit ihrer id öffnen
-darin sieht man dann welche neuen features schon implementiert sind
-und ein voting für neue features.
-und man kann ideen an den server senden
-der extension autor segnet die ab oder nich und wenn ja stehen sie bei dem voting
--changelog/rating/counts:running, installed(realy)/downloads/comments/buggreporting/issues
-
-
  * The MIT License (MIT)
  *
  * Copyright (c) 2014 Stefan Schulz

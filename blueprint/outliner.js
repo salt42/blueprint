@@ -256,7 +256,7 @@ define(function (require, exports, modul) {
 		} else if (mode === 'css') {
 			updateCss(text);
 		} else {
-			$root.html('can\'t display "' + mode + '"');
+			$root.html('I don\'t understand "' + mode + '"<br>for the moment i only now JavaScript and CSS ');
 			return false;
 		}
 		return true;

@@ -27,7 +27,6 @@ define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
-		prefs			= require('./preferences'),
 		_document,
 		$content,
 		$root,
@@ -54,16 +53,14 @@ function escapeHtml(string) {
 	CodeMirror.runMode = function(string, modespec) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
 			options,
-			html = '<span class="line-number" value="1"></span>',
-			lineNumber = 1,
+			html = '',
 			tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
 			col = 0;
 
 		var callback = function(text, style) {
 			if (text == "\n") {
-				(++lineNumber);
+				html += '\n';
 				col = 0;
-				html += '\n<span class="line-number" value="' + lineNumber + '"></span>';
 				return;
 			}
 			var content = '';
@@ -240,18 +237,11 @@ function escapeHtml(string) {
 		});
 
 		$parent.on('mousewheel', function(e) {
-			var te = prefs.get('minimap/scrollSpeed');
-			console.log(te)
-			moveOverlay(e.originalEvent.wheelDeltaY * -1, true);
+			moveOverlay(e.originalEvent.wheelDeltaY * -1);
 		});
 		$parent.append($minimapOverlay);
 		$parent.append($minimapRoot);
-
-		$(EditorManager).on('activeEditorChange', function (e, newFocusEditor) {
-			//@todo
-		});
 	};
-
 	exports.update = function (doc) {
 		if (!doc) {
 			//clear

@@ -35,7 +35,7 @@ define(function (require, exports) {
 					opneOnStart : {
 						type : 'boolean',
 						description : 'Open on start',
-						value : true,
+						value : false,
 					},
 					autoChangeTab : {
 						type : 'select',
@@ -61,18 +61,6 @@ define(function (require, exports) {
 						value : true,
 					},
 				}
-			},
-			minimap : {
-				type : 'category',
-				title : 'Minimap',
-				childs : {
-					scrollSpeed : {
-						type : 'select',
-						description : 'scroll pages per mousewheel tick',
-						values : ['1x', '1.2x', '1.5x', '1.8x', '2x', '3x', '4x', '5x', '6x', '7x'],
-						value : '1x'
-					}
-				}
 			}
 		};
 
@@ -87,8 +75,6 @@ define(function (require, exports) {
 			.append('<ul class="perf-list"></ul>');
 
 		loadPrefs();
-		$.extend(true, PREFS, defaultPrefs);
-		console.log(PREFS)
 		//check first init
 		if (PREFS === null) {
 			PREFS = defaultPrefs;
