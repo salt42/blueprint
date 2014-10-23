@@ -5,8 +5,12 @@ outliner
 -colapse/open all
 -filter /prototypes,anonym,
 
+-outline coding
+
+
+
 minimap
--aware inline editor/view
+-aware inline editor/view (codeMirror->events)
 	-line integration
 -scroll speed
 

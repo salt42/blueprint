@@ -26,6 +26,7 @@
 define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
+		InlineWidget	= brackets.getModule("editor/InlineWidget"),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		prefs			= require('./preferences'),
 		_document,
@@ -209,6 +210,8 @@ function escapeHtml(string) {
 		//JsWorker;
 
 	exports.init = function ($parent) {
+
+
 		$root = $parent;
 		$minimapOverlay = $('<div class="minimap-overlay"></div>');
 		$minimapRoot = $('<div class="minimap-root cm-s-dark-theme"></div>');
@@ -275,6 +278,10 @@ function escapeHtml(string) {
 				updateScrollOverlay();
 			}
 		});
+		$(currentEditor).on('redraw', function() {
+			console.log('krasser scheiß');
+		});
+
 	};
 	exports.setViewState = function (state) {
 		if (state) {
