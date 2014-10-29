@@ -32,7 +32,7 @@ define(function (require, exports) {
 				type : 'category',
 				title : 'Generel',
 				childs : {
-					opneOnStart : {
+					openOnStart : {
 						type : 'boolean',
 						description : 'Open on start',
 						value : true,
@@ -42,7 +42,8 @@ define(function (require, exports) {
 						description : 'on file change switch to',
 						values : ['keep','outline', 'minimap'],
 						value : 'outline',
-					}
+					},
+
 				}
 			},
 			outline : {
@@ -57,7 +58,7 @@ define(function (require, exports) {
 					},
 					unknownTypeChangeTab : {
 						type : 'boolean',
-						description : 'switch to minimap when outliner dont\'t support language',
+						description : 'switch to minimap if outliner dont\'t support language',
 						value : true,
 					},
 				}
@@ -67,32 +68,34 @@ define(function (require, exports) {
 				title : 'Minimap',
 				childs : {
 					scrollSpeed : {
-						type : 'select',
-						description : 'scroll pages per mousewheel tick',
-						values : ['1x', '1.2x', '1.5x', '1.8x', '2x', '3x', '4x', '5x', '6x', '7x'],
-						value : '1x'
+						type : 'input',
+						valueType : 'number',
+						description : 'lines per mousewheel tick',
+						value : '50'
 					}
 				}
 			}
 		};
 
 	function loadPrefs () {
-		PREFS = JSON.parse(localStorage.getItem("blueprintPrefs"));
+		PREFS = JSON.parse(localStorage.getItem("blueprintPreferences"));
 	}
 	function savePrefs () {
-		localStorage.setItem("blueprintPrefs", JSON.stringify(PREFS));
+		localStorage.setItem("blueprintPreferences", JSON.stringify(PREFS));
+		loadPrefs()
 	}
 	exports.init = function () {
-		$ui = $('<div id="blueprint-prefs-ui" class="modal"></div>')
-			.append('<ul class="perf-list"></ul>');
+		$ui = $('<ul class="perf-list"></ul>');
+		//@todo remove sometime
+		localStorage.removeItem("blueprintPrefs");
 
 		loadPrefs();
-		$.extend(true, PREFS, defaultPrefs);
-		console.log(PREFS)
 		//check first init
 		if (PREFS === null) {
 			PREFS = defaultPrefs;
 			savePrefs();
+		} else {
+			$.extend(true, defaultPrefs, PREFS);
 		}
 	};
 	/*
@@ -108,7 +111,7 @@ define(function (require, exports) {
 				if (parts[index] in result) {
 					result = result[ parts[index] ];
 				} else {
-					console.log('key not exists1: ' + url);
+					//console.log('key not exists1: ' + url);
 					return false;
 				}
 			} else if (result.type === 'category') {
@@ -116,13 +119,13 @@ define(function (require, exports) {
 				if (parts[index] in result.childs) {
 					result = result.childs[ parts[index] ];
 				} else {
-					console.log('key not exists2: ' + parts[index], result.childs);
+					//console.log('key not exists2: ' + parts[index], result.childs);
 					return false;
 				}
 			}
 		}
 		if (result.type === 'category' || result.type === 'root') {
-			console.log('key not exists3: ' + url, result);
+			//console.log('key not exists3: ' + url, result);
 			return false;
 		}
 		return result.value;
@@ -146,8 +149,7 @@ define(function (require, exports) {
 		savePrefs();
 	};
 	exports.openUI = function () {
-		var $list = $('.perf-list', $ui),
-			path = [],
+		var path = [],
 			key;
 
 		function createNode (node) {
@@ -176,12 +178,22 @@ define(function (require, exports) {
 					$ele = $('<li class="boolean"></li>').html(node.type)
 						.append('<span class="description"></span>').html(node.description);
 					var flag = 'off';
+					console.log(localStorage, node)
 					if (node.value) {
 						flag = 'on';
 					}
 					$ele.append('<span class="switch ' + flag + '" path="' + pathStr + '"><span>on</span><span>off</span></span>');
 					return $ele;
 
+				case 'input':
+					$ele = $('<li class="input"></li>')
+					.append('<span class="description"></span>').html(node.description);
+					if (node.valueType === 'number') {
+						$ele.append('<input path="' + pathStr + '" type="number" class="value" value="' + node.value + '" />');
+					} else {
+						$ele.append('<input path="' + pathStr + '" type="text" class="value" value="' + node.value + '" />');
+					}
+					return $ele;
 				default:
 					$ele = $('<li></li>');
 					return $ele;
@@ -201,20 +213,46 @@ define(function (require, exports) {
 			}
 			return $node;
 		}
-		$list.empty();
+		$ui.empty();
 		for (key in PREFS) {
 			path.push(key);
-			$list.append(recursive(PREFS[key]));
+			$ui.append(recursive(PREFS[key]));
 			path.pop();
 		}
-		$list.on('change', function(e){
+
+		//create dialog
+		//		Dialogs.showModalDialogUsingTemplate($ui);
+		Dialogs.showModalDialog('blueprint-prefs-dialog',
+							   	'Preferences',
+							   	$('<div></div>').append($ui).html(),
+							   	[{text:'Close'}]);
+		var $prefs = $('.blueprint-prefs-dialog .perf-list');
+		//add events
+		$('.select', $prefs).on('change', 'select', function(e){
 			var selected = $("option:selected", e.target).val(),
 				path = $(e.target).attr('path');
 
 			exports.set(path, selected);
 		});
-		$('.switch', $list).on('click', function() {
+		$('.input', $prefs).on('input', 'input', function(e){
+			var val = $(e.target).val(),
+				path = $(e.target).attr('path');
+
+			if (val.match(/^[0-9]+$/) === null){
+				//no number
+				if (val === '') {
+					return;
+				}
+				//override with last
+				$(e.target).val(exports.get(path));
+			} else if (val > 0) {
+				$(e.target).val(val)
+				exports.set(path, val);
+			}
+		});
+		$prefs.on('click', '.switch', function() {
 			var path = $(this).attr('path');
+
 			if ($(this).hasClass('on')) {
 				$(this).removeClass('on');
 				$(this).addClass('off');
@@ -225,7 +263,7 @@ define(function (require, exports) {
 				exports.set(path, true);
 			}
 		});
-		Dialogs.showModalDialogUsingTemplate($ui);
+
 	};
 	exports.closeUI = function () {
 		//open ui 2

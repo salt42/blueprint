@@ -22,51 +22,65 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets, Worker */
-define(function (require, exports, modul) {
+/*global define, $, brackets */
+define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
-        ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
 		prefs = require('./preferences'),
 		$root,
 		$content,
 		$footerOutline,
-		JsWorker,
 		_document,
 		sortMode = 'none',
-		newDocFlag = true;
+		newDocFlag = true,
+		outlines = {
+//			'html' : require('./outlines/html'),
+			'css' : require('./outlines/css'),
+			'js' : require('./outlines/js'),
+		};
 
-//	var listElement = function () {
-//		var private;
-//
-//		return {
-//			new : function (type) {
-//				var $el = $('<li></li>'),
-//					asd;
-//
-//				switch (type) {
-//					case 'jsFunction':
-//						break;
-//					case 'jsClass':
-//						break;
-//					case 'jsModule':
-//						break;
-//					case 'cssSelector':
-//						break;
-//					case 'cssQuery':
-//						break;
-//				}
-//				return this;
-//			},
-//			addChild : function () {
-//
-//			}
-//		};
-//	}();
-//	listElement.new('selector')
-//	.addChild();
+	/** create dom tree
+	 *	@param {object} dataTree
+	 */
+	function updateTree(dataTree) {
+		$root.html('');
+		var recursive = function (node) {
+			var html = '',
+				dataDash = '',
+				name,
+				typeStr = '';
+
+			//create data attribs
+			for(name in node) {
+				if (name === '_line' || name === 'childs') { continue; }
+				dataDash += 'data-' + name + '="' + node[name] + '" ';
+			}
+			//open new li and add data-dashes
+			var toggleCss = 'toggle';
+			if (node.childs.length === 0) {
+				toggleCss += ' no-childs';
+			}
+			if (node.type) {
+				//typeStr = '<span class="typeImage ' + node.type + '"></span>';
+			}
+			html += '<li ' + dataDash + '><div class="' + toggleCss + '">&nbsp;</div>' + typeStr + '<span class="line">' + node._line + '</span><ul class="childs">';
 
 
+			//iterate over childs
+			for (name in node.childs) {
+				html += recursive(node.childs[name]);
+			}
+			//close ul li
+			html += '</ul></li>';
+			return html;
+		};
+		var re = '';
+		for (var i in dataTree.childs) {
+			re += recursive(dataTree.childs[i]);
+		}
+		appendStringAsNodes($root[0], re);
+		sort($content);
+	}
 	function sort($parent, mode) {
 		var $list = $parent.children('ul').children('li'),
 			list = $list.get(),
@@ -75,17 +89,22 @@ define(function (require, exports, modul) {
 			sortMode = mode;
 		}
 		var sort_by_name = function(a, b) {
-			var sa = $(a).children('.line').children('.name').html(),
-				sb = $(b).children('.line').children('.name').html();
+			var sa = $(a).data('name'),//children('.line').children('.name').html(),
+				sb = $(b).data('name');//children('.line').children('.name').html();
 			return sa.toLowerCase().localeCompare(sb.toLowerCase());
 		};
-		var sort_by_filesorting = function(a, b) {
-			var sa = $(a).attr('sort'),
-				sb = $(b).attr('sort');
-			return sa.toLowerCase().localeCompare(sb.toLowerCase());
+		var sort_by_line = function(a, b) {
+			var sa = parseInt(a.dataset['startline']),
+				sb = parseInt(b.dataset['startline']);
+			return (sa < sb)? false : true;
+		};
+		var sort_by_line_down = function(a, b) {
+			var sa = parseInt(a.dataset['startline']),
+				sb = parseInt(b.dataset['startline']);
+			return (sa > sb)? false : true;
 		};
 		if (sortMode === 'none') {
-			list.sort(sort_by_filesorting);
+			list.sort(sort_by_line);
 		} else if (sortMode === 'asc') {
 			list.sort(sort_by_name);
 		}
@@ -98,113 +117,57 @@ define(function (require, exports, modul) {
 			}
 		});
 	}
+	function appendStringAsNodes() {
+		/* jslint ignore:start */
+		var frag = document.createDocumentFragment(),
+			element = arguments[0],
+			html = arguments[1],
+			tmp = document.createElement('body'),
+			child;
+
+		tmp.innerHTML = html;
+
+		while (child = tmp.firstChild) {
+			frag.appendChild(child);
+		}
+		element.appendChild(frag); // Now, append all elements at once
+		frag = tmp = null;
+		/* jslint ignore:end */
+	}
 	function setEditorLine(line) {
 		var currentEditor = EditorManager.getCurrentFullEditor();
         currentEditor.setCursorPos(line - 1, 0, true);
         currentEditor.focus();
 	}
-	function updateJsTree(dataTree) {
-		var parents = [],
-			sortStack = [0],
-			k;
-		$root.html('');
-		var recBuild = function (data) {
-			var html = '',
-				paramStr = '',
-				cssClasses = 'toggle',
-				mouseOverText = 'Attributes: &nbsp;&nbsp;',
-				k;
+	exports.init = function($parent) {
+		var name;
 
-			sortStack[sortStack.length-1] = sortStack[sortStack.length-1] + 1;
-			html = '<span class="type">' + data.type + '&nbsp;</span><span class="name">' + data.name + '</span><span class="func-params"> ( ';
-			for (k = 0; k < data.params.length; k++) {
-				var type = '&lt;' + data.params[k].type + '&gt; ';
-				if (data.params[k].type === '') {
-					type = '';
-				}
-				mouseOverText += '\n ' + type + ' ' + data.params[k].name;
-				paramStr += ', ' + type + data.params[k].name;
-				if (type !== '') {
-					html += '<span class="type">' + type + '</span>';
-				}
-				html += '<span class="name">' + data.params[k].name + '</span>';
-				if (k !== data.params.length - 1) {
-					html += ', ';
-				}
-			}
-			html += ' )   </span>';
-			paramStr = paramStr.substr(1);
-
-			if (data.childs.length === 0) {
-				cssClasses += ' no-childs';
-			}
-			var $ele = $('<li sort="' + sortStack[sortStack.length-1] + '"><div class="' + cssClasses + '">&nbsp;</div><span class="line" title="' + mouseOverText + '">' + html + '</span><ul class="childs"></ul></li>');
-
-			$ele.click(function (e) {
-				if (!_document) { return false;}
-				if ($(e.target).hasClass('toggle')) {
-					//hide/show
-					if ($(e.target).hasClass('colapsed')) {
-						$(e.target).removeClass('colapsed');
-					} else {
-						$(e.target).addClass('colapsed');
-					}
-					$('.childs', this).toggle();
-				} else {
-					setEditorLine(data.loc.start.line);
-				}
-				return false;
-			});
-			if (parents.length === 0) {
-				$root.append($ele);
-			} else {
-				parents[parents.length - 1].children('.childs').append($ele);
-			}
-			parents.push($ele);
-			sortStack.push(0);
-			for (k in data.childs) {
-				recBuild(data.childs[k]);
-			}
-			sortStack.pop();
-			parents.pop();
-		};
-		for (k in dataTree.childs) {
-			recBuild(dataTree.childs[k]);
-		}
-		sort($content);
-	}
-	function updateCss(content) {
-		var lines = content.split("\n"),
-			i,
-			re,
-			onClickOnLine = function (e) {
-				setEditorLine(e.data);
-			};
-
-		$root.html('');
-		for (i = 0; i < lines.length; i++) {
-			re = lines[i].match(/^(.*?){/);
-			if (re !== null) {
-				var selectorText = re[1].trim();
-				var $ele = $('<li><span class="line" title="' + selectorText + '"><span class="name">' + selectorText + '</span></span></li>');
-				$ele.appendTo($root);
-				$ele.click(i + 1, onClickOnLine);
-			}
-		}
-		sort($content);
-	}
-	exports.init = function ($parent) {
 		$root = $parent;
 		$content = $root.parent('.content');
 
-		var modulePath = ExtensionUtils.getModulePath(modul);
 		$parent.append('<div>outliner</div>');
-
-
 
 		$footerOutline = $('<div class="outline-buttons"><span class="button sort" alt="Switch sort mode"></span></div>');
 		$('#mySidePanelRight .footer').append($footerOutline);
-        $('.sort', $footerOutline).click(function () {
+
+		//events
+        $($root).on('click', '.line', function () {
+			var line = this.parentNode.dataset.startline;
+			setEditorLine(line);
+		});
+		$($root).on('click', '.toggle', function (e) {
+			//hide/show
+			if ($(e.target).hasClass('colapsed')) {
+				$(e.target).removeClass('colapsed');
+			} else {
+				$(e.target).addClass('colapsed');
+			}
+			var $parent = $(e.target).parent('li');
+			$parent.children('.childs').toggle();
+
+		});
+
+      $('.sort', $footerOutline).click(function () {
 			if (sortMode === 'none') {
 				sort($content, 'asc');
 			} else if (sortMode === 'asc') {
@@ -212,28 +175,20 @@ define(function (require, exports, modul) {
 			}
 		});
 
-
-		JsWorker = new Worker(modulePath + "/outlineWorker.js");
-		JsWorker.onmessage = function (e) {
-			if (e.data.type === 'log') {
-				console.log(e.data.value[0], e.data.value[1]);
-			} else if (e.data.type === 'data') {
-				updateJsTree(e.data);
-				checkSorting();
-			}
-		};
-		JsWorker.addEventListener('error', function(e) {
-			console.log('outline worker error: ' + e.message);
-		}, false);
-
-	};
-	function checkSorting () {
-		if (newDocFlag) {
-			sort($content, prefs.get('outline/defaultSorting'));
-		} else {
-			sort($content);
+		//init outlines
+		for(name in outlines) {
+			outlines[name].init(exports, $root);
 		}
-	}
+	};
+	exports.setEditorLine = setEditorLine;
+	/**
+	 *	@param {string} outlineName
+	 *	@param {string} name used as class
+	 *	@param {function} callBack function
+	 */
+	exports.registerButton = function(outlineName, buttonName, callBack) {
+		//build html, add click event
+	};
 	exports.update = function (doc) {
 		if (!doc) {
 			//clear
@@ -251,13 +206,19 @@ define(function (require, exports, modul) {
 			sortMode = prefs.get('outline/defaultSorting');
 		}
 
-		if (mode === 'javascript') {
-			JsWorker.postMessage(text);
-		} else if (mode === 'css') {
-			updateCss(text);
-		} else {
-			$root.html('can\'t display "' + mode + '"');
-			return false;
+		switch (mode) {
+//			case 'text/x-brackets-html':
+//				outlines.html.update(text, updateTree);
+//				break;
+			case 'javascript':
+				outlines.js.update(text, updateTree);
+				break;
+			case 'css':
+				outlines.css.update(text, updateTree);
+				break;
+			default:
+				$root.html('can\'t display "' + mode + '"');
+				return false;
 		}
 		return true;
 	};
@@ -268,4 +229,5 @@ define(function (require, exports, modul) {
 			$footerOutline.hide();
 		}
 	};
+
 });

@@ -60,6 +60,7 @@ function escapeHtml(string) {
 			tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
 			col = 0;
 
+
 		var callback = function(text, style) {
 			if (text == "\n") {
 				(++lineNumber);
@@ -158,7 +159,7 @@ function escapeHtml(string) {
 		}
 		$minimapOverlay.css('top', overlayTop + 'px');
 	}
-	function moveOverlay(y) {
+	function moveOverlay(y, percent) {
 		if (!_document) { return false;}
 		var contentHeight = $content[0].parentNode.clientHeight - 54,
 			hundertPro,
@@ -171,7 +172,11 @@ function escapeHtml(string) {
 		} else {
 			hundertPro = (lines * 5) - $minimapOverlay.height();
 		}
+
 		perCent = (parseInt($minimapOverlay.css('top')) + y) / hundertPro;
+		if (percent) {
+			perCent = (parseInt($minimapOverlay.css('top'))) / hundertPro + y;
+		}
 		var currentEditor = _document._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height();
 			//scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight);
@@ -194,13 +199,12 @@ function escapeHtml(string) {
 			child;
 
 		tmp.innerHTML = html;
-		// Append elements in a loop to a DocumentFragment, so that the browser does
-		// not re-render the document for each node
 
 		while (child = tmp.firstChild) {
 			frag.appendChild(child);
 		}
 		element.appendChild(frag); // Now, append all elements at once
+
 		frag = tmp = null;
 		/* jslint ignore:end */
 	}
@@ -243,16 +247,24 @@ function escapeHtml(string) {
 		});
 
 		$parent.on('mousewheel', function(e) {
-			var te = prefs.get('minimap/scrollSpeed');
-			console.log(te)
-			moveOverlay(e.originalEvent.wheelDeltaY * -1, true);
+			//@todo scroll speed pref auf scroll übertragen
+			var speed = parseInt(prefs.get('minimap/scrollSpeed')),
+				editor = _document._masterEditor,
+				lineHeight = editor.getTextHeight(),
+				scroll = lineHeight * speed;
+
+			if (e.originalEvent.wheelDeltaY > 0) {
+				scroll = -Math.abs(scroll);
+			}
+			var y = editor.getScrollPos().y;
+			editor.setScrollPos(null, y + scroll);
 		});
 		$parent.append($minimapOverlay);
 		$parent.append($minimapRoot);
 
-		$(EditorManager).on('activeEditorChange', function (e, newFocusEditor) {
-			//@todo
-		});
+//		$(EditorManager).on('activeEditorChange', function (e, newFocusEditor) {
+//			//@todo
+//		});
 	};
 
 	exports.update = function (doc) {

@@ -21,57 +21,54 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
 */
-#blueprint-prefs-ui {
-	position: relative;
-	width: 500px;
-	height: 400px;
-	background: rgb(60, 63, 65);
-	z-index: 1200!important;
+.blueprint-prefs-dialog {
 	clear: both;
 }
-#blueprint-prefs-ui li {
+.blueprint-prefs-dialog li {
 	padding: 10px 10px 10px 0;
 	/*border-bottom: 1px solid #000;*/
 	list-style: none;
 }
-#blueprint-prefs-ui .description {
+.blueprint-prefs-dialog .description {
 	float: left;
 }
-#blueprint-prefs-ui .switch {
+.blueprint-prefs-dialog .switch {
 	display: inline-block;
 	width: 50px;
 	float: right;
 	border-radius: 15px;
 	text-align: center;
 }
-#blueprint-prefs-ui .switch.on {
+.blueprint-prefs-dialog .switch.on {
 	background: #91cc41;
 }
-#blueprint-prefs-ui .switch.off {
+.blueprint-prefs-dialog .switch.off {
 	background: #c93c3c;
 }
-#blueprint-prefs-ui .switch span{
+.blueprint-prefs-dialog .switch span{
 	border-radius: 15px;
 }
-#blueprint-prefs-ui .switch span:first-child{
+.blueprint-prefs-dialog .switch span:first-child{
 	color: #000;
 }
-#blueprint-prefs-ui .switch span:last-child{
+.blueprint-prefs-dialog .switch span:last-child{
 	color: #fff;
 }
-#blueprint-prefs-ui .switch.off span:first-child {
+.blueprint-prefs-dialog .switch.off span:first-child {
 	display: none;
 	/*float: left;*/
 }
-#blueprint-prefs-ui .switch.on span:last-child {
+.blueprint-prefs-dialog .switch.on span:last-child {
 	display: none;
 	/*float: right;*/
 }
 
-#blueprint-prefs-ui .select select {
+.blueprint-prefs-dialog .select select {
 	float: right;
 }
-
+.blueprint-prefs-dialog .input .value {
+	float: right;
+}
 
 
 #mySidePanelRight {
@@ -236,15 +233,39 @@
 }
 
 
-#mySidePanelRight .outline-root li .line { line-height: 20px }
+#mySidePanelRight .outline-root li .line { line-height: 20px; font-size: 15px; }
 /*css*/
 #mySidePanelRight .outline-root li .line .selector { color: #8fddff; }
 /*js*/
 #mySidePanelRight .outline-root li .line .type { color: #adb9bd; }
+#mySidePanelRight .outline-root li .typeImage {
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	border-radius: 10px;
+}
+	#mySidePanelRight .outline-root li .typeImage.class {
+		color: #adb9bd;
+		background: #42671c;
+	}
+	#mySidePanelRight .outline-root li .typeImage.proto {
+		color: #adb9bd;
+		background: #42671c;
+	}
+	#mySidePanelRight .outline-root li .typeImage.module {
+		color: #adb9bd;
+		background: #42671c;
+	}
+	#mySidePanelRight .outline-root li .typeImage.func {
+		color: #adb9bd;
+		background: #42671c;
+	}
+
 #mySidePanelRight .outline-root li .line .name { color: #6eb5d4; }
-#mySidePanelRight .outline-root li .line .func-params {}
-#mySidePanelRight .outline-root li .line .func-params .type { color: #adb9bd; }
-#mySidePanelRight .outline-root li .line .func-params .name { color: #4f7e20; }
+#mySidePanelRight .outline-root li .line .return { color: #adb9bd; }
+#mySidePanelRight .outline-root li .line .params {}
+#mySidePanelRight .outline-root li .line .params .type { color: #adb9bd; }
+#mySidePanelRight .outline-root li .line .params .name { color: #d0d46e; }
 
 
 

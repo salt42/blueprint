@@ -1,6 +1,6 @@
 /*
 outliner
--html
+-html / umschalten zwischen id's, tags, classes, attr
 -css querys
 -colapse/open all
 -filter /prototypes,anonym,
@@ -288,7 +288,7 @@ define(function (require, exports, modul) {
 			changeDocument(cd);
 		});
 		setTimeout(function () {
-			if (prefs.get('generel/opneOnStart')) {
+			if (prefs.get('generel/openOnStart')) {
 				toggleSidebar(true);
 			}
 		}, 500);

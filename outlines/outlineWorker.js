@@ -47,7 +47,7 @@ var enter = function(node, parent) {
 					if (parent.callee.type == 'Identifier') {
 						if (parent.callee.name == 'define') {
 							//define module - require/commonjs/brackets ... etc
-							name = 'Module define';
+							name = 'define Module';
 						}
 					} else if (parent.callee.type == 'FunctionExpression') {
 						//eventuel ein js module (function(){})();
@@ -58,7 +58,7 @@ var enter = function(node, parent) {
 		}
 		//parse comments
 		var params = [],
-			reTurn = {};
+			returnType = '';
 
 		if('comments' in ast && ast.comments.length > 0){
 			for(var k in ast.comments) {
@@ -83,7 +83,7 @@ var enter = function(node, parent) {
 							var reg = /(?:\@return\s\{)(\w+)(?:\}\s)(\w+)/;
 							var res = reg.exec(lines[i]);
 							if (res != null) {
-								reTurn.type = res[1];
+								returnType = res[1];
 							}
 						}
 					}
@@ -92,38 +92,52 @@ var enter = function(node, parent) {
 			}
 		}
 		if (name != 'Anonymous') {
-			var res = {};
+			var res = {},
+				paramString = '';
+
+			//res.params = [];
 			res.name = name;
-			res.params = [];
 			res.childs = [];
-			res.loc = node.loc;
+			res.startLine = node.loc.start.line;
 			//add params
 			for (k in node.params) {
-				var paramName = node.params[k].name;
-				var type = '';
+				var paramName = node.params[k].name,
+					type;
 				if (paramName in params) {
 					type = params[paramName].type;
 				}
-				res.params.push({
-					name : paramName,
-					type : type
-				});
+				var typeTag = (type)?' <span class="type">&lt;' + type + '&gt;</span>': '';
+				var nameTag = ' <span class="name">' + paramName + '</span>,';
+				paramString += typeTag + nameTag;
 			}
+			paramString = paramString.substr(0, paramString.length-1);
 			//check 4 class
 			if (name in foundClasses) {
 				res.type = 'class';
+//				res.typeImage = '<span class="typeImage class"></span>';
 				foundClasses[name] = res;
 				parents[parents.length-1].childs.push(res);//same
 			} else if(methodeList.indexOf(node) != -1) {
 				var clas = foundClasses[objName];
 				clas.childs.push(res);//same
 				res.type = 'proto';
+//				res.type = '<span class="typeImage proto"></span>';
 				//add to class
+			} else if (name == 'define Module' || name == 'js Module') {
+				res.type = name;
+//				res.type = '<span class="typeImage module"></span>';
+				name = '';
+				parents[parents.length-1].childs.push(res);//same
 			} else {
-				res.type = 'function';
+				res.type = 'func';
+//				res.type = '<span class="typeImage func"></span>';
 				parents[parents.length-1].childs.push(res);//same
 			}
-				parents.push(res);
+			res._line = '' + '<span class="type">' + res.type + '</span> ' +
+				'<span class="name">' + name +
+				'</span> (<span class="params">' + paramString + '</span>) ' +
+				'<span class="return">' + returnType + '</span>';
+			parents.push(res);
 
 
 		} else {
