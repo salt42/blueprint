@@ -22,66 +22,138 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $ */
+/*global define, $, brackets */
 define(function (require, exports) {
     "use strict";
 	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		$root,
 		outliner;
 
+
+//	var className = "cm-" + style.replace(/ +/g, " cm-");
+//				html += '<span class="' + className + '">' + content + '</span>';
+//
+// alles so machen wie die original runmode function nur das nur die selectoren und die querrys erfasst werden
+
 	function updateHtml(code) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, 'css'),
 			lines = CodeMirror.splitLines(code),
 			state = CodeMirror.startState(mode),
 			stream,
-			lastBracket,
-			parentList = [],
+			selector = '',
+			selectorHTML = '',
 			rootElement = {childs : []},
 			currElement = rootElement,
-			isAttr  = false;
+			elementStack = [rootElement],
+			inQuerry = false,
+			isQuerry = false,
+			inDefine = false;
 
 		var getNext = function() {
 			var curr = stream.current();
 			stream.start = stream.pos;
 			return curr;
 		};
+		var selectorAdd = function(str, html) {
+			selector += str || '';
+			selectorHTML += html || '';
+		};
+
 		var callback = function(token, lineNumber, style) {
+			if (!style) {
+				switch (token) {
+					case '>':
+					case '<':
+					case '*':
+					case '~':
+					case '[':
+					case ']':
+					case '=':
+					case ',':
+					case '(':
+					case ')':
+					case ':':
+					case ' ':
+						selectorAdd(token, token);
+						break;
+					case '{':
+						//create item with selector and line
+						var ele = {
+							startline : lineNumber,
+							childs : [],
+							name : selector,
+							_line : selectorHTML,
+						};
+						currElement.childs.push(ele);
+						selector = '';
+						selectorHTML = '';
+						if (isQuerry) {
+							isQuerry = false;
+							inQuerry = true;
+							currElement = ele;
+							elementStack.push(ele);
+						} else {
+							inDefine = true;
+						}
+						break;
+					case '}':
+						if (inDefine) {
+							inDefine = false;
+						} else {
+							if (inQuerry) {
+								inQuerry = false;
+								elementStack.pop();
+								currElement = elementStack[elementStack.length-1];
+							}
+						}
+						selector = '';
+						selectorHTML = '';
+						break;
+					case ';':
+						if (inDefine) {
+							break;
+						}
+						selectorAdd(token, token);
+						currElement.childs.push({
+							startline : lineNumber,
+							childs : [],
+							name : selector,
+							_line : selectorHTML,
+						});
+						isQuerry = false;
+						selector = '';
+						selectorHTML = '';
+						break;
+				}
+				return;
+			}
 			switch(style) {
-				case 'tag bracket':
-					lastBracket = token;
-					if (token.search('>') !== -1) {
-						//close tag
-						isAttr = false;
-						//close if  "\>"
-					}
+				case 'builtin':
+				case 'qualifier':
+					var type = token.substr(0, 1),
+						name = token.substr(1);
+
+					selectorAdd(token, '<span class="type">' + type + '</span><span class="name">' + name + '</span>');
 					break;
 				case 'tag':
-					if (lastBracket === '<') {
-						//open tag
-						var element = {
-							name : token,
-							line : lineNumber,
-							attr : [],
-							childs : []
-						}
-						currElement.childs.push(element);
-						parentList.push(element);
-						currElement = element;
-					} else if (lastBracket === '</') {
-						//close tag
-						parentList.pop();
-						currElement = parentList[parentList.length-1];
-					}
-					break;
+				case 'number':
 				case 'attribute':
-					isAttr = token;
-					break;
+				case 'property':
 				case 'string':
-					if (isAttr !== false) {
-						//add attribute
-						currElement.attr[isAttr] = token.replace(/["']/g, '');
-						isAttr = false;
-					}
+					selectorAdd(token, '<span class="name">' + token + '</span>');
+					break;
+				case 'def':
+					//define media querry
+					isQuerry = true;
+					selectorAdd(token, '<span class="querryType">' + token + '</span>');
+					break;
+				case 'keyword':
+
+					break;
+				case 'comment':
+
+					break;
+				default:
 					break;
 			}
 		};
@@ -91,38 +163,38 @@ define(function (require, exports) {
 			while (!stream.eol()) {
 				var style = mode.token(stream, state),
 					token = getNext();
-
-				if (style !== null) {
-					console.log(token, style)
-//					callback(token, i + 1, style);
-				}
+//				console.log(style, token, token.length)
+				callback(token, i + 1, style);
 			}
 		}
-		return rootElement.childs;
+
+
+		//console.log(rootElement)
+		return rootElement;
 	}
 
 
 
 
-	function updateCss(content) {
-		var lines = content.split("\n"),
-			i,
-			re,
-			onClickOnLine = function (e) {
-				outliner.setEditorLine(e.data);
-			};
-
-		$root.html('');
-		for (i = 0; i < lines.length; i++) {
-			re = lines[i].match(/^(.*?){/);
-			if (re !== null) {
-				var selectorText = re[1].trim();
-				var $ele = $('<li><span class="line" title="' + selectorText + '"><span class="name">' + selectorText + '</span></span></li>');
-				$ele.appendTo($root);
-				$ele.click(i + 1, onClickOnLine);
-			}
-		}
-	}
+//	function updateCss(content) {
+//		var lines = content.split("\n"),
+//			i,
+//			re,
+//			onClickOnLine = function (e) {
+//				outliner.setEditorLine(e.data);
+//			};
+//
+//		$root.html('');
+//		for (i = 0; i < lines.length; i++) {
+//			re = lines[i].match(/^(.*?){/);
+//			if (re !== null) {
+//				var selectorText = re[1].trim();
+//				var $ele = $('<li><span class="line" title="' + selectorText + '"><span class="name">' + selectorText + '</span></span></li>');
+//				$ele.appendTo($root);
+//				$ele.click(i + 1, onClickOnLine);
+//			}
+//		}
+//	}
 	exports.init = function(outLiner, $ele) {
 		outliner = outLiner;
 		$root = $ele;
@@ -136,8 +208,10 @@ define(function (require, exports) {
 	 *	@param {string} code string
 	 */
 	exports.update = function(code, cb) {
-		var treeData = updateCss(code);
-		//updateHtml(code);
-		//cb(treeData);
+//		var treeData = updateCss(code);
+//		console.log(CSSUtils.extractAllSelectors(code, CodeMirror.getMode(CodeMirror.defaults, 'css')))
+//		console.log(CSSUtils.extractAllNamedFlows(code))
+		var data = updateHtml(code);
+		cb(data);
 	};
 });

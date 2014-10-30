@@ -22,11 +22,12 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets */
+/*global define, $, brackets, document, setTimeout */
 define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
 		prefs = require('./preferences'),
+		MAIN = require('./main'),
 		$root,
 		$content,
 		$footerOutline,
@@ -39,6 +40,12 @@ define(function (require, exports) {
 			'js' : require('./outlines/js'),
 		};
 
+	prefs.onChange(function(path) {
+		if (path === 'outline/fontSize') {
+			MAIN.changeTab('outline');
+			updateCss();
+		}
+	});
 	/** create dom tree
 	 *	@param {object} dataTree
 	 */
@@ -81,42 +88,6 @@ define(function (require, exports) {
 		appendStringAsNodes($root[0], re);
 		sort($content);
 	}
-	function sort($parent, mode) {
-		var $list = $parent.children('ul').children('li'),
-			list = $list.get(),
-			i;
-		if (typeof mode === 'string') {
-			sortMode = mode;
-		}
-		var sort_by_name = function(a, b) {
-			var sa = $(a).data('name'),//children('.line').children('.name').html(),
-				sb = $(b).data('name');//children('.line').children('.name').html();
-			return sa.toLowerCase().localeCompare(sb.toLowerCase());
-		};
-		var sort_by_line = function(a, b) {
-			var sa = parseInt(a.dataset['startline']),
-				sb = parseInt(b.dataset['startline']);
-			return (sa < sb)? false : true;
-		};
-		var sort_by_line_down = function(a, b) {
-			var sa = parseInt(a.dataset['startline']),
-				sb = parseInt(b.dataset['startline']);
-			return (sa > sb)? false : true;
-		};
-		if (sortMode === 'none') {
-			list.sort(sort_by_line);
-		} else if (sortMode === 'asc') {
-			list.sort(sort_by_name);
-		}
-		for (i = 0; i < list.length; i++) {
-			list[i].parentNode.appendChild(list[i]);
-		}
-		$list.each(function() {
-			if ($(this).children('ul').children('li').length >= 0) {
-				sort($(this), mode);
-			}
-		});
-	}
 	function appendStringAsNodes() {
 		/* jslint ignore:start */
 		var frag = document.createDocumentFragment(),
@@ -134,10 +105,63 @@ define(function (require, exports) {
 		frag = tmp = null;
 		/* jslint ignore:end */
 	}
+	function sort($parent, mode) {
+		var $list = $parent.children('ul').children('li'),
+			list = $list.get(),
+			i;
+		if (typeof mode === 'string') {
+			sortMode = mode;
+		}
+		var sort_by_name = function(a, b) {
+			var sa = $(a).data('name'),//children('.line').children('.name').html(),
+				sb = $(b).data('name');//children('.line').children('.name').html();
+			return sa.toLowerCase().localeCompare(sb.toLowerCase());
+		};
+		var startline = 'startline';
+		var sort_by_line = function(a, b) {
+			var sa = parseInt(a.dataset[startline]),
+				sb = parseInt(b.dataset[startline]);
+			return (sa < sb)? false : true;
+		};
+//		var sort_by_line_down = function(a, b) {
+//			var sa = parseInt(a.dataset['startline']),
+//				sb = parseInt(b.dataset['startline']);
+//			return (sa > sb)? false : true;
+//		};
+		if (sortMode === 'none') {
+			list.sort(sort_by_line);
+		} else if (sortMode === 'asc') {
+			list.sort(sort_by_name);
+		}
+		for (i = 0; i < list.length; i++) {
+			list[i].parentNode.appendChild(list[i]);
+		}
+		$list.each(function() {
+			if ($(this).children('ul').children('li').length >= 0) {
+				sort($(this), mode);
+			}
+		});
+	}
+	/** center line and set cursor at line
+	 *	@param {number} line
+	 */
 	function setEditorLine(line) {
 		var currentEditor = EditorManager.getCurrentFullEditor();
         currentEditor.setCursorPos(line - 1, 0, true);
         currentEditor.focus();
+	}
+	/** registers an button on the bottom of the outline viewer
+	 *	@param {string} outlineName
+	 *	@param {string} name used as class
+	 *	@param {function} callBack function
+	 */
+	function registerButton(outlineName, buttonName, callBack) {
+		//build html, add click event
+		var $button = $('<span class="button ' + buttonName + '"></span>');
+		$footerOutline.append($button);
+		$button.click(function(e) {
+			callBack(e);
+		});
 	}
 	exports.init = function($parent) {
 		var name;
@@ -147,7 +171,7 @@ define(function (require, exports) {
 
 		$parent.append('<div>outliner</div>');
 
-		$footerOutline = $('<div class="outline-buttons"><span class="button sort" alt="Switch sort mode"></span></div>');
+		$footerOutline = $('<div class="outline-buttons"><span class="button sort" title="Switch sort mode"></span></div>');
 		$('#mySidePanelRight .footer').append($footerOutline);
 
 		//events
@@ -177,34 +201,62 @@ define(function (require, exports) {
 
 		//init outlines
 		for(name in outlines) {
-			outlines[name].init(exports, $root);
+			/* jslint ignore:start */
+			outlines[name].init({
+				setEditorLine : setEditorLine,
+				render : updateTree,
+				registerButton : function (buttonName, callBack) {
+					registerButton(name, buttonName, callBack);
+				}
+			}, $root);
+			/* jslint ignore:end */
 		}
-	};
-	exports.setEditorLine = setEditorLine;
-	/**
-	 *	@param {string} outlineName
-	 *	@param {string} name used as class
-	 *	@param {function} callBack function
-	 */
-	exports.registerButton = function(outlineName, buttonName, callBack) {
-		//build html, add click event
-	};
-	exports.update = function (doc) {
-		if (!doc) {
-			//clear
-			$root.html('');
-			_document = null;
-			return true;
-		}
-		var mode = doc.getLanguage().getMode(),
-			text = doc.getText();
 
-		newDocFlag = (_document == doc)? false: true;
-		_document = doc;
+		setTimeout(function() { updateCss(); }, 300);
+		setTimeout(function() { updateCss(); }, 500);
+		setTimeout(function() { updateCss(); }, 700);
+	};
 
-		if (newDocFlag) {
-			sortMode = prefs.get('outline/defaultSorting');
+	function updateCss () {
+		var rules,
+			i = document.styleSheets.length-1;
+
+		//search right css file
+		for (i;i>-1;i--) {
+			if (typeof document.styleSheets[i].href === 'string' && document.styleSheets[i].href.slice(-13) === 'blueprint.css') {
+				rules = document.styleSheets[i].rules;
+				break;
+			}
 		}
+		if (!rules) {
+			return false;
+		}
+
+		//search selectors to change and change
+		for (i=0;i<rules.length;i++) {
+			switch (rules[i].selectorText) {
+				case '#mySidePanelRight .outline-root li .line':
+					//fontSize
+					var fontSize = prefs.get('outline/fontSize');
+					rules[i].style.fontSize = fontSize + 'px';
+//					rules[i].style.lineHeight = (fontSize + 5) + 'px';
+					break;
+				case '':
+					break;
+				case '':
+					break;
+				case '':
+					break;
+				case '':
+					break;
+			}
+		}
+		//force redraw
+		$root.hide().show();
+	}
+	function forceUpdate() {
+		var mode = _document.getLanguage().getMode(),
+			text = _document.getText();
 
 		switch (mode) {
 //			case 'text/x-brackets-html':
@@ -221,6 +273,22 @@ define(function (require, exports) {
 				return false;
 		}
 		return true;
+	}
+	exports.update = function (doc) {
+		if (!doc) {
+			//clear
+			$root.html('');
+			_document = null;
+			return true;
+		}
+
+		newDocFlag = (_document == doc)? false: true;
+		_document = doc;
+
+		if (newDocFlag) {
+			sortMode = prefs.get('outline/defaultSorting');
+		}
+		return forceUpdate();
 	};
 	exports.setViewState = function (state) {
 		if (state) {

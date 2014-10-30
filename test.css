@@ -1,0 +1,18 @@
+@import 'layout.css' (min-width: 50em);
+#testID {
+
+}
+#testID .klass>li {}
+
+#testID .klass[name="test"] {
+
+}
+
+@media print {
+	#subID {}
+  /* zusätzliche oder abweichende CSS-Regeln für Drucker */
+}
+
+@media print, embossed { /* Formate für Printmedien. */ }
+@media (min-width: 30em) and (max-width: 60em) { /* Kompaktes Layout */ }
+@media print and (color), screen and (color) { /* Farbangaben */ }

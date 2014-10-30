@@ -22,7 +22,7 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets, Worker */
+/*global define, brackets, Worker */
 define(function (require, exports, modul) {
     "use strict";
 	var ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
@@ -38,16 +38,14 @@ define(function (require, exports, modul) {
 
 		$root = $ele;
 		outliner = outLiner;
-		//register buttons
-		outliner.registerButton('js', 'class/button-name', function() {
-			//onclick
-		});
+
 		JsWorker = new Worker(modulePath + "/outlineWorker.js");
 		JsWorker.onmessage = function (e) {
 			if (e.data.type === 'log') {
-//				console.log(e.data.value[0], e.data.value[1]);
+				console.log(e.data.value[0], e.data.value[1]);
 			} else if (e.data.type === 'data') {
 				//updateJsTree(e.data);
+				console.log(e.data)
 				callBack(e.data);
 			}
 		};

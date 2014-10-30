@@ -3,19 +3,14 @@ outliner
 -html / umschalten zwischen id's, tags, classes, attr
 -css querys
 -colapse/open all
--filter /prototypes,anonym,
-
--outline coding
-
+//-filter /prototypes,anonym,
+--prefs:
+-colors
 
 
 minimap
 -aware inline editor/view (codeMirror->events)
-	-line integration
--scroll speed
 
-
-!!!!!!!!!!!!!!!!!!!!!
 next version features
 alle extensions können ein fenster mit ihrer id öffnen
 darin sieht man dann welche neuen features schon implementiert sind
@@ -145,7 +140,7 @@ define(function (require, exports, modul) {
 		});
 
 		//create html
-		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + '/css.css">');
+		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + 'blueprint.css">');
 		$panelRight = $('<div id="mySidePanelRight"></div>');
 			$headline = $('<div class="headline"><span class="outline tab">Outline</span><span class="minimap tab">Minimap</span></div>');
 			$content = $('<div class="content"></div>');
@@ -293,4 +288,7 @@ define(function (require, exports, modul) {
 			}
 		}, 500);
     });
+
+	exports.toggleSidebar = toggleSidebar;
+	exports.changeTab = changeTab;
 });

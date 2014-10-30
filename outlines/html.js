@@ -107,7 +107,7 @@ define(function (require, exports, modul) {
 	exports.init = function (outliner) {
 		//set dom
 		//register buttons
-		outliner.registerButton('html', 'class/button-name', function() {
+		outliner.registerButton('class/button-name', function() {
 			//onclick
 		});
 	};

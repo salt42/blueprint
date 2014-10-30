@@ -29,6 +29,15 @@
 	/*border-bottom: 1px solid #000;*/
 	list-style: none;
 }
+.blueprint-prefs-dialog .category>h4 {
+	margin-bottom: 0px;
+}
+.blueprint-prefs-dialog .category>hr {
+	border: 0;
+    height: 1px;
+	margin-top: 0px;
+    background-image: -webkit-linear-gradient(left, rgba(0,0,0,0.75), rgba(0, 0, 0, 0.75), rgba(0,0,0,0));
+}
 .blueprint-prefs-dialog .description {
 	float: left;
 }
@@ -69,7 +78,9 @@
 .blueprint-prefs-dialog .input .value {
 	float: right;
 }
-
+.blueprint-prefs-dialog .input .value[type="number"] {
+	width: 70px;
+}
 
 #mySidePanelRight {
 	position: absolute;
@@ -206,6 +217,7 @@
 #mySidePanelRight .outline-root ul {
     list-style: none;
     width: auto;
+	margin-left: 15px;
 }
 #mySidePanelRight .outline-root li {
     width: auto;
@@ -235,7 +247,9 @@
 
 #mySidePanelRight .outline-root li .line { line-height: 20px; font-size: 15px; }
 /*css*/
-#mySidePanelRight .outline-root li .line .selector { color: #8fddff; }
+#mySidePanelRight .outline-root li .line .type { color: #d0d46e; }
+#mySidePanelRight .outline-root li .line .name { color: #6eb5d4; }
+#mySidePanelRight .outline-root li .line .querryType { color: #d0d46e; }
 /*js*/
 #mySidePanelRight .outline-root li .line .type { color: #adb9bd; }
 #mySidePanelRight .outline-root li .typeImage {
@@ -263,7 +277,6 @@
 
 #mySidePanelRight .outline-root li .line .name { color: #6eb5d4; }
 #mySidePanelRight .outline-root li .line .return { color: #adb9bd; }
-#mySidePanelRight .outline-root li .line .params {}
 #mySidePanelRight .outline-root li .line .params .type { color: #adb9bd; }
 #mySidePanelRight .outline-root li .line .params .name { color: #d0d46e; }
 

@@ -27,6 +27,7 @@ define(function (require, exports) {
 	var Dialogs = brackets.getModule('widgets/Dialogs'),
 		PREFS = null,
 		$ui,
+		changeCallBacks = [],
 		defaultPrefs = {
 			generel : {
 				type : 'category',
@@ -40,7 +41,7 @@ define(function (require, exports) {
 					autoChangeTab : {
 						type : 'select',
 						description : 'on file change switch to',
-						values : ['keep','outline', 'minimap'],
+						values : ['keep', 'outline', 'minimap'],
 						value : 'outline',
 					},
 
@@ -60,6 +61,12 @@ define(function (require, exports) {
 						type : 'boolean',
 						description : 'switch to minimap if outliner dont\'t support language',
 						value : true,
+					},
+					fontSize : {
+						type : 'input',
+						valueType : 'number',
+						description : 'font size',
+						value : '15'
 					},
 				}
 			},
@@ -82,7 +89,7 @@ define(function (require, exports) {
 	}
 	function savePrefs () {
 		localStorage.setItem("blueprintPreferences", JSON.stringify(PREFS));
-		loadPrefs()
+		loadPrefs();
 	}
 	exports.init = function () {
 		$ui = $('<ul class="perf-list"></ul>');
@@ -95,7 +102,8 @@ define(function (require, exports) {
 			PREFS = defaultPrefs;
 			savePrefs();
 		} else {
-			$.extend(true, defaultPrefs, PREFS);
+			PREFS = $.extend(true, {}, defaultPrefs, PREFS);
+			savePrefs();
 		}
 	};
 	/*
@@ -136,16 +144,20 @@ define(function (require, exports) {
 	 */
 	exports.set = function (url, value) {
 		var parts = url.split('/'),
-			index = 0,
+			i = 0,
 			chain = PREFS;
-		for (; index<parts.length; index++) {
+		for (; i<parts.length; i++) {
 			if (!('type' in chain)) {
-				chain = chain[ parts[index] ];
+				chain = chain[ parts[i] ];
 			} else if (chain.type === 'category') {
-				chain = chain.childs[ parts[index] ];
+				chain = chain.childs[ parts[i] ];
 			}
 		}
 		chain.value = value;
+
+		for(i=0;i<changeCallBacks.length;i++) {
+			changeCallBacks[i].call(null, url, value);
+		}
 		savePrefs();
 	};
 	exports.openUI = function () {
@@ -158,7 +170,7 @@ define(function (require, exports) {
 
 			switch (node.type) {
 				case 'category':
-					$ele = $('<li class="category"><span>' + node.title + '</span><ul></ul></li>');
+					$ele = $('<li class="category"><h4>' + node.title + '</h4><hr><ul></ul></li>');
 					return $ele;
 				case 'select':
 					$ele = $('<li class="select"></li>')
@@ -178,7 +190,6 @@ define(function (require, exports) {
 					$ele = $('<li class="boolean"></li>').html(node.type)
 						.append('<span class="description"></span>').html(node.description);
 					var flag = 'off';
-					console.log(localStorage, node)
 					if (node.value) {
 						flag = 'on';
 					}
@@ -246,7 +257,7 @@ define(function (require, exports) {
 				//override with last
 				$(e.target).val(exports.get(path));
 			} else if (val > 0) {
-				$(e.target).val(val)
+				$(e.target).val(val);
 				exports.set(path, val);
 			}
 		});
@@ -267,5 +278,8 @@ define(function (require, exports) {
 	};
 	exports.closeUI = function () {
 		//open ui 2
+	};
+	exports.onChange = function (cb) {
+		changeCallBacks.push(cb);
 	};
 });
