@@ -26,9 +26,10 @@
 define(function (require, exports, modul) {
     "use strict";
 	var	CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
-		prefs = require('../preferences'),
-		dataTree = [],
-		displayMode = 'all';
+		EditorManager   = brackets.getModule("editor/EditorManager"),
+		prefs			= require('../preferences'),
+		dataTree		= [],
+		currentEditorTabSize = 4;
 
 	/**
 	 *	@param {string} code
@@ -42,9 +43,12 @@ define(function (require, exports, modul) {
 			stream,
 			lastBracket,
 			parentList = [],
-			rootElement = {childs : []},
+			rootElement = {childs : [] },
 			currElement = rootElement,
-			isAttr  = false;
+			isAttr  = false,
+			charNumber = 0,
+			openTagCharPos = 0,
+			inOpenTag = false;
 
 		var getNext = function() {
 			var curr = stream.current();
@@ -57,17 +61,37 @@ define(function (require, exports, modul) {
 					lastBracket = token;
 					if (token.search('>') !== -1) {
 						//close tag
+						var attribStr = '',
+							nameStr = '';
+
+						if (inOpenTag) {
+							inOpenTag = false;
+							if (!currElement) { break; }
+							if ('id' in currElement.attr) {
+								attribStr += ' <span class="id">#' + currElement.attr.id + '</span>';
+								nameStr += ' #' + currElement.attr.id;
+							}
+							if ('class' in currElement.attr) {
+								attribStr += ' <span class="class">.' + currElement.attr.class + '</span>';
+								nameStr += ' .' + currElement.attr.class;
+							}
+							currElement.line = '<span class="tag">' + currElement.name + '</span>' + attribStr;
+							currElement.name = currElement.name + nameStr;
+						}
 						isAttr = false;
-						//close if  "\>"
+					} else if (token.search('<') !== -1) {
+						openTagCharPos = charNumber -(token.length);
 					}
 					break;
 				case 'tag':
 					if (lastBracket === '<') {
 						//open tag
+						inOpenTag = true;
 						var element = {
 							name : token,
-							line : '<span class="name">' + token + '</span>',
+							line : '',
 							startline : lineNumber,
+							startchar : openTagCharPos,
 							childs : [],
 							attr : [],
 						}
@@ -94,9 +118,15 @@ define(function (require, exports, modul) {
 		};
 		for (var i = 0, e = lines.length; i < e; ++i) {
 			stream = new CodeMirror.StringStream(lines[i]);
+			charNumber = 0;
 			while (!stream.eol()) {
 				var style = mode.token(stream, state),
 					token = getNext();
+
+				if (style === null) {
+					token = token.replace(/\\t/g, new Array(currentEditorTabSize).join(' '));
+				}
+				charNumber = charNumber + token.length;
 				if (style !== null) {
 					callback(token, i + 1, style);
 				}
@@ -113,6 +143,8 @@ define(function (require, exports, modul) {
 		});
 	};
 	exports.update = function (code, cb) {
+		console.log(EditorManager.getCurrentFullEditor())
+		//currentEditorTabSize = EditorManager.getCurrentFullEditor().getTabSize();
 		dataTree = updateHtml(code, 'text/x-brackets-html');
 		console.log(dataTree)
 		cb(dataTree);

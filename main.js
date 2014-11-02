@@ -1,6 +1,8 @@
 /*
 outliner
--html / umschalten zwischen id's, tags, classes, attr
+-html:
+	-umschalten zwischen id's, tags, classes, attr
+	-context menu / (zoom oder ausschnit anzeigen)
 -css querys
 -colapse/open all
 //-filter /prototypes,anonym,

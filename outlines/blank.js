@@ -84,6 +84,14 @@ define(function (require, exports) {
 	 */
 	exports.update = function(code, cb) {
 		var data = update(code);
+		/**
+			element = {
+				childs : [],
+				startline : 1, // need for sorting and click function
+				name : 'name string', //need for sorting
+				line : 'content of the "li>.line" element. can contain html elements',
+			},
+		 */
 		cb(data);
 	};
 });

@@ -157,14 +157,21 @@ define(function (require, exports) {
 					var type = token.substr(0, 1),
 						name = token.substr(1);
 
-					selectorAdd(token, '<span class="type">' + type + '</span><span class="name">' + name + '</span>');
+					if (type === '#') {
+						selectorAdd(token, '<span class="id">' + token + '</span>');
+					} else if (type === '.') {
+						selectorAdd(token, '<span class="class">' + token + '</span>');
+					}
+//					selectorAdd(token, '<span class="type">' + type + '</span><span class="name">' + name + '</span>');
 					break;
 				case 'tag':
+					selectorAdd(token.replace(/"/g,''), '<span class="tag">' + token + '</span>');
+					break;
+				case 'string':
 				case 'number':
 				case 'attribute':
 				case 'property':
 				case 'variable-3':
-				case 'string':
 					selectorAdd(token.replace(/"/g,''), '<span class="name">' + token + '</span>');
 					break;
 				case 'def':

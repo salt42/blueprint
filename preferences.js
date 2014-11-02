@@ -28,7 +28,15 @@ define(function (require, exports) {
 		PREFS = null,
 		$ui,
 		changeCallBacks = [],
-		defaultPrefs = {
+		defaultPrefValues = {
+			generelopenOnStart : true,
+			generelautoChangeTab : 'outline',
+			outlinedefaultSorting : 'asc',
+			outlineunknownTypeChangeTab : true,
+			outlinefontSize : '19',
+			minimapscrollSpeed : '50',
+		},
+		prefConf = {
 			generel : {
 				type : 'category',
 				title : 'Generel',
@@ -66,7 +74,7 @@ define(function (require, exports) {
 						type : 'input',
 						valueType : 'number',
 						description : 'font size',
-						value : '15'
+						value : '19'
 					},
 				}
 			},
@@ -85,25 +93,26 @@ define(function (require, exports) {
 		};
 
 	function loadPrefs () {
-		PREFS = JSON.parse(localStorage.getItem("blueprintPreferences"));
+		PREFS = JSON.parse(localStorage.getItem("blueprintPrefs"));
 	}
 	function savePrefs () {
-		localStorage.setItem("blueprintPreferences", JSON.stringify(PREFS));
+		localStorage.setItem("blueprintPrefs", JSON.stringify(PREFS));
 		loadPrefs();
 	}
+
 	exports.init = function () {
 		$ui = $('<ul class="perf-list"></ul>');
 		//@todo remove sometime
-		localStorage.removeItem("blueprintPrefs");
-//		localStorage.removeItem("blueprintPreferences");
+//		localStorage.removeItem("blueprintPrefs");
+		localStorage.removeItem("blueprintPreferences");
 
 		loadPrefs();
 		//check first init
 		if (PREFS === null) {
-			PREFS = defaultPrefs;
+			PREFS = defaultPrefValues;
 			savePrefs();
 		} else {
-			PREFS = $.extend(true, {}, defaultPrefs, PREFS);
+			PREFS = $.extend({}, defaultPrefValues, PREFS);
 			savePrefs();
 		}
 	};
@@ -111,55 +120,77 @@ define(function (require, exports) {
 	 *	@param {string} url relative 2 PREFS
 	 */
 	exports.get = function (url) {
-		var parts = url.split('/'),
-			index = 0,
-			result = PREFS;
+		var key = url.replace(/\//g, ''),
+			i=0;
 
-		for (; index<parts.length; index++) {
-			if (!('type' in result)) {
-				if (parts[index] in result) {
-					result = result[ parts[index] ];
-				} else {
-					//console.log('key not exists1: ' + url);
-					return false;
-				}
-			} else if (result.type === 'category') {
-
-				if (parts[index] in result.childs) {
-					result = result.childs[ parts[index] ];
-				} else {
-					//console.log('key not exists2: ' + parts[index], result.childs);
-					return false;
-				}
-			}
+		if (key in PREFS) {
+			//validate value with
+			return PREFS[key];
+		} else {
+			console.error('key dosen\'t exists!')
 		}
-		if (result.type === 'category' || result.type === 'root') {
-			//console.log('key not exists3: ' + url, result);
-			return false;
-		}
-		return result.value;
+//		var parts = url.split('/'),
+//			index = 0,
+//			result = PREFS;
+//
+//		for (; index<parts.length; index++) {
+//			if (!('type' in result)) {
+//				if (parts[index] in result) {
+//					result = result[ parts[index] ];
+//				} else {
+//					//console.log('key not exists1: ' + url);
+//					return false;
+//				}
+//			} else if (result.type === 'category') {
+//
+//				if (parts[index] in result.childs) {
+//					result = result.childs[ parts[index] ];
+//				} else {
+//					//console.log('key not exists2: ' + parts[index], result.childs);
+//					return false;
+//				}
+//			}
+//		}
+//		if (result.type === 'category' || result.type === 'root') {
+//			//console.log('key not exists3: ' + url, result);
+//			return false;
+//		}
+//		return result.value;
 	};
 	/*
 	 *	@param {string} url relative 2 PREFS
 	 *	@param {string|number|object} value value 2 store
 	 */
 	exports.set = function (url, value) {
-		var parts = url.split('/'),
-			i = 0,
-			chain = PREFS;
-		for (; i<parts.length; i++) {
-			if (!('type' in chain)) {
-				chain = chain[ parts[i] ];
-			} else if (chain.type === 'category') {
-				chain = chain.childs[ parts[i] ];
-			}
-		}
-		chain.value = value;
+		var key = url.replace(/\//g, ''),
+			i=0;
 
-		for(i=0;i<changeCallBacks.length;i++) {
-			changeCallBacks[i].call(null, url, value);
+		if (key in defaultPrefValues) {
+			//validate value with
+			PREFS[key] = value;
+			savePrefs();
+			for(i=0;i<changeCallBacks.length;i++) {
+				changeCallBacks[i].call(null, url, value);
+			}
+		} else {
+			console.error('key dosen\'t exists!')
 		}
-		savePrefs();
+//		var parts = url.split('/'),
+//			i = 0,
+//			chain = PREFS;
+//		for (; i<parts.length; i++) {
+//			if (!('type' in chain)) {
+//				chain = chain[ parts[i] ];
+//			} else if (chain.type === 'category') {
+//				chain = chain.childs[ parts[i] ];
+//			}
+//		}
+//		chain.value = value;
+//
+//		for(i=0;i<changeCallBacks.length;i++) {
+//			changeCallBacks[i].call(null, url, value);
+//		}
+//		savePrefs();
 	};
 	exports.openUI = function () {
 		var path = [],
@@ -167,7 +198,8 @@ define(function (require, exports) {
 
 		function createNode (node) {
 			var $ele,
-				pathStr = path.join('/');
+				pathStr = path.join('/'),
+				url		= path.join('');
 
 			switch (node.type) {
 				case 'category':
@@ -179,7 +211,7 @@ define(function (require, exports) {
 					var html = '<select path="' + pathStr + '">';
 						for (var i=0;i<node.values.length;i++) {
 							var select = '';
-							if (node.value === node.values[i]) {
+							if (PREFS[url] === node.values[i]) {
 								select = 'selected';
 							}
 							html += '<option ' + select + ' value="' + node.values[i] + '">' + node.values[i] + '</option>';
@@ -191,7 +223,7 @@ define(function (require, exports) {
 					$ele = $('<li class="boolean"></li>').html(node.type)
 						.append('<span class="description"></span>').html(node.description);
 					var flag = 'off';
-					if (node.value) {
+					if (PREFS[url]) {
 						flag = 'on';
 					}
 					$ele.append('<span class="switch ' + flag + '" path="' + pathStr + '"><span>yes</span><span>no</span></span>');
@@ -201,9 +233,9 @@ define(function (require, exports) {
 					$ele = $('<li class="input"></li>')
 					.append('<span class="description"></span>').html(node.description);
 					if (node.valueType === 'number') {
-						$ele.append('<input path="' + pathStr + '" type="number" class="value" value="' + node.value + '" />');
+						$ele.append('<input path="' + pathStr + '" type="number" class="value" value="' + PREFS[url] + '" />');
 					} else {
-						$ele.append('<input path="' + pathStr + '" type="text" class="value" value="' + node.value + '" />');
+						$ele.append('<input path="' + pathStr + '" type="text" class="value" value="' + PREFS[url] + '" />');
 					}
 					return $ele;
 				default:
@@ -212,8 +244,8 @@ define(function (require, exports) {
 			}
 		}
 
-		function recursive (node) {
-			var $node = createNode(node),
+		function recursive (node, url) {
+			var $node = createNode(node, url),
 				key;
 
 			if (node.type === 'category') {
@@ -226,9 +258,9 @@ define(function (require, exports) {
 			return $node;
 		}
 		$ui.empty();
-		for (key in PREFS) {
+		for (key in prefConf) {
 			path.push(key);
-			$ui.append(recursive(PREFS[key]));
+			$ui.append(recursive(prefConf[key]));
 			path.pop();
 		}
 

@@ -59,8 +59,12 @@ define(function (require, exports) {
 
 			//create data attribs
 			for(name in node) {
-				if (name === 'line' || name === 'childs') { continue; }
-				dataDash += 'data-' + name + '="' + node[name] + '" ';
+				if (name === 'line' || name === 'line') { continue; }
+				if (typeof node[name] === 'string' || typeof node[name] === 'number') {
+					dataDash += 'data-' + name + '="' + node[name] + '" ';
+				} else if (node[name] instanceof Array) {
+					//dataDash += 'data-' + name + '="' + JSON.stringify(node[name]) + '" ';
+				}
 			}
 			//open new li and add data-dashes
 			var toggleCss = 'toggle';
@@ -145,9 +149,13 @@ define(function (require, exports) {
 	/** center line and set cursor at line
 	 *	@param {number} line
 	 */
-	function setEditorLine(line) {
+	function setEditorLine(line, char) {
+		if (typeof char !== 'number') {
+			char = 0;
+		}
+		console.log(line, char)
 		var currentEditor = EditorManager.getCurrentFullEditor();
-        currentEditor.setCursorPos(line - 1, 0, true);
+        currentEditor.setCursorPos(line - 1, char, true);
         currentEditor.focus();
 	}
 	/** registers an button on the bottom of the outline viewer
@@ -176,8 +184,10 @@ define(function (require, exports) {
 
 		//events
         $($root).on('click', '.line', function () {
-			var line = this.parentNode.dataset.startline;
-			setEditorLine(line);
+			var line = this.parentNode.dataset.startline,
+				char = this.parentNode.dataset.startchar;
+
+			setEditorLine(parseInt(line), parseInt(char));
 		});
 		$($root).on('click', '.toggle', function (e) {
 			//hide/show
@@ -254,6 +264,9 @@ define(function (require, exports) {
 		//force redraw
 		$root.hide().show();
 	}
+	function updateOutlineRootType(type) {
+		$root.attr('type', type);
+	}
 	function forceUpdate() {
 		var mode = _document.getLanguage().getMode(),
 			text = _document.getText();
@@ -261,12 +274,15 @@ define(function (require, exports) {
 		switch (mode) {
 			case 'text/x-brackets-html':
 				outlines.html.update(text, updateTree);
+				updateOutlineRootType('html');
 				break;
 			case 'javascript':
 				outlines.js.update(text, updateTree);
+				updateOutlineRootType('js');
 				break;
 			case 'css':
 				outlines.css.update(text, updateTree);
+				updateOutlineRootType('css');
 				break;
 			default:
 				$root.html('can\'t display "' + mode + '"');

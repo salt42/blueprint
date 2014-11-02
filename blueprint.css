@@ -61,7 +61,7 @@
 	color: #000;
 }
 .blueprint-prefs-dialog .switch span:last-child{
-	color: #fff;
+	color: #cccccc;
 }
 .blueprint-prefs-dialog .switch.off span:first-child {
 	display: none;
@@ -207,7 +207,7 @@
     list-style: none;
 	padding: 3px;
 	margin: 0px;
-	color: #fff;
+	color: #cccccc;
 	font-size: 13px;
 	cursor: default;
 	overflow: scroll;
@@ -245,13 +245,27 @@
 }
 
 
-#mySidePanelRight .outline-root li .line { line-height: 20px; font-size: 15px; }
+#mySidePanelRight .outline-root li .line {
+	line-height: 20px;
+	font-size: 15px;
+	color: #cccccc;
+}
 /*css*/
-#mySidePanelRight .outline-root li .line .type { color: #d0d46e; }
-#mySidePanelRight .outline-root li .line .name { color: #6eb5d4; }
-#mySidePanelRight .outline-root li .line .querryType { color: #d0d46e; }
+#mySidePanelRight .outline-root[type="css"] li .line .id { color: #d0d46e; }
+#mySidePanelRight .outline-root[type="css"] li .line .class { color: #6eb5d4; }
+#mySidePanelRight .outline-root[type="css"] li .line .tag { color: #888888; }
+#mySidePanelRight .outline-root[type="css"] li .line .querryType { color: #d0d46e; }
+/*html*/
+#mySidePanelRight .outline-root[type="html"] li .line .tag { color: #888888; }
+#mySidePanelRight .outline-root[type="html"] li .line .id { color: #d0d46e; }
+#mySidePanelRight .outline-root[type="html"] li .line .class { color: #6eb5d4; }
 /*js*/
-#mySidePanelRight .outline-root li .line .type { color: #adb9bd; }
+#mySidePanelRight .outline-root[type="js"] li .line .type { color: #888888; }
+#mySidePanelRight .outline-root[type="js"] li .line .name { color: #6eb5d4; }
+#mySidePanelRight .outline-root[type="js"] li .line .params .type { color: #adb9bd; }
+#mySidePanelRight .outline-root[type="js"] li .line .params .name { color: #d0d46e; }
+#mySidePanelRight .outline-root[type="js"] li .line .return { color: #adb9bd; }
+/*
 #mySidePanelRight .outline-root li .typeImage {
 	display: inline-block;
 	width: 20px;
@@ -274,11 +288,8 @@
 		color: #adb9bd;
 		background: #42671c;
 	}
+*/
 
-#mySidePanelRight .outline-root li .line .name { color: #6eb5d4; }
-#mySidePanelRight .outline-root li .line .return { color: #adb9bd; }
-#mySidePanelRight .outline-root li .line .params .type { color: #adb9bd; }
-#mySidePanelRight .outline-root li .line .params .name { color: #d0d46e; }
 
 
 
