@@ -27,7 +27,7 @@ self.addEventListener('message', function (e) {
 	root = {
 		type : 'data',
 		name : 'root',
-		childs : []
+		childs : [],
 	};
 	parents = [root];
 	methodeList = [];
@@ -155,7 +155,7 @@ var enter = function(node, parent) {
 //				res.type = '<span class="typeImage func"></span>';
 				parents[parents.length-1].childs.push(res);//same
 			}
-			res._line = '' + '<span class="type">' + res.type + '</span> ' +
+			res.line = '' + '<span class="type">' + res.type + '</span> ' +
 				'<span class="name">' + name +
 				'</span> (<span class="params">' + paramString + '</span>) ' +
 				'<span class="return">' + returnType + '</span>';

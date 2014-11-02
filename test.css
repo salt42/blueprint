@@ -1,18 +1,31 @@
+.intro {}
+#firstname {}
+* {}
+p {}
+div, p {}
+div p {}
+div > p {}
+div + p {}
+p ~ ul {}
+[target] {}
+[target=_blank] {}
+[target~=flower] {}
+[target|=en] {}
+a[href^="https"] {}
+a[href$=".pdf"] {}
+a[href*="google"] {}
+a:active {}
+p::first-letter {}
+p:lang(it) {}
+:root {}
+::selection {}
+#news:target {}
+
+
 @import 'layout.css' (min-width: 50em);
-#testID {
-
-}
-#testID .klass>li {}
-
-#testID .klass[name="test"] {
-
-}
-
 @media print {
 	#subID {}
-  /* zusätzliche oder abweichende CSS-Regeln für Drucker */
 }
-
-@media print, embossed { /* Formate für Printmedien. */ }
-@media (min-width: 30em) and (max-width: 60em) { /* Kompaktes Layout */ }
-@media print and (color), screen and (color) { /* Farbangaben */ }
+@media print, embossed { }
+@media (min-width: 30em) and (max-width: 60em) { }
+@media print and (color), screen and (color) { }

@@ -31,8 +31,6 @@ define(function (require, exports, modul) {
 		$root,
 		callBack;
 
-
-
 	exports.init = function (outLiner, $ele) {
 		var modulePath = ExtensionUtils.getModulePath(modul);
 
@@ -42,10 +40,8 @@ define(function (require, exports, modul) {
 		JsWorker = new Worker(modulePath + "/outlineWorker.js");
 		JsWorker.onmessage = function (e) {
 			if (e.data.type === 'log') {
-				console.log(e.data.value[0], e.data.value[1]);
+				//console.log(e.data.value[0], e.data.value[1]);
 			} else if (e.data.type === 'data') {
-				//updateJsTree(e.data);
-				console.log(e.data)
 				callBack(e.data);
 			}
 		};

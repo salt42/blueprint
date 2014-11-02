@@ -44,7 +44,7 @@ der extension autor segnet die ab oder nich und wenn ja stehen sie bei dem votin
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
 /*global define, $, brackets, setTimeout, localStorage, setInterval */
-define(function (require, exports, modul) {
+define(function (require, exports, module) {
     "use strict";
 
 	//first of all init preferences 2 ensure that at load all perfs are exists
@@ -53,6 +53,7 @@ define(function (require, exports, modul) {
 
     var AppInit         = brackets.getModule("utils/AppInit"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
+		modulePath		= ExtensionUtils.getModulePath(module),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
 		MainViewManager	= brackets.getModule('view/MainViewManager'),
@@ -90,10 +91,12 @@ define(function (require, exports, modul) {
 	 *	@param {boolean} flag true=open, false=close
 	 */
 	function toggleSidebar(flag) {
-		if(flag || !sidebarOpen) {
-			Resizer.show($panelRight);
-		} else {
-			Resizer.hide($panelRight);
+		if (sidebarOpen) {
+			if(flag) {
+				Resizer.show($panelRight);
+			} else {
+				Resizer.hide($panelRight);
+			}
 		}
 	}
 	//(e, newFile:File, newPaneId:string, oldFile:File, oldPaneId:string)
@@ -128,15 +131,28 @@ define(function (require, exports, modul) {
 			toggleSidebar(true);
 		}
 	}
-
+	function setActive(flag) {
+		if (flag) {
+			sidebarOpen = true;
+			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
+		} else {
+			sidebarOpen = false;
+			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
+			Resizer.hide($panelRight);
+		}
+	}
 	function initHtml() {
-		var modulePath = ExtensionUtils.getModulePath(modul);
         //create quick button
 		// &#955;   HL sing
         $quickButton = $('<a id="toolbar-blueprint-outline" title="toggle outline" href="#" style="font-size:22px;"><img src="' + modulePath + '/blueprint_dark.png"></a>');
 		$("#main-toolbar .buttons").find("#toolbar-extension-manager").after($quickButton);
         $($quickButton).click(function () {
-			toggleSidebar();
+			if (sidebarOpen) {
+				setActive(false);
+			} else {
+				setActive(true);
+				toggleSidebar(true);
+			}
 		});
 
 		//create html
@@ -174,7 +190,6 @@ define(function (require, exports, modul) {
 		};
 		$panelRight.on('panelResizeUpdate', allroundHandler);
 		$panelRight.on('panelExpanded', function(e,w) {
-
 			allroundHandler(e,w);
 		});
 		$panelRight.on('panelCollapsed', function () {
@@ -183,15 +198,11 @@ define(function (require, exports, modul) {
 		$panelRight.on('panelCollapsed panelExpanded', function (e) {
 			if (e.type === 'panelExpanded') {
 				//show
-				sidebarOpen = true;
 				if (!parsed) {
 					parseDoc();
 				}
-				$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
 			} else {
 				//hide
-				sidebarOpen = false;
-				$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
 			}
 		});
 
@@ -282,11 +293,10 @@ define(function (require, exports, modul) {
 			//if (!Resizer.isVisible($panelRight)) return true;
 			changeDocument(cd);
 		});
-		setTimeout(function () {
-			if (prefs.get('generel/openOnStart')) {
-				toggleSidebar(true);
-			}
-		}, 500);
+		if (prefs.get('generel/openOnStart')) {
+			setActive(true);
+		}
+
     });
 
 	exports.toggleSidebar = toggleSidebar;

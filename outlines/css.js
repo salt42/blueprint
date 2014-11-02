@@ -34,7 +34,26 @@ define(function (require, exports) {
 //				html += '<span class="' + className + '">' + content + '</span>';
 //
 // alles so machen wie die original runmode function nur das nur die selectoren und die querrys erfasst werden
+	var entityMap = {
+//		"&": "&amp;",
+//		"<": "&lt;",
+//		">": "&gt;",
+//		'"': '&quot;',
+//		"'": '&#39;',
+//		"/": '&#x2F;',
+		'+' : '&#43;',
+		'|' : '&#124;',
+		'^' : '&#94;',
+		'$' : '&#36;',
 
+	};
+
+	function escapeHtml(string) {
+//		return String(string).replace(/[&<>"'\/]/g, function (s) {
+		return String(string).replace(/[+|^$]/g, function (s) {
+			return entityMap[s];
+		});
+	}
 	function updateHtml(code) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, 'css'),
 			lines = CodeMirror.splitLines(code),
@@ -62,10 +81,15 @@ define(function (require, exports) {
 		var callback = function(token, lineNumber, style) {
 			if (!style) {
 				switch (token) {
+					case '|=':
+					case '+':
+					case '^':
 					case '>':
 					case '<':
 					case '*':
 					case '~':
+					case '~=':
+					case '$':
 					case '[':
 					case ']':
 					case '=':
@@ -82,7 +106,7 @@ define(function (require, exports) {
 							startline : lineNumber,
 							childs : [],
 							name : selector,
-							_line : selectorHTML,
+							line : selectorHTML,
 						};
 						currElement.childs.push(ele);
 						selector = '';
@@ -118,7 +142,7 @@ define(function (require, exports) {
 							startline : lineNumber,
 							childs : [],
 							name : selector,
-							_line : selectorHTML,
+							line : selectorHTML,
 						});
 						isQuerry = false;
 						selector = '';
@@ -139,8 +163,9 @@ define(function (require, exports) {
 				case 'number':
 				case 'attribute':
 				case 'property':
+				case 'variable-3':
 				case 'string':
-					selectorAdd(token, '<span class="name">' + token + '</span>');
+					selectorAdd(token.replace(/"/g,''), '<span class="name">' + token + '</span>');
 					break;
 				case 'def':
 					//define media querry
@@ -163,7 +188,7 @@ define(function (require, exports) {
 			while (!stream.eol()) {
 				var style = mode.token(stream, state),
 					token = getNext();
-//				console.log(style, token, token.length)
+				//console.log(style, token, token.length)
 				callback(token, i + 1, style);
 			}
 		}

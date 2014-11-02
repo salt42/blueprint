@@ -23,28 +23,24 @@
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
 /*global define, $, brackets */
-define(function (require, exports, modul) {
+define(function (require, exports) {
     "use strict";
-	var	CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
-		prefs = require('../preferences'),
-		dataTree = [],
-		displayMode = 'all';
+	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
+		$root;
 
-	/**
-	 *	@param {string} code
-	 *	@param {string} modespec
-	 *	@return {object} dataTree
-	 */
-	function updateHtml(code, modespec) {
-		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
+	function update(code) {
+		var mode = CodeMirror.getMode(CodeMirror.defaults, 'css'),
 			lines = CodeMirror.splitLines(code),
 			state = CodeMirror.startState(mode),
 			stream,
-			lastBracket,
-			parentList = [],
-			rootElement = {childs : []},
+			rootElement = {
+				childs : [],// the root element just needs childs, the next lines are the required fields for all elements
+				//startline : 1, //
+				//name : 'name string for sorting',
+				//line : 'content of the "li>.line" element. can contain html elements',
+			},
 			currElement = rootElement,
-			isAttr  = false;
+			elementStack = [rootElement];
 
 		var getNext = function() {
 			var curr = stream.current();
@@ -52,70 +48,42 @@ define(function (require, exports, modul) {
 			return curr;
 		};
 		var callback = function(token, lineNumber, style) {
-			switch(style) {
-				case 'tag bracket':
-					lastBracket = token;
-					if (token.search('>') !== -1) {
-						//close tag
-						isAttr = false;
-						//close if  "\>"
-					}
-					break;
-				case 'tag':
-					if (lastBracket === '<') {
-						//open tag
-						var element = {
-							name : token,
-							line : '<span class="name">' + token + '</span>',
-							startline : lineNumber,
-							childs : [],
-							attr : [],
-						}
-						currElement.childs.push(element);
-						parentList.push(element);
-						currElement = element;
-					} else if (lastBracket === '</') {
-						//close tag
-						parentList.pop();
-						currElement = parentList[parentList.length-1];
-					}
-					break;
-				case 'attribute':
-					isAttr = token;
-					break;
-				case 'string':
-					if (isAttr !== false) {
-						//add attribute
-						currElement.attr[isAttr] = token.replace(/["']/g, '');
-						isAttr = false;
-					}
-					break;
-			}
+			//foreach found element create a element like rootElement
+			//style can be null, this occurse on space, brackets, etc
 		};
+
+		//loop over lines
 		for (var i = 0, e = lines.length; i < e; ++i) {
 			stream = new CodeMirror.StringStream(lines[i]);
 			while (!stream.eol()) {
 				var style = mode.token(stream, state),
 					token = getNext();
-				if (style !== null) {
-					callback(token, i + 1, style);
-				}
+				//console.log(style, token, token.length)
+				callback(token, i + 1, style);
 			}
 		}
+
+
+		//console.log(rootElement)
 		return rootElement;
 	}
-
-	exports.init = function (outliner) {
+	/*
+	 *	@param {object} outliner api
+	 *	@param {object} $ele
+	 */
+	exports.init = function(outliner, $ele) {
+		$root = $ele;
 		//set dom
 		//register buttons
 		outliner.registerButton('class/button-name', function() {
 			//onclick
 		});
 	};
-	exports.update = function (code, cb) {
-		dataTree = updateHtml(code, 'text/x-brackets-html');
-		console.log(dataTree)
-		cb(dataTree);
+	/*
+	 *	@param {string} code string
+	 */
+	exports.update = function(code, cb) {
+		var data = update(code);
+		cb(data);
 	};
-
 });

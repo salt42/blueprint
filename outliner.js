@@ -35,7 +35,7 @@ define(function (require, exports) {
 		sortMode = 'none',
 		newDocFlag = true,
 		outlines = {
-//			'html' : require('./outlines/html'),
+			'html' : require('./outlines/html'),
 			'css' : require('./outlines/css'),
 			'js' : require('./outlines/js'),
 		};
@@ -59,7 +59,7 @@ define(function (require, exports) {
 
 			//create data attribs
 			for(name in node) {
-				if (name === '_line' || name === 'childs') { continue; }
+				if (name === 'line' || name === 'childs') { continue; }
 				dataDash += 'data-' + name + '="' + node[name] + '" ';
 			}
 			//open new li and add data-dashes
@@ -70,7 +70,7 @@ define(function (require, exports) {
 			if (node.type) {
 				//typeStr = '<span class="typeImage ' + node.type + '"></span>';
 			}
-			html += '<li ' + dataDash + '><div class="' + toggleCss + '">&nbsp;</div>' + typeStr + '<span class="line">' + node._line + '</span><ul class="childs">';
+			html += '<li ' + dataDash + '><div class="' + toggleCss + '">&nbsp;</div>' + typeStr + '<span class="line">' + node.line + '</span><ul class="childs">';
 
 
 			//iterate over childs
@@ -113,14 +113,14 @@ define(function (require, exports) {
 			sortMode = mode;
 		}
 		var sort_by_name = function(a, b) {
-			var sa = $(a).data('name'),//children('.line').children('.name').html(),
-				sb = $(b).data('name');//children('.line').children('.name').html();
+			var sa = a.dataset.name,
+				sb = b.dataset.name;
 			return sa.toLowerCase().localeCompare(sb.toLowerCase());
 		};
-		var startline = 'startline';
+
 		var sort_by_line = function(a, b) {
-			var sa = parseInt(a.dataset[startline]),
-				sb = parseInt(b.dataset[startline]);
+			var sa = parseInt(a.dataset.startline),
+				sb = parseInt(b.dataset.startline);
 			return (sa < sb)? false : true;
 		};
 //		var sort_by_line_down = function(a, b) {
@@ -259,9 +259,9 @@ define(function (require, exports) {
 			text = _document.getText();
 
 		switch (mode) {
-//			case 'text/x-brackets-html':
-//				outlines.html.update(text, updateTree);
-//				break;
+			case 'text/x-brackets-html':
+				outlines.html.update(text, updateTree);
+				break;
 			case 'javascript':
 				outlines.js.update(text, updateTree);
 				break;

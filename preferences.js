@@ -35,7 +35,7 @@ define(function (require, exports) {
 				childs : {
 					openOnStart : {
 						type : 'boolean',
-						description : 'Open on start',
+						description : 'show on start up',
 						value : true,
 					},
 					autoChangeTab : {
@@ -95,6 +95,7 @@ define(function (require, exports) {
 		$ui = $('<ul class="perf-list"></ul>');
 		//@todo remove sometime
 		localStorage.removeItem("blueprintPrefs");
+//		localStorage.removeItem("blueprintPreferences");
 
 		loadPrefs();
 		//check first init
@@ -193,7 +194,7 @@ define(function (require, exports) {
 					if (node.value) {
 						flag = 'on';
 					}
-					$ele.append('<span class="switch ' + flag + '" path="' + pathStr + '"><span>on</span><span>off</span></span>');
+					$ele.append('<span class="switch ' + flag + '" path="' + pathStr + '"><span>yes</span><span>no</span></span>');
 					return $ele;
 
 				case 'input':
