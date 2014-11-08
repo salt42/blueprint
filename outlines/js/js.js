@@ -26,6 +26,7 @@
 define(function (require, exports, modul) {
     "use strict";
 	var ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
+		prefs = require('../../preferences'),
 		outliner,
 		JsWorker,
 		$root,
@@ -37,11 +38,16 @@ define(function (require, exports, modul) {
 		$root = $ele;
 		outliner = outLiner;
 
-		JsWorker = new Worker(modulePath + "/outlineWorker.js");
+		var path = "jsScopeWorker.js"
+		if (prefs.get('outline/js/experimentalParser') ){
+			path = 'jsWorker.js';
+		}
+		JsWorker = new Worker(modulePath + path);
 		JsWorker.onmessage = function (e) {
 			if (e.data.type === 'log') {
-				//console.log(e.data.value[0], e.data.value[1]);
+				console.log(e.data.value[0], e.data.value[1]);
 			} else if (e.data.type === 'data') {
+				console.log('dataCallBack', e.data)
 				callBack(e.data);
 			}
 		};

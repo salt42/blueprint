@@ -16,7 +16,7 @@
         "url": "https://github.com/salt42"
     },
 	"license": "MIT",
-    "version": "0.7.0",
+    "version": "0.8.0",
     "engines": {
         "brackets": ">=0.44.0"
     }

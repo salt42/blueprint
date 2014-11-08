@@ -34,6 +34,7 @@ define(function (require, exports) {
 			outlinedefaultSorting : 'asc',
 			outlineunknownTypeChangeTab : true,
 			outlinefontSize : '19',
+			outlinejsexperimentalParser : false,
 			minimapscrollSpeed : '50',
 		},
 		prefConf = {
@@ -76,6 +77,17 @@ define(function (require, exports) {
 						description : 'font size',
 						value : '19'
 					},
+					js : {
+						type : 'category',
+						title : 'javaScript',
+						childs : {
+							experimentalParser : {
+								type : 'boolean',
+								description : 'use experimental js parser',
+								value : false,
+							},
+						}
+					}
 				}
 			},
 			minimap : {
@@ -90,7 +102,7 @@ define(function (require, exports) {
 					}
 				}
 			}
-		};
+		}
 
 	function loadPrefs () {
 		PREFS = JSON.parse(localStorage.getItem("blueprintPrefs"));
@@ -112,6 +124,7 @@ define(function (require, exports) {
 			PREFS = defaultPrefValues;
 			savePrefs();
 		} else {
+			console.log('load prefs', PREFS, defaultPrefValues);
 			PREFS = $.extend({}, defaultPrefValues, PREFS);
 			savePrefs();
 		}
@@ -123,6 +136,7 @@ define(function (require, exports) {
 		var key = url.replace(/\//g, ''),
 			i=0;
 
+		console.log(key, PREFS)
 		if (key in PREFS) {
 			//validate value with
 			return PREFS[key];
@@ -164,7 +178,7 @@ define(function (require, exports) {
 	exports.set = function (url, value) {
 		var key = url.replace(/\//g, ''),
 			i=0;
-
+		console.log(key, defaultPrefValues)
 		if (key in defaultPrefValues) {
 			//validate value with
 			PREFS[key] = value;

@@ -37,7 +37,7 @@ define(function (require, exports) {
 		outlines = {
 			'html' : require('./outlines/html'),
 			'css' : require('./outlines/css'),
-			'js' : require('./outlines/js'),
+			'js' : require('./outlines/js/js'),
 		};
 
 	prefs.onChange(function(path) {
@@ -187,6 +187,9 @@ define(function (require, exports) {
 			var line = this.parentNode.dataset.startline,
 				char = this.parentNode.dataset.startchar;
 
+			if (line === '') {
+				return;
+			}
 			setEditorLine(parseInt(line), parseInt(char));
 		});
 		$($root).on('click', '.toggle', function (e) {
