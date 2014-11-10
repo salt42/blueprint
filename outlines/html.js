@@ -49,7 +49,15 @@ define(function (require, exports, modul) {
 			charNumber = 0,
 			openTagCharPos = 0,
 			inOpenTag = false;
-
+		
+		var isVoidElement = function(tagName) {
+			var voidTags = [
+				"area", "base", "br", "col", "command", "embed", 
+				"hr", "img", "input", "keygen", "link", 
+				"meta", "param", "source", "track", "wbr"
+			];
+			return $.inArray(tagName, voidTags) > -1;
+		};
 		var getNext = function() {
 			var curr = stream.current();
 			stream.start = stream.pos;
@@ -76,7 +84,13 @@ define(function (require, exports, modul) {
 								nameStr += ' .' + currElement.attr.class;
 							}
 							currElement.line = '<span class="tag">' + currElement.name + '</span>' + attribStr;
+							var tagName = currElement.name;
 							currElement.name = currElement.name + nameStr;
+							
+							if(isVoidElement(tagName)) {
+								parentList.pop();
+								currElement = parentList[parentList.length-1];
+							}
 						}
 						isAttr = false;
 					} else if (token.search('<') !== -1) {
