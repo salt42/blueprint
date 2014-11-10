@@ -58,7 +58,7 @@ define(function (require, exports, module) {
 		modulePath		= ExtensionUtils.getModulePath(module),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
-		MainViewManager	= brackets.getModule('view/MainViewManager'),
+		DropdownButton	= brackets.getModule('widgets/DropdownButton'),
 		PanelManager	= brackets.getModule("view/PanelManager"),
 		Outliner		= require('./outliner'),
 		Minimap			= require('./minimap'),
@@ -95,26 +95,50 @@ define(function (require, exports, module) {
 			activeTab = tabName;
 		}
 	}
-	/*
-	 *	@param {boolean} flag true=open, false=close
-	 */
-	function toggleOutliner(flag) {
-		if (outlinerOpen) {
-			if(flag) {
-				Resizer.show($panelRight);
-			} else {
-				Resizer.hide($panelRight);
-			}
-		}
-	}
 	function setActive(flag) {
 		if (flag) {
 			outlinerOpen = true;
 			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
+			openView();
 		} else {
 			outlinerOpen = false;
 			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
-			Resizer.hide($panelRight);
+			closeView();
+		}
+	}
+	function openView() {
+		switch (currentView) {
+			case 'right':
+				$($wrapper).appendTo($panelRight);
+				if (outlinerOpen) {
+					Resizer.show($panelRight);
+				}
+				break;
+			case 'bottom':
+				$($wrapper).appendTo($panel.$panel);
+				if (outlinerOpen) {
+					$panel.show();
+				}
+				break;
+			case 'window':
+				openWindow(function () {
+					var container = _win.document.getElementById('blueprint-outliner');
+					$($wrapper).appendTo($(container));
+				});
+				break;
+		}
+	}
+	function closeView() {
+		switch (currentView) {
+			case 'right':
+				Resizer.hide($panelRight);
+				break;
+			case 'bottom':
+				$panel.hide();
+				break;
+			case 'window':
+				closeWindow();
+				break;
 		}
 	}
 	function switchView(viewName) {
@@ -122,38 +146,9 @@ define(function (require, exports, module) {
 			return;
 		}
 		$wrapper.detach();
-		//close
-		switch (currentView) {
-			case 'right':
-				$panelRight.hide();
-				break;
-			case 'bottom':
-				$panel.hide();
-				break;
-			case 'window':
-				_win.close();
-				_win = null;
-				break;
-		}
-		//open
-		switch (viewName) {
-			case 'right':
-				$($wrapper).appendTo($panelRight);
-				$panelRight.show();
-				break;
-			case 'bottom':
-				$($wrapper).appendTo($panel.$panel);
-				$panel.show();
-				break;
-			case 'window':
-				openWindow(function () {
-					var container = _win.document.getElementById('blueprint-outliner');
-					console.dir(container)
-					$($wrapper).appendTo($(container));
-				});
-				break;
-		}
+		closeView();
 		currentView = viewName;
+		openView()
 	}
 
 	function closeWindow(cb) {
@@ -174,6 +169,7 @@ define(function (require, exports, module) {
 			_win.onbeforeunload = function(e) {
 				if (!doClose) {
 					switchView('right');
+					doClose = false;
 				}
 			}
         } else {
@@ -206,7 +202,6 @@ define(function (require, exports, module) {
 				setActive(false);
 			} else {
 				setActive(true);
-				toggleOutliner(true);
 			}
 		});
 
@@ -239,6 +234,8 @@ define(function (require, exports, module) {
 		$content.append($outlineRoot);
 		$content.append($minimapRoot);
 
+		//DropdownButton();
+
 
 		$('.button.prefs', $footer).click(function () {
 			prefs.openUI();
@@ -269,21 +266,14 @@ define(function (require, exports, module) {
 			$('.main-view .content').css('right', 'calc(' + width + 'px + 30px)');
 		};
 		$panelRight.on('panelResizeUpdate', allroundHandler);
-		$panelRight.on('panelExpanded', function(e,w) {
-			allroundHandler(e,w);
-		});
 		$panelRight.on('panelCollapsed', function () {
 			$('.main-view .content').css('right', '30px');
 		});
-		$panelRight.on('panelCollapsed panelExpanded', function (e) {
-			if (e.type === 'panelExpanded') {
-				//show
-				if (!parsed) {
-					parseDoc();
-				}
-			} else {
-				//hide
+		$panelRight.on('panelExpanded', function (e, w) {
+			if (!parsed) {
+				parseDoc();
 			}
+			allroundHandler(e,w);
 		});
 
 	}
@@ -358,10 +348,12 @@ define(function (require, exports, module) {
 		Outliner.init($outlineRoot);
 		Minimap.init($minimapRoot);
 
-		switchView('bottom');//prefs.get(''));
 		if (prefs.get('generel/openOnStart')) {
-			setActive(false);
+			setActive(true);
 		}
+		switchView('bottom');//prefs.get(''));
+
+
 		$('.tab', $headline).click(function () {
 			if ($(this).hasClass('outline')) {
 				changeTab('outline');

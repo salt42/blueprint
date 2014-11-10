@@ -91,13 +91,13 @@
 #blueprint-outliner .headline. top-bottons {}
 #blueprint-outliner .headline .top-bottons .button {
 	float: right;
-	width: 15px;
-	height: 1em;
+	width: 20px;
+	height: 20px;
 }
-#blueprint-outliner .headline .top-bottons .button[name="bottom"] { background-color: #f00; }
-#blueprint-outliner .headline .top-bottons .button[name="right"] { background-color: #0f0; }
-#blueprint-outliner .headline .top-bottons .button[name="window"] { background-color: #00f; }
-#blueprint-outliner .headline .top-bottons .button[name="close"] { background-color: #fde; }
+#blueprint-outliner .headline .top-bottons .button[name="bottom"] { background: url('./media/bottom.png') }
+#blueprint-outliner .headline .top-bottons .button[name="right"] { background: url('./media/right.png') }
+#blueprint-outliner .headline .top-bottons .button[name="window"] { background: url('./media/max.png') }
+#blueprint-outliner .headline .top-bottons .button[name="close"] { background: url('./media/close.png'); margin-right: 5px;  }
 #side-panel-right #blueprint-outliner .headline .top-bottons .button[name="right"],
 body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 #blueprint-bottomPanel #blueprint-outliner .headline .top-bottons .button[name="bottom"] { display: none }
@@ -112,6 +112,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	width: 200px;
 }
 #blueprint-outliner {
+	position: relative;
 	background-color: rgb(29, 31, 33);
 	height: 100%;
 	overflow: hidden;
@@ -127,6 +128,10 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	color: #adb9bd;
 	background: #1c1c1e;
 	border-bottom: 1px solid #343434;
+}
+/*headline for bottom panel*/
+#blueprint-bottomPanel #blueprint-outliner .headline {
+	width: calc(100% - 30px);
 }
 #blueprint-outliner .headline .tab{
 	display: inline-block;
@@ -152,6 +157,11 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	left: 0px;
 	overflow: hidden;
 	height: calc(100% - 54px);
+}
+/*content for bottom panel*/
+#blueprint-bottomPanel #blueprint-outliner .content {
+	width: calc(100% - 30px);
+	height: 100%;
 }
 #blueprint-outliner .content.minimap {
 	/*zoom: 25%;*/
@@ -204,6 +214,13 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	border-top: 1px solid #343434;
 	border-left: 1px solid #343434;
 	color: #ccc;
+}
+/*footer for bottom panel*/
+#blueprint-bottomPanel #blueprint-outliner .footer {
+	height: 100%;
+	width: 30px;
+	left:auto;
+	right: 0px;
 }
 #blueprint-outliner .footer .button {
 	width: 20px;
