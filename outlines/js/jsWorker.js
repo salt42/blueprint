@@ -26,6 +26,7 @@ self.addEventListener('message', function (e) {
 		varDefs : [],
 		childs : [],
 		dataNode : {
+			type : 'root',
 			childs : [],
 			name : 'root'
 		}
@@ -83,11 +84,13 @@ function createOutlineDataTree(scopeTree) {
 				k;
 			//name über den scope auflösen und dann zu scope.dataNode.childs oder var.value.childs hinzufügen
 			if (!('callee' in scope) && !('expressionChain' in scope)) {
-				owner = scope.parent;//!!!!!!!!!!
+
 			} else {
 				if ('callee' in scope && scope.callee.length > 0) {
 					//anonym function in function attribute
 					//use scope.callee[0] as name
+					scope.name = scope.callee[scope.callee.length - 1];
+					scope.dataNode.type = 'call';
 				}
 				if ('expressionChain' in scope && scope.expressionChain.length > 0) {
 					//check for prototype
@@ -95,7 +98,9 @@ function createOutlineDataTree(scopeTree) {
 						var copy = scope.expressionChain.slice();
 						copy.pop();
 						owner = resolveNameForScope(copy, scope);
+						scope.dataNode.type = 'proto';
 						if (owner) {
+							owner.var.value.type = 'class';
 							owner.var.value.childs.push(scope.dataNode);
 							scope.skip = true;
 						}
@@ -104,22 +109,23 @@ function createOutlineDataTree(scopeTree) {
 						owner = resolveNameForScope(scope.expressionChain, scope);
 						if (owner) {
 							if (!owner.var.value) {
+								var name = scope.expressionChain.join('.');
 								owner.var.value = {
-									startline : '',//owner.scope.loc.start.line,
+									type : 'expression',
+									startline : '',
 									childs : [scope.dataNode],
-									name : scope.expressionChain[0], //@todo better search naming ... its just the first object name
-									line : ''
+									name : name, //@todo better search naming ... its just the first object name
+									line : '<span class="type"></span> ' +
+										   '<span class="name">' + name + '</span>',
 								};
-								owner.var.value.line = '<span class="type">' + '</span> ' +
-								'<span class="name">' + owner.var.value.name + '</span>';
+								//owner.scope.dataNode.type = 'expression';
 								owner.scope.dataNode.childs.push(owner.var.value);
+								scope.dataNode.type ='member';
 							} else {
+								scope.dataNode.type ='member';
 								owner.var.value.childs.push(scope.dataNode);
 							}
 							scope.skip = true;
-						} else {
-
-							console.log('bäm');
 						}
 					}
 
@@ -146,10 +152,37 @@ function createOutlineDataTree(scopeTree) {
 
 	//!! next step  build dataTree for outliner (extract nodes form ast)
 	var rec = function(scope) {
-		var i = 0;
+		var nameStr = '',
+			i = 0,
+			calleeBegin = '';
 
-		if (!('skip' in scope) && scope.name !== 'root') {
-			scope.parent.dataNode.childs.push(scope.dataNode);
+		if (scope.name !== 'root') {
+			if (scope.dataNode.type === 'proto' || scope.dataNode.type === 'member') {
+				if (scope.dataNode.type === 'member') {
+					scope.dataNode.type = 'func';
+				}
+				nameStr = scope.name;
+			} else if (scope.dataNode.type === 'call') {
+				nameStr = scope.name;
+				calleeBegin = '';
+			}else {
+				if (scope.expressionChain) {
+					nameStr += scope.expressionChain.join('.');
+					nameStr += '.';
+				}
+				nameStr += scope.name;
+				scope.dataNode.name = nameStr;
+			}
+			scope.dataNode.line = '<span class="type">' + scope.dataNode.type + '</span> ' +
+				'<span class="name">' + nameStr + '</span>' + calleeBegin +
+				' (<span class="params">' + scope.paramTag + '</span> ) ';
+			if (scope.returnType || scope.returnType !== '') {
+				scope.dataNode.line += '<span class="return">&lt;' + scope.returnType + '&gt;</span>';
+			}
+
+			if (!('skip' in scope)) {
+				scope.parent.dataNode.childs.push(scope.dataNode);
+			}
 		}
 		for(;i<scope.childs.length;i++) {
 			rec(scope.childs[i]);
@@ -181,8 +214,9 @@ function addScopeVar(name, value, scope) {
 		scope = scopeStack[scopeStack.length-1];
 	}
 	if (getScopeVarDef(name, scope)){
-		//already exists
+		//already exists // overwride
 	}
+
 	scope.varDefs.push({
 		name : name,
 		value : value,
@@ -232,15 +266,13 @@ function getFunctionComment(line) {
 		};
 	}
 }
-function createScope(node, name, chain, callee) {
-	//check scope function komment
+function createScope(node, parent, name, chain, callee) {
 	var comment = getFunctionComment(node.loc.start.line),
 		paramString = '',
 		params = [],
-		varDefs = [];
-//				description : '',//@todo extract description and add it
-//			params : params,
-//			returnType : returnType,
+		varDefs = [],
+		typeName = '';
+
 	if ('params' in node) {
 		var i;
 
@@ -261,8 +293,9 @@ function createScope(node, name, chain, callee) {
 			var nameTag = ' <span class="name">' + paramName + '</span>,';
 			paramString += typeTag + nameTag;
 		}
+		paramString = paramString.substr(0, paramString.length-1);
 	}
-	console.log('params', paramString)
+
 	var scope = {
 		parent : scopeStack[scopeStack.length - 1],
 		name : name,
@@ -271,44 +304,31 @@ function createScope(node, name, chain, callee) {
 		loc : node.loc,
 		varDefs : varDefs,
 		childs : [],
+		paramTag : paramString,
 		dataNode : {
+			type : 'func',
 			startline : node.loc.start.line,
 			childs : [],
 			name : name, //@todo better search naming
 			line : '<span class="name">' + name + '</span>',
 		}
 	};
-	if (comment && comment.returnType) {
-		scope.returnType = comment.returnType;
-	}
-	var nameStr = '';
-	if (chain) {
-		nameStr += chain.join('.');
-		nameStr += '.';
-	}
-	nameStr += name;
-	paramString = paramString.substr(0, paramString.length-1);
-	scope.dataNode.line = '<span class="type">func</span> ' +
-	'<span class="name">' + nameStr +
-	'</span> (<span class="params">' + paramString + '</span> ) ' +
-	'<span class="return">' + scope.returnType + '</span>';
-
-
-
 	if (chain) {
 		scope.expressionChain = chain;
 	}
 	if (callee) {
 		scope.callee = callee;
 	}
-	if (node.type === 'FunctionDeclaration') {
-		//add var to parent with dataNode
-
+	if (node.type === 'FunctionDeclaration' || parent.type === 'VariableDeclarator') {
 		scope.parent.varDefs.push({
 			name : [name],
 			value : scope.dataNode
 		});
 	}
+	if (comment && comment.returnType) {
+		scope.returnType = comment.returnType;
+	}
+
 	scope.parent.childs.push(scope);
 	scopeStack.push(scope);
 }
@@ -369,7 +389,7 @@ var enter = function (node, parent) {
 				//i think, this happens never
 				name = 'anonym';
 			}
-			createScope(node, name);
+			createScope(node, parent, name);
 			break;
 		case 'FunctionExpression':
 			//var parent = this.parents().pop(),
@@ -388,12 +408,12 @@ var enter = function (node, parent) {
 				case 'CallExpression':
 					name = 'anonym';
 					if (node.id) {
-						name = node.id.name
+						name = node.id.name;
 					}
 					callee = getIdentifier(parent.callee);
 					break;
 			}
-			createScope(node, name, objChain, callee);
+			createScope(node, parent, name, objChain, callee);
 			break;
 		case 'VariableDeclaration':
 			var dec,
@@ -405,8 +425,11 @@ var enter = function (node, parent) {
 				//if (dec.init.type === '')
 				name = dec.id.name;
 				value = dec.init;
+
 				//add var to scope
-				addScopeVar(name, value);
+				if (value && value.type === 'ObjectExpression') {
+					addScopeVar([name], null);
+				}
 			}
 			break;
 		case 'ExpressionStatement':

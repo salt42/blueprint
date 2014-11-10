@@ -47,7 +47,6 @@ define(function (require, exports, modul) {
 			if (e.data.type === 'log') {
 				console.log(e.data.value[0], e.data.value[1]);
 			} else if (e.data.type === 'data') {
-				console.log('dataCallBack', e.data)
 				callBack(e.data);
 			}
 		};

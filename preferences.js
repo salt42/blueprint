@@ -83,7 +83,7 @@ define(function (require, exports) {
 						childs : {
 							experimentalParser : {
 								type : 'boolean',
-								description : 'use experimental js parser',
+								description : 'use experimental js parser (need reload)',
 								value : false,
 							},
 						}
@@ -102,7 +102,7 @@ define(function (require, exports) {
 					}
 				}
 			}
-		}
+		};
 
 	function loadPrefs () {
 		PREFS = JSON.parse(localStorage.getItem("blueprintPrefs"));
@@ -124,7 +124,6 @@ define(function (require, exports) {
 			PREFS = defaultPrefValues;
 			savePrefs();
 		} else {
-			console.log('load prefs', PREFS, defaultPrefValues);
 			PREFS = $.extend({}, defaultPrefValues, PREFS);
 			savePrefs();
 		}
@@ -133,15 +132,13 @@ define(function (require, exports) {
 	 *	@param {string} url relative 2 PREFS
 	 */
 	exports.get = function (url) {
-		var key = url.replace(/\//g, ''),
-			i=0;
+		var key = url.replace(/\//g, '');
 
-		console.log(key, PREFS)
 		if (key in PREFS) {
 			//validate value with
 			return PREFS[key];
 		} else {
-			console.error('key dosen\'t exists!')
+			console.error('key dosen\'t exists!');
 		}
 //		var parts = url.split('/'),
 //			index = 0,
@@ -178,7 +175,7 @@ define(function (require, exports) {
 	exports.set = function (url, value) {
 		var key = url.replace(/\//g, ''),
 			i=0;
-		console.log(key, defaultPrefValues)
+
 		if (key in defaultPrefValues) {
 			//validate value with
 			PREFS[key] = value;
@@ -187,7 +184,7 @@ define(function (require, exports) {
 				changeCallBacks[i].call(null, url, value);
 			}
 		} else {
-			console.error('key dosen\'t exists!')
+			console.error('key dosen\'t exists!');
 		}
 //		var parts = url.split('/'),
 //			i = 0,

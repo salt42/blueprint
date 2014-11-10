@@ -45,7 +45,7 @@ der extension autor segnet die ab oder nich und wenn ja stehen sie bei dem votin
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets, setTimeout, localStorage, setInterval */
+/*global define, $, brackets, setTimeout, localStorage, setInterval, window */
 define(function (require, exports, module) {
     "use strict";
 
@@ -59,10 +59,16 @@ define(function (require, exports, module) {
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
 		MainViewManager	= brackets.getModule('view/MainViewManager'),
+		PanelManager	= brackets.getModule("view/PanelManager"),
 		Outliner		= require('./outliner'),
 		Minimap			= require('./minimap'),
+		outlinerOpen	= false,
+		parsed			= false,
+		doClose			= false,
 		$quickButton,
 		$panelRight,
+		$panel,
+		$wrapper,
 		$content,
 		$outlineRoot,
 		$minimapRoot,
@@ -70,9 +76,9 @@ define(function (require, exports, module) {
 		$headline,
 		lastDoc,
 		currDoc,
-		sidebarOpen = false,
 		activeTab,
-		parsed = false;
+		_win,
+		currentView;
 
 	function changeTab(tabName) {
 		if (tabName === 'outline') {
@@ -92,8 +98,8 @@ define(function (require, exports, module) {
 	/*
 	 *	@param {boolean} flag true=open, false=close
 	 */
-	function toggleSidebar(flag) {
-		if (sidebarOpen) {
+	function toggleOutliner(flag) {
+		if (outlinerOpen) {
 			if(flag) {
 				Resizer.show($panelRight);
 			} else {
@@ -101,24 +107,82 @@ define(function (require, exports, module) {
 			}
 		}
 	}
-	//(e, newFile:File, newPaneId:string, oldFile:File, oldPaneId:string)
-//	$(MainViewManager).on('currentFileChange ', function(e, newFile) {
-//		if (newFile !== null) {
-//			var doc = DocumentManager.getDocumentForPath(newFile._path);
-//			doc.done(function(doc) {
-//				currDoc = doc;
-//				parsed = false;
-//				parseDoc();
-//			});
-//		}
-//	});
-	//(e, newPaneId:string, oldPaneId:string)
-	$(MainViewManager).on('activePaneChange', function() {
-		//console.log(newPaneId + ' now active')
-	});
+	function setActive(flag) {
+		if (flag) {
+			outlinerOpen = true;
+			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
+		} else {
+			outlinerOpen = false;
+			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
+			Resizer.hide($panelRight);
+		}
+	}
+	function switchView(viewName) {
+		if (currentView === viewName) {
+			return;
+		}
+		$wrapper.detach();
+		//close
+		switch (currentView) {
+			case 'right':
+				$panelRight.hide();
+				break;
+			case 'bottom':
+				$panel.hide();
+				break;
+			case 'window':
+				_win.close();
+				_win = null;
+				break;
+		}
+		//open
+		switch (viewName) {
+			case 'right':
+				$($wrapper).appendTo($panelRight);
+				$panelRight.show();
+				break;
+			case 'bottom':
+				$($wrapper).appendTo($panel.$panel);
+				$panel.show();
+				break;
+			case 'window':
+				openWindow(function () {
+					var container = _win.document.getElementById('blueprint-outliner');
+					console.dir(container)
+					$($wrapper).appendTo($(container));
+				});
+				break;
+		}
+		currentView = viewName;
+	}
 
+	function closeWindow(cb) {
+		if (_win) {
+			doClose = true;
+            _win.close();
+            _win = null;
+		}
+	}
+    function openWindow(cb) {
+        if (_win && _win.closed) _win = null;
+        if (!_win) {
+			var path = 'file:///' + modulePath + 'window.html';
+            _win = window.open(path);//'about:blank');
+			_win.onload = function() {
+				cb(_win);
+			}
+			_win.onbeforeunload = function(e) {
+				if (!doClose) {
+					switchView('right');
+				}
+			}
+        } else {
+            _win.close();
+            _win = null;
+        }
+    }
 	function parseDoc() {
-		if (sidebarOpen) {
+		if (outlinerOpen) {
 			if (!Outliner.update(currDoc) && prefs.get('outline/unknownTypeChangeTab')) {
 				changeTab('minimap');
 			}
@@ -128,49 +192,47 @@ define(function (require, exports, module) {
 			parsed = false;
 		}
 		if (!currDoc) {
-			toggleSidebar(false);
+			toggleOutliner(false);
 		} else if (!lastDoc) {
-			toggleSidebar(true);
-		}
-	}
-	function setActive(flag) {
-		if (flag) {
-			sidebarOpen = true;
-			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
-		} else {
-			sidebarOpen = false;
-			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
-			Resizer.hide($panelRight);
+			toggleOutliner(true);
 		}
 	}
 	function initHtml() {
         //create quick button
-		// &#955;   HL sing
         $quickButton = $('<a id="toolbar-blueprint-outline" title="toggle outline" href="#" style="font-size:22px;"><img src="' + modulePath + '/blueprint_dark.png"></a>');
 		$("#main-toolbar .buttons").find("#toolbar-extension-manager").after($quickButton);
         $($quickButton).click(function () {
-			if (sidebarOpen) {
+			if (outlinerOpen) {
 				setActive(false);
 			} else {
 				setActive(true);
-				toggleSidebar(true);
+				toggleOutliner(true);
 			}
 		});
 
-		//create html
+		//create html   mySidePanelRight
 		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + 'blueprint.css">');
-		$panelRight = $('<div id="mySidePanelRight"></div>');
-			$headline = $('<div class="headline"><span class="outline tab">Outline</span><span class="minimap tab">Minimap</span></div>');
-			$content = $('<div class="content"></div>');
-				$outlineRoot = $('<ul class="outline-root childs"></ul>');
-				$minimapRoot = $('<div class="minimap"></div>');
-			$footer = $('<div class="footer"></div>');
+		$panelRight = $('<div id="side-panel-right"></div>'); //right sidebar
+			$wrapper = $('<div id="blueprint-outliner"></div>')
+				$headline = $('<div class="headline">' +
+							  '<span class="outline tab">Outline</span>' +
+							  '<span class="minimap tab">Minimap</span>' +
+							  '<span class="top-bottons">' +
+							  	'<span class="button" name="close"></span>' +
+							  	'<span class="button" name="window"></span>' +
+							  	'<span class="button" name="right"></span>' +
+							  	'<span class="button" name="bottom"></span></span></div>');
+				$content = $('<div class="content"></div>');
+					$outlineRoot = $('<ul class="outline-root childs"></ul>');
+					$minimapRoot = $('<div class="minimap"></div>');
+				$footer = $('<div class="footer"></div>');
 
 		$panelRight.hide();
 		$('#main-toolbar').before($panelRight);
-		$panelRight.append($headline);
-		$panelRight.append($content);
-		$panelRight.append($footer);
+
+		$wrapper.append($headline);
+		$wrapper.append($content);
+		$wrapper.append($footer);
 
 		$footer.append('<div class="working-set-option-btn button prefs"></div>');
 
@@ -181,7 +243,23 @@ define(function (require, exports, module) {
 		$('.button.prefs', $footer).click(function () {
 			prefs.openUI();
 		});
+		$('.button', $headline).click(function() {
+			console.log($(this).attr('name'))
+			switch ($(this).attr('name')) {
+				case 'bottom':
+					switchView('bottom');
+					break;
+				case 'right':
+					switchView('right');
+					break;
+				case 'window':
+					switchView('window');
+					break;
+				case 'close':
 
+					break;
+			}
+		});
 
 		Resizer.makeResizable($panelRight[0], Resizer.DIRECTION_HORIZONTAL, 'left', 100, true);
 
@@ -208,6 +286,13 @@ define(function (require, exports, module) {
 			}
 		});
 
+	}
+	function changeDocument(doc) {
+		lastDoc = currDoc;
+		currDoc = doc;
+		parsed = false;
+		changeTab(prefs.get('generel/autoChangeTab'));
+		parseDoc();
 	}
 
 //extention rating ping
@@ -260,23 +345,23 @@ define(function (require, exports, module) {
         obj[appToken] = id;
         localStorage.setItem(keyId, JSON.stringify(obj));
     }
-	function changeDocument(doc) {
-		lastDoc = currDoc;
-		currDoc = doc;
-		parsed = false;
-		changeTab(prefs.get('generel/autoChangeTab'));
-		parseDoc();
-	}
+//extension rating ping end
+
 	AppInit.appReady(function () {
-		//create html
+		//extension rating tick
 		tick();
         setInterval(tick, mins60);
+		//create html
+		$panel = PanelManager.createBottomPanel('blueprint-bottomPanel', $("<div id='blueprint-bottomPanel' class='bottom-panel'></div>"), 200);
 		initHtml();
 
 		Outliner.init($outlineRoot);
 		Minimap.init($minimapRoot);
 
-
+		switchView('bottom');//prefs.get(''));
+		if (prefs.get('generel/openOnStart')) {
+			setActive(false);
+		}
 		$('.tab', $headline).click(function () {
 			if ($(this).hasClass('outline')) {
 				changeTab('outline');
@@ -295,12 +380,8 @@ define(function (require, exports, module) {
 			//if (!Resizer.isVisible($panelRight)) return true;
 			changeDocument(cd);
 		});
-		if (prefs.get('generel/openOnStart')) {
-			setActive(true);
-		}
-
     });
 
-	exports.toggleSidebar = toggleSidebar;
+	exports.toggleSidebar = toggleOutliner;
 	exports.changeTab = changeTab;
 });
