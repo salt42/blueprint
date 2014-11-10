@@ -113,6 +113,7 @@ define(function (require, exports) {
 		var $list = $parent.children('ul').children('li'),
 			list = $list.get(),
 			i;
+
 		if (typeof mode === 'string') {
 			sortMode = mode;
 		}
@@ -125,7 +126,7 @@ define(function (require, exports) {
 		var sort_by_line = function(a, b) {
 			var sa = parseInt(a.dataset.startline),
 				sb = parseInt(b.dataset.startline);
-			return (sa < sb)? false : true;
+			return (sa > sb)? 1 : -1;
 		};
 //		var sort_by_line_down = function(a, b) {
 //			var sa = parseInt(a.dataset['startline']),
@@ -142,7 +143,7 @@ define(function (require, exports) {
 		}
 		$list.each(function() {
 			if ($(this).children('ul').children('li').length >= 0) {
-				sort($(this), mode);
+				sort($(this));
 			}
 		});
 	}
@@ -248,7 +249,7 @@ define(function (require, exports) {
 		//search selectors to change and change
 		for (i=0;i<rules.length;i++) {
 			switch (rules[i].selectorText) {
-				case '#mySidePanelRight .outline-root li .line':
+				case '#blueprint-outliner .outline-root li .line':
 					//fontSize
 					var fontSize = prefs.get('outline/fontSize');
 					rules[i].style.fontSize = fontSize + 'px';
