@@ -181,7 +181,7 @@ define(function (require, exports) {
 		$parent.append('<div>outliner</div>');
 
 		$footerOutline = $('<div class="outline-buttons"><span class="button sort" title="Switch sort mode"></span></div>');
-		$('#mySidePanelRight .footer').append($footerOutline);
+		$content.parent().children('.footer').append($footerOutline);
 
 		//events
         $($root).on('click', '.line', function () {
@@ -202,7 +202,6 @@ define(function (require, exports) {
 			}
 			var $parent = $(e.target).parent('li');
 			$parent.children('.childs').toggle();
-
 		});
 
       $('.sort', $footerOutline).click(function () {

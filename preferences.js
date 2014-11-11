@@ -43,8 +43,9 @@ define(function (require, exports) {
 				title : 'Generel',
 				childs : {
 					openOnStart : {
-						type : 'boolean',
+						type : 'select',
 						description : 'show on start up',
+						values : [false, 'right', 'bottom', 'window'],
 						value : true,
 					},
 					autoChangeTab : {
@@ -119,6 +120,10 @@ define(function (require, exports) {
 		localStorage.removeItem("blueprintPreferences");
 
 		loadPrefs();
+		//
+		if (PREFS.generelopenOnStart === true) {
+			PREFS.generelopenOnStart = 'right';
+		}
 		//check first init
 		if (PREFS === null) {
 			PREFS = defaultPrefValues;
@@ -214,7 +219,7 @@ define(function (require, exports) {
 
 			switch (node.type) {
 				case 'category':
-					$ele = $('<li class="category"><h4>' + node.title + '</h4><hr><ul></ul></li>');
+					$ele = $('<li class="category"><span class="section"><div class="toggle">&nbsp;</div><h4>' + node.title + '</h4></span><hr><ul></ul></li>');
 					return $ele;
 				case 'select':
 					$ele = $('<li class="select"></li>')
@@ -283,6 +288,16 @@ define(function (require, exports) {
 							   	[{text:'Close'}]);
 		var $prefs = $('.blueprint-prefs-dialog .perf-list');
 		//add events
+		$($prefs).on('click', '.section', function (e) {
+			//hide/show
+			if ($('.toggle', this).hasClass('colapsed')) {
+				$('.toggle', this).removeClass('colapsed');
+			} else {
+				$('.toggle', this).addClass('colapsed');
+			}
+			var $parent = $(this).parent('li');
+			$parent.children('ul').toggle();
+		});
 		$('.select', $prefs).on('change', 'select', function(e){
 			var selected = $("option:selected", e.target).val(),
 				path = $(e.target).attr('path');

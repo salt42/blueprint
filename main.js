@@ -188,9 +188,13 @@ define(function (require, exports, module) {
 			parsed = false;
 		}
 		if (!currDoc) {
-			toggleOutliner(false);
+			if (currentView !== 'window') {
+				closeView();
+			}
 		} else if (!lastDoc) {
-			toggleOutliner(true);
+			if (currentView !== 'window') {
+				openView();
+			}
 		}
 	}
 	function initHtml() {
@@ -348,10 +352,13 @@ define(function (require, exports, module) {
 		Outliner.init($outlineRoot);
 		Minimap.init($minimapRoot);
 
-		if (prefs.get('generel/openOnStart')) {
+		var openState = prefs.get('generel/openOnStart');
+		if (openState !== false) {
 			setActive(true);
+			switchView(openState);
+		} else {
+			switchView('right');
 		}
-		switchView('bottom');//prefs.get(''));
 
 
 		$('.tab', $headline).click(function () {
@@ -374,6 +381,4 @@ define(function (require, exports, module) {
 		});
     });
 
-	exports.toggleSidebar = toggleOutliner;
-	exports.changeTab = changeTab;
 });
