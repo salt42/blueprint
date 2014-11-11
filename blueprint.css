@@ -29,14 +29,37 @@
 	/*border-bottom: 1px solid #000;*/
 	list-style: none;
 }
+.blueprint-prefs-dialog .category {
+	margin-top: 0px;
+}
 .blueprint-prefs-dialog .category>h4 {
+	float: left;
 	margin-bottom: 0px;
+	color: #939393;
 }
 .blueprint-prefs-dialog .category>hr {
 	border: 0;
     height: 1px;
-	margin-top: 0px;
+	margin: 0px 0 0 0;
     background-image: -webkit-linear-gradient(left, rgba(0,0,0,0.75), rgba(0, 0, 0, 0.75), rgba(0,0,0,0));
+}
+.blueprint-prefs-dialog .toggle {
+	display: inline-block;
+	width: 15px;
+	height: 15px;
+	float: left;
+	margin-top: 10px;
+	background-image: url("jsTreeSprites.svg");
+	background-repeat: no-repeat;
+	background-color: transparent;
+	background-position: 7px -8px;
+	-webkit-transform: translateZ(0) rotate(90deg);
+	-webkit-transition: -webkit-transform 190ms cubic-bezier(.01, .91, 0, .99);
+}
+.blueprint-prefs-dialog .toggle.colapsed {
+	background-position: 4px -8px;
+	-webkit-transform: translateZ(0);
+	-webkit-transition: -webkit-transform 90ms cubic-bezier(.01, .91, 0, .99);
 }
 .blueprint-prefs-dialog .description {
 	float: left;
