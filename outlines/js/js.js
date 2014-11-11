@@ -38,14 +38,14 @@ define(function (require, exports, modul) {
 		$root = $ele;
 		outliner = outLiner;
 
-		var path = "jsScopeWorker.js"
+		var path = "jsScopeWorker.js";
 		if (prefs.get('outline/js/experimentalParser') ){
 			path = 'jsWorker.js';
 		}
 		JsWorker = new Worker(modulePath + path);
 		JsWorker.onmessage = function (e) {
 			if (e.data.type === 'log') {
-				console.log(e.data.value[0], e.data.value[1]);
+//				console.log(e.data.value[0], e.data.value[1]);
 			} else if (e.data.type === 'data') {
 				callBack(e.data);
 			}
