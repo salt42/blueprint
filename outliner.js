@@ -26,6 +26,7 @@
 define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
+		Editor			= brackets.getModule("editor/Editor"),
 		prefs = require('./preferences'),
 		MAIN = require('./main'),
 		$root,
@@ -38,6 +39,7 @@ define(function (require, exports) {
 			'html' : require('./outlines/html'),
 			'css' : require('./outlines/css'),
 			'js' : require('./outlines/js/js'),
+			'python' : require('./outlines/python'),
 		};
 
 	prefs.onChange(function(path) {
@@ -215,6 +217,11 @@ define(function (require, exports) {
 		for(name in outlines) {
 			/* jslint ignore:start */
 			outlines[name].init({
+				getTabSize : function () {
+					if (_document) {
+						return Editor.Editor.getTabSize(_document.file._path);
+					}
+				},
 				setEditorLine : setEditorLine,
 				render : updateTree,
 				registerButton : function (buttonName, callBack) {
@@ -285,6 +292,10 @@ define(function (require, exports) {
 			case 'css':
 				outlines.css.update(text, updateTree);
 				updateOutlineRootType('css');
+				break;
+			case 'python':
+				outlines.python.update(text, updateTree);
+				updateOutlineRootType('python');
 				break;
 			default:
 				$root.html('can\'t display "' + mode + '"');
