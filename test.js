@@ -37,3 +37,7 @@ define(function (require, exports) {
 	test.expresion.chain.first = function() {}
 	test.expresion.chain.sec = function(){}
 });
+(function() {
+	function test() {}
+
+})();
