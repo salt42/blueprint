@@ -63,6 +63,8 @@ define(function (require, exports, modul) {
 			stream.start = stream.pos;
 			return curr;
 		};
+		//@todo implement callbackForSelectorList | generate a list with selectors
+		var callbackForSelectorList = function(token, lineNumber, style) {}
 		var callback = function(token, lineNumber, style) {
 			switch(style) {
 				case 'tag bracket':
