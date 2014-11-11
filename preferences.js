@@ -288,7 +288,7 @@ define(function (require, exports) {
 							   	[{text:'Close'}]);
 		var $prefs = $('.blueprint-prefs-dialog .perf-list');
 		//add events
-		$($prefs).on('click', '.section', function (e) {
+		$($prefs).on('click', '.section', function () {
 			//hide/show
 			if ($('.toggle', this).hasClass('colapsed')) {
 				$('.toggle', this).removeClass('colapsed');

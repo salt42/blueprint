@@ -58,10 +58,10 @@ define(function (require, exports, module) {
 		modulePath		= ExtensionUtils.getModulePath(module),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
-		DropdownButton	= brackets.getModule('widgets/DropdownButton'),
 		PanelManager	= brackets.getModule("view/PanelManager"),
 		Outliner		= require('./outliner'),
 		Minimap			= require('./minimap'),
+		outlinerActive	= false,
 		outlinerOpen	= false,
 		parsed			= false,
 		doClose			= false,
@@ -97,26 +97,27 @@ define(function (require, exports, module) {
 	}
 	function setActive(flag) {
 		if (flag) {
-			outlinerOpen = true;
+			outlinerActive = true;
 			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
 			openView();
 		} else {
-			outlinerOpen = false;
+			outlinerActive = false;
 			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
 			closeView();
 		}
 	}
 	function openView() {
+		outlinerOpen = true;
 		switch (currentView) {
 			case 'right':
 				$($wrapper).appendTo($panelRight);
-				if (outlinerOpen) {
+				if (outlinerActive) {
 					Resizer.show($panelRight);
 				}
 				break;
 			case 'bottom':
 				$($wrapper).appendTo($panel.$panel);
-				if (outlinerOpen) {
+				if (outlinerActive) {
 					$panel.show();
 				}
 				break;
@@ -129,6 +130,7 @@ define(function (require, exports, module) {
 		}
 	}
 	function closeView() {
+		outlinerOpen = false;
 		switch (currentView) {
 			case 'right':
 				Resizer.hide($panelRight);
@@ -137,6 +139,7 @@ define(function (require, exports, module) {
 				$panel.hide();
 				break;
 			case 'window':
+				$wrapper.detach();
 				closeWindow();
 				break;
 		}
@@ -148,10 +151,10 @@ define(function (require, exports, module) {
 		$wrapper.detach();
 		closeView();
 		currentView = viewName;
-		openView()
+		openView();
 	}
 
-	function closeWindow(cb) {
+	function closeWindow() {
 		if (_win) {
 			doClose = true;
             _win.close();
@@ -159,26 +162,26 @@ define(function (require, exports, module) {
 		}
 	}
     function openWindow(cb) {
-        if (_win && _win.closed) _win = null;
+        if (_win && _win.closed) { _win = null; }
         if (!_win) {
 			var path = 'file:///' + modulePath + 'window.html';
             _win = window.open(path);//'about:blank');
 			_win.onload = function() {
 				cb(_win);
-			}
-			_win.onbeforeunload = function(e) {
+			};
+			_win.onbeforeunload = function() {
 				if (!doClose) {
 					switchView('right');
 					doClose = false;
 				}
-			}
+			};
         } else {
             _win.close();
             _win = null;
         }
     }
 	function parseDoc() {
-		if (outlinerOpen) {
+		if (outlinerActive) {
 			if (!Outliner.update(currDoc) && prefs.get('outline/unknownTypeChangeTab')) {
 				changeTab('minimap');
 			}
@@ -202,7 +205,9 @@ define(function (require, exports, module) {
         $quickButton = $('<a id="toolbar-blueprint-outline" title="toggle outline" href="#" style="font-size:22px;"><img src="' + modulePath + '/blueprint_dark.png"></a>');
 		$("#main-toolbar .buttons").find("#toolbar-extension-manager").after($quickButton);
         $($quickButton).click(function () {
-			if (outlinerOpen) {
+			if (outlinerActive && !outlinerOpen) {
+				openView();
+			} else if (outlinerActive) {
 				setActive(false);
 			} else {
 				setActive(true);
@@ -212,7 +217,7 @@ define(function (require, exports, module) {
 		//create html   mySidePanelRight
 		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + 'blueprint.css">');
 		$panelRight = $('<div id="side-panel-right"></div>'); //right sidebar
-			$wrapper = $('<div id="blueprint-outliner"></div>')
+			$wrapper = $('<div id="blueprint-outliner"></div>');
 				$headline = $('<div class="headline">' +
 							  '<span class="outline tab">Outline</span>' +
 							  '<span class="minimap tab">Minimap</span>' +
@@ -245,7 +250,6 @@ define(function (require, exports, module) {
 			prefs.openUI();
 		});
 		$('.button', $headline).click(function() {
-			console.log($(this).attr('name'))
 			switch ($(this).attr('name')) {
 				case 'bottom':
 					switchView('bottom');
@@ -257,7 +261,7 @@ define(function (require, exports, module) {
 					switchView('window');
 					break;
 				case 'close':
-
+					closeView();
 					break;
 			}
 		});

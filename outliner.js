@@ -154,7 +154,6 @@ define(function (require, exports) {
 		if (typeof char !== 'number') {
 			char = 0;
 		}
-		console.log(line, char)
 		var currentEditor = EditorManager.getCurrentFullEditor();
         currentEditor.setCursorPos(line - 1, char, true);
         currentEditor.focus();
