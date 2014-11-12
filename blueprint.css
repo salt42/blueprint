@@ -273,7 +273,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	padding: 3px;
 	margin: 0px;
 	color: #cccccc;
-	font-size: 13px;
+	font-size: 15px;
 	cursor: default;
 	overflow: scroll;
 	height: calc(100% - 5px);
@@ -315,12 +315,14 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	font-size: 15px;
 	color: #cccccc;
 }
+/*default like js*/
+#blueprint-outliner .outline-root li .line .type { color: #888888; }
+#blueprint-outliner .outline-root li .line .name { color: #6eb5d4; }
+#blueprint-outliner .outline-root li .line .params .type { color: #adb9bd; }
+#blueprint-outliner .outline-root li .line .params .name { color: #d0d46e; }
+#blueprint-outliner .outline-root li .line .return { color: #adb9bd; }
+/*js*/
 /*python*/
-#blueprint-outliner .outline-root[type="python"] li .line .type { color: #888888; }
-#blueprint-outliner .outline-root[type="python"] li .line .name { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="python"] li .line .params .type { color: #adb9bd; }
-#blueprint-outliner .outline-root[type="python"] li .line .params .name { color: #d0d46e; }
-#blueprint-outliner .outline-root[type="python"] li .line .return { color: #adb9bd; }
 /*css*/
 #blueprint-outliner .outline-root[type="css"] li .line .id { color: #d0d46e; }
 #blueprint-outliner .outline-root[type="css"] li .line .class { color: #6eb5d4; }
@@ -330,12 +332,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 #blueprint-outliner .outline-root[type="html"] li .line .tag { color: #888888; }
 #blueprint-outliner .outline-root[type="html"] li .line .id { color: #d0d46e; }
 #blueprint-outliner .outline-root[type="html"] li .line .class { color: #6eb5d4; }
-/*js*/
-#blueprint-outliner .outline-root[type="js"] li .line .type { color: #888888; }
-#blueprint-outliner .outline-root[type="js"] li .line .name { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="js"] li .line .params .type { color: #adb9bd; }
-#blueprint-outliner .outline-root[type="js"] li .line .params .name { color: #d0d46e; }
-#blueprint-outliner .outline-root[type="js"] li .line .return { color: #adb9bd; }
+
 /*
 #blueprint-outliner .outline-root li .typeImage {
 	display: inline-block;

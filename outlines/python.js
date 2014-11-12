@@ -99,13 +99,14 @@ define(function (require, exports) {
 						console.log(currElement)
 						if (funcDef === 'params') {
 							currElement.line = '<span class="type">func</span> <span class="name">' + currElement.name + '</span>';
+							currElement.line += ' (<span class="params">' + paramStr + '</span> )';
 							funcDef = false;
 						}
 						if (classDef === 'params') {
 							currElement.line = '<span class="type">class</span> <span class="name">' + currElement.name + '</span>';
+							currElement.line += ' (<span class="params">' + paramStr + '</span> )';
 							classDef = false;
 						}
-						currElement.line += '</span> (<span class="params">' + paramStr + '</span>)';
 						break;
 				}
 			} else {
