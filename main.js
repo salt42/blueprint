@@ -98,11 +98,11 @@ define(function (require, exports, module) {
 	function setActive(flag) {
 		if (flag) {
 			outlinerActive = true;
-			$quickButton.children('img').attr('src', modulePath + '/blueprint.png');
+			$quickButton.children('img').attr('src', modulePath + './media/blueprint.png');
 			openView();
 		} else {
 			outlinerActive = false;
-			$quickButton.children('img').attr('src', modulePath + '/blueprint_dark.png');
+			$quickButton.children('img').attr('src', modulePath + './media/blueprint_dark.png');
 			closeView();
 		}
 	}
@@ -238,7 +238,7 @@ define(function (require, exports, module) {
 		$wrapper.append($content);
 		$wrapper.append($footer);
 
-		$footer.append('<div class="working-set-option-btn button prefs"></div>');
+		$footer.append('<div class="button prefs"></div>');
 
 		$content.append($outlineRoot);
 		$content.append($minimapRoot);

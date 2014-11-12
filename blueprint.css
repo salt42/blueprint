@@ -154,7 +154,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 }
 /*headline for bottom panel*/
 #blueprint-bottomPanel #blueprint-outliner .headline {
-	width: calc(100% - 30px);
+	width: 100%;/* calc(100% - 30px);*/
 }
 #blueprint-outliner .headline .tab{
 	display: inline-block;
@@ -240,10 +240,11 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 }
 /*footer for bottom panel*/
 #blueprint-bottomPanel #blueprint-outliner .footer {
-	height: 100%;
+	height: calc(100% - 28px);
 	width: 30px;
 	left:auto;
 	right: 0px;
+	float: right;
 }
 #blueprint-outliner .footer .button {
 	width: 20px;
@@ -252,21 +253,19 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	margin: 2px 2px 2px 2px;
 	display: inline-block;
 	background-repeat: no-repeat;
+	background-size: 15px 15px;
+	background-position: center;
+	opacity: 0.8;
+	float: right;
+}
+#blueprint-outliner .footer .outline-buttons {
 	float: right;
 }
 #blueprint-outliner .footer .button.prefs {
-	position: relative;
-	right: 0px;
-	top: 0px;
-	padding: 0;
-	content: "";
-	background-position: center;
-	opacity: 0.8;
-	background-size: 15px 15px;
+	background-image: url("./media/settings.svg");
 }
 #blueprint-outliner .footer .button.sort {
-	background-image: url('az.png');
-	background-size: 15px 15px;
+	background-image: url('./media/az.png');
 }
 #blueprint-outliner .outline-root {
     list-style: none;
@@ -291,8 +290,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	display: inline-block;
 	width: 15px;
 	height: 15px;
-
-	background-image: url("jsTreeSprites.svg");
+	background-image: url("./media/jsTreeSprites.svg");
 	background-repeat: no-repeat;
 	background-color: transparent;
 	background-position: 7px -8px;
