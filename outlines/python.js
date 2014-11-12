@@ -22,7 +22,7 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets */
+/*global define, brackets */
 define(function (require, exports) {
     "use strict";
 	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
@@ -50,69 +50,137 @@ define(function (require, exports) {
 			return curr;
 		};
 		var skipLine = false,
-			funcName = false,
-			className = false,
-			newLine = true;
+			funcDef = false,
+			classDef = false,
+			newLine = true,
+			currTabCount = 0;
 
 		var callback = function(token, lineNumber, style) {
 			var tabCount = 0,
-				bothCount = 0;
+				spaceCount = 0,
+				paramStr = '',
+				i;
 
-			if (skipLine === true) { return }
+			if (skipLine === true) { return; }
 			if (newLine) {
-				tabCount = token.replace(/\t/g, '\t').length;
-				bothCount = token.replace(/\s|\t/g, '').length;
-				//check if tabs or spaces
-				if (tabCount === bothCount) {
-					//use tabs
-					console.log('tabs', tabCount);
-				} else {
-					//use space
-					console.log('space', token.length / tabsSize);
-				}
-				//check diff between lastLine and this line
-
-				return;
-			}
-			switch(style) {
-				case 'builtin':
-					if (token === '#') {
-						skipLine = true;
-					}
-					break;
-				case 'tag':
-					if (funcName) {
-						//add function
-						var func = {
-							childs : [],
-							startline : lineNumber,
-							name : token, //need for sorting
-							line : '<span class="type">func</span> <span class="name">' + token + '</span>',
-						};
-						currElement.childs.push(func);
-						funcName = false;
-					} else if (className){
-						//add class
-						var clas = {
-							childs : [],
-							startline : lineNumber,
-							name : token, //need for sorting
-							line : '<span class="type">class</span> <span class="name">' + token + '</span>',
-						};
-						currElement.childs.push(clas);
-						//elementStack.push(clas);
-						className = false;
-					} else {
-						switch(token) {
-							case 'def':
-								funcName = true;
-								break;
-							case 'class':
-								className = true;
-								break;
+				if (token.match(/[^\s]/) === null) {
+					tabCount = (token.match(/\t/g) || []).length;
+					spaceCount = (token.match(/ /g) || []).length;
+					spaceCount = Math.floor(spaceCount / tabsSize);
+					tabCount = tabCount + spaceCount;
+					console.log(lineNumber, tabCount, elementStack.length - 1);
+					while(tabCount < elementStack.length - 1) {
+						elementStack.pop();
+						if (elementStack.length < 2) {
+							break;
 						}
 					}
-					break;
+					currElement = elementStack[elementStack.length - 1];
+					currTabCount = tabCount;
+					return;
+				} else {
+					elementStack = [rootElement];
+					currElement = rootElement;
+					currTabCount = 0;
+				}
+			}
+//			console.log(lineNumber, token, style);
+			if (style === null) {
+				switch(token) {
+					case '(':
+						if (funcDef === 'wait4params') { funcDef = 'params'; }
+						if (classDef === 'wait4params') { classDef = 'params'; }
+						break;
+					case ')':
+						for(i in currElement._params) {
+							paramStr += ' <span class="name">' + currElement._params[i] + '</span>,';
+						}
+						paramStr = paramStr.substr(0, paramStr.length-1);
+						console.log(currElement)
+						if (funcDef === 'params') {
+							currElement.line = '<span class="type">func</span> <span class="name">' + currElement.name + '</span>';
+							funcDef = false;
+						}
+						if (classDef === 'params') {
+							currElement.line = '<span class="type">class</span> <span class="name">' + currElement.name + '</span>';
+							classDef = false;
+						}
+						currElement.line += '</span> (<span class="params">' + paramStr + '</span>)';
+						break;
+				}
+			} else {
+				switch(style) {
+					case 'builtin':
+						if (token === '#') {
+							skipLine = true;
+						}
+						break;
+					case 'variable-3':
+						switch(token) {
+							case 'def':
+								funcDef = 'name';
+								break;
+						}
+						break;
+					case 'tag':
+						if (funcDef) {
+							switch(funcDef) {
+								case 'name':
+									var func = {
+										childs : [],
+										startline : lineNumber,
+										name : token,
+										line : '',
+										_params : [],
+									};
+
+									currElement.childs.push(func);
+									elementStack.push(func);
+									currElement = func;
+									currTabCount = ++currTabCount;
+
+									funcDef = 'wait4params';
+									break;
+								case 'params':
+									//add param
+									currElement._params.push(token);
+									break;
+							}
+						} else if (classDef){
+							switch(classDef) {
+								case 'name':
+									var clas = {
+										childs : [],
+										startline : lineNumber,
+										name : token,
+										line : '',
+										_params : [],
+									};
+
+									currElement.childs.push(clas);
+									elementStack.push(clas);
+									currElement = clas;
+									currTabCount = ++currTabCount;
+
+									classDef = 'wait4params';
+									break;
+								case 'params':
+									//add param
+									currElement._params.push(token);
+									break;
+							}
+						} else {
+							switch(token) {
+								case 'def':
+									funcDef = 'name';
+									break;
+								case 'class':
+									classDef = 'name';
+									break;
+							}
+						}
+						break;
+				}
 			}
 			//foreach found element create a element like rootElement
 			//style can be null, this occurse on space, brackets, etc
@@ -162,6 +230,7 @@ define(function (require, exports) {
 				line : 'content of the "li>.line" element. can contain html elements',
 			},
 		 */
+		console.log(data)
 		cb(data);
 	};
 });
