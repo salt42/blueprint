@@ -114,15 +114,18 @@ define(function (require, exports, module) {
 				if (outlinerActive) {
 					Resizer.show($panelRight);
 				}
+				Minimap.onOpenIn('right');
 				break;
 			case 'bottom':
 				$($wrapper).appendTo($panel.$panel);
 				if (outlinerActive) {
 					$panel.show();
 				}
+				Minimap.onOpenIn('bottom');
 				break;
 			case 'window':
 				openWindow(function () {
+					Minimap.onOpenIn('window', _win);
 					var container = _win.document.getElementById('blueprint-outliner');
 					$($wrapper).appendTo($(container));
 				});
@@ -175,9 +178,6 @@ define(function (require, exports, module) {
 					doClose = false;
 				}
 			};
-			_win.addEventListener('mouseup', function() {
-				Minimap.windowMouseUpHelper(_win);
-			});
         } else {
             _win.close();
             _win = null;

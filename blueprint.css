@@ -184,7 +184,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 /*content for bottom panel*/
 #blueprint-bottomPanel #blueprint-outliner .content {
 	width: calc(100% - 30px);
-	height: 100%;
+	height: calc(100% - 20px);
 }
 #blueprint-outliner .content.minimap {
 	/*zoom: 25%;*/

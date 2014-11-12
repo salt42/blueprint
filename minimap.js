@@ -33,7 +33,8 @@ define(function (require, exports) {
 		$content,
 		$root,
 		$minimapOverlay,
-		$minimapRoot;
+		$minimapRoot,
+		viewCorrection = 54;
 
 
 	var entityMap = {
@@ -141,7 +142,7 @@ define(function (require, exports) {
 		var currentEditor = _document._masterEditor,
 			editorHeight = $(currentEditor.getScrollerElement()).height(),
 			lineHight = 20,
-			contentHeight = $content[0].parentNode.clientHeight - 54,
+			contentHeight = $content[0].parentNode.clientHeight - viewCorrection,
 			scrollPercent = currentEditor.getScrollPos().y / (currentEditor.totalHeight() - 18 - editorHeight),
 			lines = currentEditor.lineCount() + 1,
 			overlayTop;
@@ -161,7 +162,7 @@ define(function (require, exports) {
 	}
 	function moveOverlay(y, percent) {
 		if (!_document) { return false;}
-		var contentHeight = $content[0].parentNode.clientHeight - 54,
+		var contentHeight = $content[0].parentNode.clientHeight - viewCorrection,
 			hundertPro,
 			perCent,
 			lines = _document._masterEditor.lineCount();
@@ -266,9 +267,6 @@ define(function (require, exports) {
 //			//@todo
 //		});
 	};
-	exports.windowMouseUpHelper = function(win) {
-		$(win).on('mouseup', mouseUpHelper);
-	}
 	exports.update = function (doc) {
 		if (!doc) {
 			//clear
@@ -292,11 +290,17 @@ define(function (require, exports) {
 				updateScrollOverlay();
 			}
 		});
-		$(currentEditor).on('redraw', function() {
-			console.log('krasser scheiß');
-		});
-
 	};
+	exports.onOpenIn = function(viewName, win) {
+		if (viewName === 'window') {
+			$(win).on('mouseup', mouseUpHelper);
+			viewCorrection = 54;
+		} else if(viewName === 'bottom') {
+			viewCorrection = 28;
+		} else {
+			viewCorrection = 54;
+		}
+	}
 	exports.setViewState = function (state) {
 		if (state) {
 			updateScrollOverlay();
