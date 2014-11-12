@@ -28,6 +28,8 @@ define(function (require, exports) {
 		PREFS = null,
 		$ui,
 		changeCallBacks = [],
+		uiOpenState = false,
+		uiDialog,
 		defaultPrefValues = {
 			generelopenOnStart : true,
 			generelautoChangeTab : 'outline',
@@ -209,6 +211,7 @@ define(function (require, exports) {
 //		savePrefs();
 	};
 	exports.openUI = function () {
+		if (uiOpenState === true) { return; }
 		var path = [],
 			key;
 
@@ -282,10 +285,15 @@ define(function (require, exports) {
 
 		//create dialog
 		//		Dialogs.showModalDialogUsingTemplate($ui);
-		Dialogs.showModalDialog('blueprint-prefs-dialog',
+		uiDialog = Dialogs.showModalDialog('blueprint-prefs-dialog',
 							   	'Preferences',
 							   	$('<div></div>').append($ui).html(),
 							   	[{text:'Close'}]);
+		uiDialog.done(function() {
+			uiOpenState = false;
+			uiDialog = null;
+		});
+		uiOpenState = true;
 		var $prefs = $('.blueprint-prefs-dialog .perf-list');
 		//add events
 		$($prefs).on('click', '.section', function () {
@@ -336,7 +344,12 @@ define(function (require, exports) {
 
 	};
 	exports.closeUI = function () {
-		//open ui 2
+		if (uiOpenState && uiDialog) {
+			Dialogs.cancelModalDialogIfOpen('blueprint-prefs-dialog', 0);
+		}
+	};
+	exports.isUiOpen = function () {
+		return uiOpenState;
 	};
 	exports.onChange = function (cb) {
 		changeCallBacks.push(cb);

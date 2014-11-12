@@ -250,7 +250,11 @@ define(function (require, exports, module) {
 
 
 		$('.button.prefs', $footer).click(function () {
-			prefs.openUI();
+			if (prefs.isUiOpen()) {
+				prefs.closeUI();
+			} else {
+				prefs.openUI();
+			}
 		});
 		$('.button', $headline).click(function() {
 			switch ($(this).attr('name')) {
