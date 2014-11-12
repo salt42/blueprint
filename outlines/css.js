@@ -22,38 +22,13 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets */
+/*global define, brackets */
 define(function (require, exports) {
     "use strict";
 	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		$root,
 		outliner;
 
-
-//	var className = "cm-" + style.replace(/ +/g, " cm-");
-//				html += '<span class="' + className + '">' + content + '</span>';
-//
-// alles so machen wie die original runmode function nur das nur die selectoren und die querrys erfasst werden
-	var entityMap = {
-//		"&": "&amp;",
-//		"<": "&lt;",
-//		">": "&gt;",
-//		'"': '&quot;',
-//		"'": '&#39;',
-//		"/": '&#x2F;',
-		'+' : '&#43;',
-		'|' : '&#124;',
-		'^' : '&#94;',
-		'$' : '&#36;',
-
-	};
-
-	function escapeHtml(string) {
-//		return String(string).replace(/[&<>"'\/]/g, function (s) {
-		return String(string).replace(/[+|^$]/g, function (s) {
-			return entityMap[s];
-		});
-	}
 	function updateHtml(code) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, 'css'),
 			lines = CodeMirror.splitLines(code),
@@ -154,8 +129,7 @@ define(function (require, exports) {
 			switch(style) {
 				case 'builtin':
 				case 'qualifier':
-					var type = token.substr(0, 1),
-						name = token.substr(1);
+					var type = token.substr(0, 1);
 
 					if (type === '#') {
 						selectorAdd(token, '<span class="id">' + token + '</span>');
@@ -204,29 +178,6 @@ define(function (require, exports) {
 		//console.log(rootElement)
 		return rootElement;
 	}
-
-
-
-
-//	function updateCss(content) {
-//		var lines = content.split("\n"),
-//			i,
-//			re,
-//			onClickOnLine = function (e) {
-//				outliner.setEditorLine(e.data);
-//			};
-//
-//		$root.html('');
-//		for (i = 0; i < lines.length; i++) {
-//			re = lines[i].match(/^(.*?){/);
-//			if (re !== null) {
-//				var selectorText = re[1].trim();
-//				var $ele = $('<li><span class="line" title="' + selectorText + '"><span class="name">' + selectorText + '</span></span></li>');
-//				$ele.appendTo($root);
-//				$ele.click(i + 1, onClickOnLine);
-//			}
-//		}
-//	}
 	exports.init = function(outLiner, $ele) {
 		outliner = outLiner;
 		$root = $ele;
@@ -240,9 +191,6 @@ define(function (require, exports) {
 	 *	@param {string} code string
 	 */
 	exports.update = function(code, cb) {
-//		var treeData = updateCss(code);
-//		console.log(CSSUtils.extractAllSelectors(code, CodeMirror.getMode(CodeMirror.defaults, 'css')))
-//		console.log(CSSUtils.extractAllNamedFlows(code))
 		var data = updateHtml(code);
 		cb(data);
 	};

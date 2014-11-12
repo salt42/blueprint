@@ -68,7 +68,6 @@ define(function (require, exports) {
 					spaceCount = (token.match(/ /g) || []).length;
 					spaceCount = Math.floor(spaceCount / tabsSize);
 					tabCount = tabCount + spaceCount;
-					console.log(lineNumber, tabCount, elementStack.length - 1);
 					while(tabCount < elementStack.length - 1) {
 						elementStack.pop();
 						if (elementStack.length < 2) {
@@ -84,7 +83,6 @@ define(function (require, exports) {
 					currTabCount = 0;
 				}
 			}
-//			console.log(lineNumber, token, style);
 			if (style === null) {
 				switch(token) {
 					case '(':
@@ -96,7 +94,6 @@ define(function (require, exports) {
 							paramStr += ' <span class="name">' + currElement._params[i] + '</span>,';
 						}
 						paramStr = paramStr.substr(0, paramStr.length-1);
-						console.log(currElement)
 						if (funcDef === 'params') {
 							currElement.line = '<span class="type">func</span> <span class="name">' + currElement.name + '</span>';
 							currElement.line += ' (<span class="params">' + paramStr + '</span> )';
@@ -231,7 +228,6 @@ define(function (require, exports) {
 				line : 'content of the "li>.line" element. can contain html elements',
 			},
 		 */
-		console.log(data)
 		cb(data);
 	};
 });

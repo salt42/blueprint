@@ -22,7 +22,7 @@
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets */
+/*global define, brackets */
 define(function (require, exports) {
     "use strict";
 	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
@@ -32,15 +32,15 @@ define(function (require, exports) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, 'css'),
 			lines = CodeMirror.splitLines(code),
 			state = CodeMirror.startState(mode),
-			stream,
 			rootElement = {
 				childs : [],// the root element just needs childs, the next lines are the required fields for all elements
 				//startline : 1, //
 				//name : 'name string for sorting',
 				//line : 'content of the "li>.line" element. can contain html elements',
 			},
-			currElement = rootElement,
-			elementStack = [rootElement];
+//			currElement = rootElement,
+//			elementStack = [rootElement],
+			stream;
 
 		var getNext = function() {
 			var curr = stream.current();

@@ -300,7 +300,7 @@ define(function (require, exports) {
 		} else {
 			viewCorrection = 54;
 		}
-	}
+	};
 	exports.setViewState = function (state) {
 		if (state) {
 			updateScrollOverlay();

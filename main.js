@@ -205,7 +205,7 @@ define(function (require, exports, module) {
 	}
 	function initHtml() {
         //create quick button
-        $quickButton = $('<a id="toolbar-blueprint-outline" title="toggle outline" href="#" style="font-size:22px;"><img src="' + modulePath + '/blueprint_dark.png"></a>');
+        $quickButton = $('<a id="toolbar-blueprint-outline" title="toggle outline" href="#" style="font-size:22px;"><img src="' + modulePath + 'media/blueprint_dark.png"></a>');
 		$("#main-toolbar .buttons").find("#toolbar-extension-manager").after($quickButton);
         $($quickButton).click(function () {
 			if (outlinerActive && !outlinerOpen) {
@@ -373,11 +373,11 @@ define(function (require, exports, module) {
 
 		window.addEventListener("focus", function() {
 			if (_win) {
-
-				setTimeout(function(){
+//				setTimeout(function(){
+//					window.blur();
 //					console.log('focus', _win.focus());
-					//_win.myFocus();
-				}, 1000);
+//					_win.focus();
+//				}, 1000);
 			}
 		}, false);
 		$('.tab', $headline).click(function () {

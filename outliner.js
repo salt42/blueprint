@@ -26,7 +26,6 @@
 define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
-		Editor			= brackets.getModule("editor/Editor"),
 		prefs = require('./preferences'),
 		MAIN = require('./main'),
 		$root,
