@@ -364,7 +364,15 @@ define(function (require, exports, module) {
 			switchView('right');
 		}
 
+		window.addEventListener("focus", function() {
+			if (_win) {
 
+				setTimeout(function(){
+//					console.log('focus', _win.focus());
+					//_win.myFocus();
+				}, 1000);
+			}
+		}, false);
 		$('.tab', $headline).click(function () {
 			if ($(this).hasClass('outline')) {
 				changeTab('outline');
