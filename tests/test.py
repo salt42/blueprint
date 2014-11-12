@@ -1,4 +1,4 @@
-def adssa(par1, par2 = 1):
+def xdssa(par1, par2 = 1):
 	print('dsa')
 def test(x=2):
     print('in test function')
