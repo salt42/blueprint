@@ -211,8 +211,12 @@ define(function (require, exports) {
 	//api
 	var dragState = false,
 		lastEvent;
-		//JsWorker;
 
+	function mouseUpHelper() {
+		if (dragState === 'dragging' || dragState === 'possible') {
+			dragState = false;
+		}
+	}
 	exports.init = function ($parent) {
 
 
@@ -240,11 +244,7 @@ define(function (require, exports) {
 			}
 		});
 		//mouseup on document
-		$(document).on('mouseup', function() {
-			if (dragState === 'dragging' || dragState === 'possible') {
-				dragState = false;
-			}
-		});
+		$(document).on('mouseup', mouseUpHelper);
 
 		$parent.on('mousewheel', function(e) {
 			//@todo scroll speed pref auf scroll übertragen
@@ -266,7 +266,9 @@ define(function (require, exports) {
 //			//@todo
 //		});
 	};
-
+	exports.windowMouseUpHelper = function(win) {
+		$(win).on('mouseup', mouseUpHelper);
+	}
 	exports.update = function (doc) {
 		if (!doc) {
 			//clear

@@ -175,6 +175,9 @@ define(function (require, exports, module) {
 					doClose = false;
 				}
 			};
+			_win.addEventListener('mouseup', function() {
+				Minimap.windowMouseUpHelper(_win);
+			});
         } else {
             _win.close();
             _win = null;
