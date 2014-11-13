@@ -58,7 +58,7 @@ define(function (require, exports, module) {
 		modulePath		= ExtensionUtils.getModulePath(module),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
-		PanelManager	= brackets.getModule("view/PanelManager"),
+		WorkspaceManager= brackets.getModule("view/WorkspaceManager"),
 		Outliner		= require('./outliner'),
 		Minimap			= require('./minimap'),
 		outlinerActive	= false,
@@ -357,7 +357,7 @@ define(function (require, exports, module) {
 		tick();
         setInterval(tick, mins60);
 		//create html
-		$panel = PanelManager.createBottomPanel('blueprint-bottomPanel', $("<div id='blueprint-bottomPanel' class='bottom-panel'></div>"), 200);
+		$panel = WorkspaceManager.createBottomPanel('blueprint-bottomPanel', $("<div id='blueprint-bottomPanel' class='bottom-panel'></div>"), 200);
 		initHtml();
 
 		Outliner.init($outlineRoot);
