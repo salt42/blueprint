@@ -186,14 +186,14 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	width: calc(100% - 30px);
 	height: calc(100% - 20px);
 }
-#blueprint-outliner .content.minimap {
-	/*zoom: 25%;*/
-}
 #blueprint-outliner .content.outline {
 	/*white-space: nowrap;*/
 }
-#blueprint-outliner .content.minimap  {
-	zoom: 25%;
+#blueprint-outliner .content .minimap  {
+	height: 100%;
+}
+#blueprint-outliner .minimap-root .wrap  {
+	height: 100%;
 }
 #blueprint-outliner .content .minimap-overlay {
 	position: absolute;
@@ -221,7 +221,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
 	height: auto;
 }
-
+.CodeMirror-scroll
 #blueprint-outliner .footer {
 	position: absolute;
 	bottom: 0px;
@@ -365,9 +365,8 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 #blueprint-outliner .cm-operator,
 #blueprint-outliner .cm-meta,
 #blueprint-outliner .cm-bracket {
-	color: #dddddd;
+
 }
 #blueprint-outliner .cm-comment {
-	color: #767676;
 }
 #blueprint-outliner .line-number {}

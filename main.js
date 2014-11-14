@@ -55,6 +55,7 @@ define(function (require, exports, module) {
 
     var AppInit         = brackets.getModule("utils/AppInit"),
         ExtensionUtils  = brackets.getModule("utils/ExtensionUtils"),
+        ThemeManager	= brackets.getModule("view/ThemeManager"),
 		modulePath		= ExtensionUtils.getModulePath(module),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
@@ -65,6 +66,7 @@ define(function (require, exports, module) {
 		outlinerOpen	= false,
 		parsed			= false,
 		doClose			= false,
+		codeMirrorCssElementStr = '',
 		$quickButton,
 		$panelRight,
 		$panel,
@@ -170,6 +172,10 @@ define(function (require, exports, module) {
 			var path = 'file:///' + modulePath + 'window.html';
             _win = window.open(path);//'about:blank');
 			_win.onload = function() {
+				var theme = ThemeManager.getCurrentTheme(),
+					container = _win.document.getElementsByTagName('head')[0];
+				$(container).append(codeMirrorCssElementStr);
+				$(container).append('<link rel="stylesheet" type="text/less" href="' + theme.file._path + '">');
 				cb(_win);
 			};
 			_win.onbeforeunload = function() {
@@ -231,7 +237,7 @@ define(function (require, exports, module) {
 							  	'<span class="button" name="bottom"></span></span></div>');
 				$content = $('<div class="content"></div>');
 					$outlineRoot = $('<ul class="outline-root childs"></ul>');
-					$minimapRoot = $('<div class="minimap"></div>');
+					$minimapRoot = $('<div class="minimap" id="editor-holder"></div>');
 				$footer = $('<div class="footer"></div>');
 
 		$panelRight.hide();
@@ -353,6 +359,16 @@ define(function (require, exports, module) {
 //extension rating ping end
 
 	AppInit.appReady(function () {
+		var i = document.styleSheets.length-1;
+
+		//search right css file
+		for (i;i>-1;i--) {
+			if (typeof document.styleSheets[i].href === 'string' && document.styleSheets[i].href.slice(-14) === 'codemirror.css') {
+				codeMirrorCssElementStr = '<link rel="stylesheet" type="text/css" href="' + document.styleSheets[i] + '">';
+				break;
+			}
+		}
+
 		//extension rating tick
 		tick();
         setInterval(tick, mins60);

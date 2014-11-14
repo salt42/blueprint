@@ -26,7 +26,7 @@
 define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
-//		InlineWidget	= brackets.getModule("editor/InlineWidget"),
+		ThemeManager  = brackets.getModule("view/ThemeManager"),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		prefs			= require('./preferences'),
 		_document,
@@ -219,11 +219,9 @@ define(function (require, exports) {
 		}
 	}
 	exports.init = function ($parent) {
-
-
 		$root = $parent;
-		$minimapOverlay = $('<div class="minimap-overlay"></div>');
-		$minimapRoot = $('<div class="minimap-root cm-s-dark-theme"></div>');
+		$minimapOverlay = $('<div class="minimap-overlay"></div>');// cm-s-light-theme"></div>');
+		$minimapRoot = $('<div class="minimap-root CodeMirror cm-s-rhode-island-red"></div>');
 		$content = $($parent.parent('.content')[0]);
 
 		$parent.on('mousedown', function(e) {
@@ -281,7 +279,7 @@ define(function (require, exports) {
 		_document = doc;
 
 		var html = CodeMirror.runMode(text, mode);
-		$minimapRoot.append('<div class="wrap"></div>');
+		$minimapRoot.append('<div class="wrap CodeMirror-scroll"></div>');
 		appendStringAsNodes($('.wrap' ,$minimapRoot)[0], html);
 
 		var currentEditor = doc._masterEditor;
