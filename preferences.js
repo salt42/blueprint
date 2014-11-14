@@ -33,7 +33,7 @@ define(function (require, exports) {
 		defaultPrefValues = {
 			generelopenOnStart : true,
 			generelautoChangeTab : 'outline',
-			outlinedefaultSorting : 'asc',
+			outlinedefaultSorting : 'none',
 			outlineunknownTypeChangeTab : true,
 			outlinefontSize : '19',
 			outlinejsexperimentalParser : false,
@@ -67,7 +67,7 @@ define(function (require, exports) {
 						type : 'select',
 						description : 'default sorting',
 						values : ['none', 'asc'],
-						value : 'asc'
+						value : 'none'
 					},
 					unknownTypeChangeTab : {
 						type : 'boolean',
