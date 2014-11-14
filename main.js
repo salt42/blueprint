@@ -45,7 +45,7 @@ der extension autor segnet die ab oder nich und wenn ja stehen sie bei dem votin
  * SOFTWARE.
 */
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, $, brackets, setTimeout, localStorage, setInterval, window */
+/*global define, document, $, brackets, setTimeout, localStorage, setInterval, window, CSSRule */
 define(function (require, exports, module) {
     "use strict";
 
@@ -66,7 +66,6 @@ define(function (require, exports, module) {
 		outlinerOpen	= false,
 		parsed			= false,
 		doClose			= false,
-		codeMirrorCssElementStr = '',
 		$quickButton,
 		$panelRight,
 		$panel,
@@ -172,23 +171,57 @@ define(function (require, exports, module) {
 			var path = 'file:///' + modulePath + 'window.html';
             _win = window.open(path);//'about:blank');
 			_win.onload = function() {
-				var theme = ThemeManager.getCurrentTheme(),
-					container = _win.document.getElementsByTagName('head')[0];
-				$(container).append(codeMirrorCssElementStr);
-				$(container).append('<link rel="stylesheet" type="text/less" href="' + theme.file._path + '">');
+				copyCssToWindow();
 				cb(_win);
 			};
 			_win.onbeforeunload = function() {
+				$wrapper.detach();
 				if (!doClose) {
-					switchView('right');
-					doClose = false;
+					currentView = 'right';
+					openView();
 				}
+				doClose = false;
 			};
         } else {
             _win.close();
             _win = null;
         }
     }
+	function copyCssToWindow() {
+		var mainCss = document.styleSheets,
+			themePath = ThemeManager.getCurrentTheme().file._path,
+			windowCss = _win.document.styleSheets;
+
+		_win.document.head.appendChild(document.createElement("style"));
+
+		var targetCss = windowCss[windowCss.length - 1];
+		var rule_index = 0; // We'll need this to help us add the rules in order.
+		for (var i=0; i<mainCss.length; i++) {
+				//filter by files
+				if (typeof mainCss[i].href === 'string' &&
+					(mainCss[i].href.slice(-14) !== 'codemirror.css' ||
+				    mainCss[i].href.slice(-20) !== themePath.slice(-20)) ) {
+					continue;
+				}
+			for (var j=0; j<mainCss[i].cssRules.length; j++) {
+				// Loop through the rules in each of the parent document's stylesheets.
+				var r = mainCss[i].cssRules[j];
+				if (r.type == CSSRule.IMPORT_RULE) {
+					// If the current rule is an @import, copy the rules from the stylesheet it imports.
+					for (var k=0; k<r.styleSheet.cssRules.length; k++) {
+						/* FIXME: Assuming a max depth of 1 import for now.
+						This should really be done recursively, but it's a PoC, so hey.
+						*/
+						// Insert the rule from the parent doc's stylesheet into ours.
+						targetCss.insertRule(r.styleSheet.cssRules[k].cssText, rule_index++);
+					}
+				} else {
+					// Insert the rule from the parent doc's stylesheet into ours.
+					targetCss.insertRule(r.cssText, rule_index++);
+				}
+			}
+		}
+	}
 	function parseDoc() {
 		if (outlinerActive) {
 			if (!Outliner.update(currDoc) && prefs.get('outline/unknownTypeChangeTab')) {
@@ -306,7 +339,7 @@ define(function (require, exports, module) {
 		parseDoc();
 	}
 
-//extention rating ping
+	//extention rating ping
     var trackingServiceUrl = 'http://brackets-online.herokuapp.com/',
         // http://brackets-online.herokuapp.com/ is an address of default tracking service
         // Change it if you use self-hosting instance of online tracking service
@@ -356,19 +389,8 @@ define(function (require, exports, module) {
         obj[appToken] = id;
         localStorage.setItem(keyId, JSON.stringify(obj));
     }
-//extension rating ping end
-
+	//extension rating ping end
 	AppInit.appReady(function () {
-		var i = document.styleSheets.length-1;
-
-		//search right css file
-		for (i;i>-1;i--) {
-			if (typeof document.styleSheets[i].href === 'string' && document.styleSheets[i].href.slice(-14) === 'codemirror.css') {
-				codeMirrorCssElementStr = '<link rel="stylesheet" type="text/css" href="' + document.styleSheets[i] + '">';
-				break;
-			}
-		}
-
 		//extension rating tick
 		tick();
         setInterval(tick, mins60);

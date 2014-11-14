@@ -186,9 +186,6 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	width: calc(100% - 30px);
 	height: calc(100% - 20px);
 }
-#blueprint-outliner .content.outline {
-	/*white-space: nowrap;*/
-}
 #blueprint-outliner .content .minimap  {
 	height: 100%;
 }
@@ -213,7 +210,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	white-space: pre;
 	overflow: hidden;
 	padding: 0;
-	line-height: 20px!important;
+	line-height: 20px;
 	padding: 15px 0;
 	tab-size: 4;
 	background: transparent;
@@ -221,7 +218,6 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
 	height: auto;
 }
-.CodeMirror-scroll
 #blueprint-outliner .footer {
 	position: absolute;
 	bottom: 0px;
