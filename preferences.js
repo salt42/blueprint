@@ -117,18 +117,21 @@ define(function (require, exports) {
 
 	exports.init = function () {
 		$ui = $('<ul class="perf-list"></ul>');
+		//@todo remove sometime
+//		localStorage.removeItem("blueprintPrefs");
+		localStorage.removeItem("blueprintPreferences");
 
 		loadPrefs();
+		//
+		if (PREFS.generelopenOnStart === true) {
+			PREFS.generelopenOnStart = 'right';
+		}
 		//check first init
 		if (PREFS === null) {
 			PREFS = defaultPrefValues;
 			savePrefs();
 		} else {
 			PREFS = $.extend({}, defaultPrefValues, PREFS);
-			savePrefs();
-		}
-		if (PREFS.generelopenOnStart === true) {
-			PREFS.generelopenOnStart = 'right';
 			savePrefs();
 		}
 	};
@@ -139,10 +142,38 @@ define(function (require, exports) {
 		var key = url.replace(/\//g, '');
 
 		if (key in PREFS) {
+			//validate value with
 			return PREFS[key];
 		} else {
 			console.error('key dosen\'t exists!');
 		}
+//		var parts = url.split('/'),
+//			index = 0,
+//			result = PREFS;
+//
+//		for (; index<parts.length; index++) {
+//			if (!('type' in result)) {
+//				if (parts[index] in result) {
+//					result = result[ parts[index] ];
+//				} else {
+//					//console.log('key not exists1: ' + url);
+//					return false;
+//				}
+//			} else if (result.type === 'category') {
+//
+//				if (parts[index] in result.childs) {
+//					result = result.childs[ parts[index] ];
+//				} else {
+//					//console.log('key not exists2: ' + parts[index], result.childs);
+//					return false;
+//				}
+//			}
+//		}
+//		if (result.type === 'category' || result.type === 'root') {
+//			//console.log('key not exists3: ' + url, result);
+//			return false;
+//		}
+//		return result.value;
 	};
 	/*
 	 *	@param {string} url relative 2 PREFS
@@ -162,6 +193,22 @@ define(function (require, exports) {
 		} else {
 			console.error('key dosen\'t exists!');
 		}
+//		var parts = url.split('/'),
+//			i = 0,
+//			chain = PREFS;
+//		for (; i<parts.length; i++) {
+//			if (!('type' in chain)) {
+//				chain = chain[ parts[i] ];
+//			} else if (chain.type === 'category') {
+//				chain = chain.childs[ parts[i] ];
+//			}
+//		}
+//		chain.value = value;
+//
+//		for(i=0;i<changeCallBacks.length;i++) {
+//			changeCallBacks[i].call(null, url, value);
+//		}
+//		savePrefs();
 	};
 	exports.openUI = function () {
 		if (uiOpenState === true) { return; }
