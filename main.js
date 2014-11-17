@@ -81,7 +81,7 @@ define(function (require, exports, module) {
 		_win,
 		currentView;
 
-	function changeTab(tabName) {
+	exports.changeTab = function(tabName) {
 		if (tabName === 'outline') {
 			$minimapRoot.hide();
 			$outlineRoot.show();
@@ -95,7 +95,8 @@ define(function (require, exports, module) {
 			$minimapRoot.show();
 			activeTab = tabName;
 		}
-	}
+	};
+
 	function setActive(flag) {
 		if (flag) {
 			outlinerActive = true;
@@ -225,7 +226,7 @@ define(function (require, exports, module) {
 	function parseDoc() {
 		if (outlinerActive) {
 			if (!Outliner.update(currDoc) && prefs.get('outline/unknownTypeChangeTab')) {
-				changeTab('minimap');
+				exports.changeTab('minimap');
 			}
 			Minimap.update(currDoc);
 			parsed = true;
@@ -335,7 +336,7 @@ define(function (require, exports, module) {
 		lastDoc = currDoc;
 		currDoc = doc;
 		parsed = false;
-		changeTab(prefs.get('generel/autoChangeTab'));
+		exports.changeTab(prefs.get('generel/autoChangeTab'));
 		parseDoc();
 	}
 
@@ -420,9 +421,9 @@ define(function (require, exports, module) {
 		}, false);
 		$('.tab', $headline).click(function () {
 			if ($(this).hasClass('outline')) {
-				changeTab('outline');
+				exports.changeTab('outline');
 			} else {
-				changeTab('minimap');
+				exports.changeTab('minimap');
 			}
 		});
 		$(DocumentManager).on('documentSaved', function (e, document) {

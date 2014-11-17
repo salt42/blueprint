@@ -122,11 +122,8 @@ define(function (require, exports) {
 		localStorage.removeItem("blueprintPreferences");
 
 		loadPrefs();
-		//
-		if (PREFS.generelopenOnStart === true) {
-			PREFS.generelopenOnStart = 'right';
-		}
-		//check first init
+
+		// Check first init before using the preferences object.
 		if (PREFS === null) {
 			PREFS = defaultPrefValues;
 			savePrefs();
@@ -134,7 +131,13 @@ define(function (require, exports) {
 			PREFS = $.extend({}, defaultPrefValues, PREFS);
 			savePrefs();
 		}
+
+		//
+		if (PREFS.generelopenOnStart === true) {
+			PREFS.generelopenOnStart = 'right';
+		}
 	};
+
 	/*
 	 *	@param {string} url relative 2 PREFS
 	 */
@@ -145,7 +148,7 @@ define(function (require, exports) {
 			//validate value with
 			return PREFS[key];
 		} else {
-			console.error('key dosen\'t exists!');
+			console.error("key doesn't exist!");
 		}
 //		var parts = url.split('/'),
 //			index = 0,
@@ -191,7 +194,7 @@ define(function (require, exports) {
 				changeCallBacks[i].call(null, url, value);
 			}
 		} else {
-			console.error('key dosen\'t exists!');
+			console.error("key doesn't exist!");
 		}
 //		var parts = url.split('/'),
 //			i = 0,
