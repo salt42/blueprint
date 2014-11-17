@@ -312,10 +312,16 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 /*default like js*/
 #blueprint-outliner .outline-root li .line .type { color: #888888; }
 #blueprint-outliner .outline-root li .line .name { color: #6eb5d4; }
-#blueprint-outliner .outline-root li .line .params .type { color: #adb9bd; }
+#blueprint-outliner .outline-root li .line .params .type { color: #888888; }
 #blueprint-outliner .outline-root li .line .params .name { color: #d0d46e; }
-#blueprint-outliner .outline-root li .line .return { color: #adb9bd; }
+#blueprint-outliner .outline-root li .line .return { color: #888888; }
 /*js*/
+/*php*/
+#blueprint-outliner .outline-root li .line .extends { color: #888888; }
+#blueprint-outliner .outline-root li .line .extends .base-class { color: #d0d46e; }
+#blueprint-outliner .outline-root li .line .implements { color: #888888; }
+#blueprint-outliner .outline-root li .line .implements .interface { color: #d0d46e; }
+
 /*python*/
 /*css*/
 #blueprint-outliner .outline-root[type="css"] li .line .id { color: #d0d46e; }

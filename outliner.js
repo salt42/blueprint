@@ -39,6 +39,7 @@ define(function (require, exports) {
 			'css' : require('./outlines/css'),
 			'js' : require('./outlines/js/js'),
 			'python' : require('./outlines/python'),
+			'php' : require('./outlines/php'),
 		};
 
 	prefs.onChange(function(path) {
@@ -295,6 +296,10 @@ define(function (require, exports) {
 			case 'python':
 				outlines.python.update(text, updateTree);
 				updateOutlineRootType('python');
+				break;
+			case 'php':
+				outlines.php.update(text, updateTree);
+				updateOutlineRootType('php');
 				break;
 			default:
 				$root.html('can\'t display "' + mode + '"');
