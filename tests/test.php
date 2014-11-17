@@ -1,4 +1,9 @@
 <?php
+/**
+ *	@param {int} $var1
+ *	@param {string} $var2
+ *	@return {int} test
+ */
 function simpleFunction($var1 = 1, $var2) {
     echo "Hello world!";
 	function test($params) {

@@ -26,17 +26,57 @@
 define(function (require, exports) {
     "use strict";
 	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
-		$root;
+		$root,
+		comments = [];
 
+	function parseFunctionCommentBlock(line) {
+		if (typeof comments[--line] === 'number') {
+
+		} else if (typeof comments[line] === 'object') {
+			var i = 0,
+				reg,
+				res,
+				params = [],
+				returnType = '';
+
+			for (i;i<comments[line].length;i++) {
+				if(comments[line][i].search('@param') != -1) {
+					//extract @param lines
+					reg = /(?:\@param\s\{)(\w+)(?:\}\s)([^\s]+)/;
+					res = reg.exec(comments[line][i]);
+					if (res !== null) {
+						params[res[2]] = {
+							type : res[1],
+							name : res[2]
+						};
+					}
+				} else if (comments[line][i].search('@return') != -1){
+					//extract @return line
+					reg = /(?:\@return\s\{)(\w+)(?:\}\s)([^\s]+)/;
+					res = reg.exec(comments[line][i]);
+					if (res !== null) {
+						returnType = res[1];
+					}
+				}
+			}
+			return {
+				description : '',
+				returnType : returnType,
+				params : params
+			}
+		}
+		return {
+			description : '',
+			returnType : '',
+			params : []
+		};
+	}
 	function update(code) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, 'php'),
 			lines = CodeMirror.splitLines(code),
 			state = CodeMirror.startState(mode),
 			rootElement = {
-				childs : [],// the root element just needs childs, the next lines are the required fields for all elements
-				//startline : 1, //
-				//name : 'name string for sorting',
-				//line : 'content of the "li>.line" element. can contain html elements',
+				childs : [],
 			},
 			currElement = rootElement,
 			elementStack = [rootElement],
@@ -61,15 +101,30 @@ define(function (require, exports) {
 		var STATE,
 			define,
 			lastToken = '',
-			curlyCount = 1;
+			curlyCount = 1,
+			blockComment = -1;
 
 		var callback = function(token, lineNumber, style) {
 			var element,
 				i,
 				extendsString = '',
 				implementsString = '';
-
-			if (style === 'comment') { return; }
+			if (style === 'comment') {
+				if (token.match(/\/\*+/)) {
+					blockComment = lineNumber;
+					comments[blockComment] = [token];
+				}
+				if (blockComment > 0) {
+					comments[blockComment].push(token);
+					comments[lineNumber] = comments[blockComment];
+				} else {
+					comments[lineNumber] = token;
+				}
+				if (token.match(/\*+\//)) {
+					blockComment = -1;
+				}
+				 return;
+			}
 			//foreach found element create a element like rootElement
 			//style can be null, this occurse on space, brackets, etc
 			switch (style) {
@@ -187,10 +242,12 @@ define(function (require, exports) {
 							if (define === 'function' && STATE === 'wait4Body') {
 								//close define here
 								var paramString = '',
-									returnType = '';
+									parsedComment = parseFunctionCommentBlock(currElement.startline);
 
 								for (i=0;i<currElement._params.length;i++) {
-									var typeTag = (currElement._params[i].type)?' <span class="type">&lt;' + currElement._params[i].type + '&gt;</span>': '';
+									var paramComment = parsedComment.params[currElement._params[i].name];
+									var typeTag = (paramComment && paramComment.type)?' <span class="type">&lt;' +
+										paramComment.type + '&gt;</span>': '';
 									var nameTag = ' <span class="name">' + currElement._params[i].name + '</span>,';
 									paramString += typeTag + nameTag;
 								}
@@ -198,8 +255,8 @@ define(function (require, exports) {
 								currElement.line = '' +
 									'<span class="type">' + currElement.type + '</span> ' +
 									'<span class="name">' + currElement.name + '</span> (' +
-									'<span class="params">' + paramString + '</span> )' +
-									'<span class="return">' + returnType + '</span>';
+									'<span class="params">' + paramString + '</span> ) ' +
+									'<span class="return">' + parsedComment.returnType + '</span>';
 								define = null;
 								STATE = null;
 								if (token === ';') { pop(); }
