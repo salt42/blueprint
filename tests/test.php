@@ -18,18 +18,18 @@ interface interfacetest extends a {
 }
 class Enum {
     protected $self = array();
-    public function __construct( /*...*/ ) {
+    public function __construct() {
         $args = func_get_args();
         for( $i=0, $n=count($args); $i<$n; $i++ ) {
             $this->add($args[$i]);
 		}
     }
 
-    public function __get( /*string*/ $name = null ) {
+    public function __get( $name = null ) {
         return $this->self[$name];
     }
 
-    public function add( /*string*/ $name = null, /*int*/ $enum = null ) {
+    public function add($name = null, $enum = null ) {
         if( isset($enum) )
             $this->self[$name] = $enum;
         else
@@ -38,8 +38,8 @@ class Enum {
 }
 
 class DefinedEnum extends Enum implements interfacetest{
-    public function __construct( /*array*/ $itms ) {
-        foreach( $itms as $name => $enum )
+    public function __construct($items ) {
+        foreach( $items as $name => $enum )
             $this->add($name, $enum);
     }
 	public function sagHallo(){
