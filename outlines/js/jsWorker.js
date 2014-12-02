@@ -44,7 +44,6 @@ self.addEventListener('message', function (e) {
 		enter: enter,
 		leave: leave
 	});
-	console.log(scopeTree);
 	var dataTree = createOutlineDataTree(scopeTree);
 	dataTree.type = 'data';
 	postMessage(dataTree);
@@ -112,9 +111,9 @@ function createOutlineDataTree(scopeTree) {
 								var name = scope.expressionChain.join('.');
 								owner.var.value = {
 									type : 'expression',
-									startline : '',
+									startline : scope.dataNode.startline,
 									childs : [scope.dataNode],
-									name : name, //@todo better search naming ... its just the first object name
+									name : name,
 									line : '<span class="type"></span> ' +
 										   '<span class="name">' + name + '</span>',
 								};
