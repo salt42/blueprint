@@ -75,9 +75,7 @@ function resolveNameForScope(name, scope){
 	return false;
 }
 function createOutlineDataTree(scopeTree) {
-	var dataTree = {childs : []},
-		dataStack = [dataTree],
-		i,
+	var i,
 		recursive = function(scope) {
 			var owner,
 				k;

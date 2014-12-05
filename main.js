@@ -1,56 +1,10 @@
-/*
-outliner
--html:
-	-umschalten zwischen id's, tags, classes, attr
-	-context menu / (zoom oder ausschnit anzeigen)
--css querys
--colapse/open all
-//-filter /prototypes,anonym,
---prefs:
--colors
-
-
-minimap
--aware inline editor/view (codeMirror->events)
-
-next version features
-alle extensions können ein fenster mit ihrer id öffnen
-darin sieht man dann welche neuen features schon implementiert sind
-und ein voting für neue features.
-und man kann ideen an den server senden
-der extension autor segnet die ab oder nich und wenn ja stehen sie bei dem voting
--changelog/rating/counts:running, installed(realy)/downloads/comments/buggreporting/issues
-
-
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Stefan Schulz
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
-*/
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
 /*global define, document, $, brackets, setTimeout, localStorage, setInterval, window, CSSRule */
 define(function (require, exports, module) {
     "use strict";
 
-	//first of all init preferences 2 ensure that at load all perfs are exists
-	var prefs = require('./preferences');
+	//first of all init preferences to ensure that at load, all perfs exists
+	var prefs = require('./src/preferences');
 	prefs.init();
 
     var AppInit         = brackets.getModule("utils/AppInit"),
@@ -60,8 +14,8 @@ define(function (require, exports, module) {
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
 		WorkspaceManager= brackets.getModule("view/WorkspaceManager"),
-		Outliner		= require('./outliner'),
-		Minimap			= require('./minimap'),
+		Outliner		= require('./src/outliner'),
+		Minimap			= require('./src/minimap'),
 		outlinerActive	= false,
 		outlinerOpen	= false,
 		parsed			= false,
@@ -80,22 +34,6 @@ define(function (require, exports, module) {
 		activeTab,
 		_win,
 		currentView;
-
-	exports.changeTab = function(tabName) {
-		if (tabName === 'outline') {
-			$minimapRoot.hide();
-			$outlineRoot.show();
-			Outliner.setViewState(true);
-			Minimap.setViewState(false);
-			activeTab = tabName;
-		} else if (tabName === 'minimap') {
-			$outlineRoot.hide();
-			Outliner.setViewState(false);
-			Minimap.setViewState(true);
-			$minimapRoot.show();
-			activeTab = tabName;
-		}
-	};
 
 	function setActive(flag) {
 		if (flag) {
@@ -258,7 +196,7 @@ define(function (require, exports, module) {
 		});
 
 		//create html   mySidePanelRight
-		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + 'blueprint.css">');
+		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + 'src/blueprint.css">');
 		$panelRight = $('<div id="side-panel-right"></div>'); //right sidebar
 			$wrapper = $('<div id="blueprint-outliner"></div>');
 				$headline = $('<div class="headline">' +
@@ -270,8 +208,8 @@ define(function (require, exports, module) {
 							  	'<span class="button" name="right"></span>' +
 							  	'<span class="button" name="bottom"></span></span></div>');
 				$content = $('<div class="content"></div>');
-					$outlineRoot = $('<ul class="outline-root childs"></ul>');
-					$minimapRoot = $('<div class="minimap" id="editor-holder"></div>');
+					$outlineRoot = $('<ul class="outline-root childs" style="display:none;"></ul>');
+					$minimapRoot = $('<div class="minimap" id="editor-holder" style="display:none;"></div>');
 				$footer = $('<div class="footer"></div>');
 
 		$panelRight.hide();
@@ -285,9 +223,6 @@ define(function (require, exports, module) {
 
 		$content.append($outlineRoot);
 		$content.append($minimapRoot);
-
-		//DropdownButton();
-
 
 		$('.button.prefs', $footer).click(function () {
 			if (prefs.isUiOpen()) {
@@ -314,7 +249,6 @@ define(function (require, exports, module) {
 		});
 
 		Resizer.makeResizable($panelRight[0], Resizer.DIRECTION_HORIZONTAL, 'left', 100, true);
-
 
 		//resize events
 		var allroundHandler = function (e, width) {
@@ -410,15 +344,6 @@ define(function (require, exports, module) {
 			switchView('right');
 		}
 
-		window.addEventListener("focus", function() {
-			if (_win) {
-//				setTimeout(function(){
-//					window.blur();
-//					console.log('focus', _win.focus());
-//					_win.focus();
-//				}, 1000);
-			}
-		}, false);
 		$('.tab', $headline).click(function () {
 			if ($(this).hasClass('outline')) {
 				exports.changeTab('outline');
@@ -438,5 +363,21 @@ define(function (require, exports, module) {
 			changeDocument(cd);
 		});
     });
+
+	exports.changeTab = function(tabName) {
+		if (tabName === 'outline') {
+			$minimapRoot.hide();
+			$outlineRoot.show();
+			Outliner.setViewState(true);
+			Minimap.setViewState(false);
+			activeTab = tabName;
+		} else if (tabName === 'minimap') {
+			$outlineRoot.hide();
+			Outliner.setViewState(false);
+			Minimap.setViewState(true);
+			$minimapRoot.show();
+			activeTab = tabName;
+		}
+	};
 
 });
