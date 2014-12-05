@@ -151,6 +151,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	/*display: none;*/
 }
 #blueprint-outliner .content {
+	display: block;
 	border-left: 1px solid #000;
 	position: relative;
 	top: 0px;

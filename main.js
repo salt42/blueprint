@@ -208,8 +208,8 @@ define(function (require, exports, module) {
 							  	'<span class="button" name="right"></span>' +
 							  	'<span class="button" name="bottom"></span></span></div>');
 				$content = $('<div class="content"></div>');
-					$outlineRoot = $('<ul class="outline-root childs" style="display:none;"></ul>');
-					$minimapRoot = $('<div class="minimap" id="editor-holder" style="display:none;"></div>');
+					$outlineRoot = $('<ul class="outline-root childs"></ul>');
+					$minimapRoot = $('<div class="minimap" id="editor-holder"></div>');
 				$footer = $('<div class="footer"></div>');
 
 		$panelRight.hide();
@@ -223,7 +223,7 @@ define(function (require, exports, module) {
 
 		$content.append($outlineRoot);
 		$content.append($minimapRoot);
-
+		
 		$('.button.prefs', $footer).click(function () {
 			if (prefs.isUiOpen()) {
 				prefs.closeUI();
@@ -267,10 +267,15 @@ define(function (require, exports, module) {
 
 	}
 	function changeDocument(doc) {
+		console.log('change doc')
 		lastDoc = currDoc;
 		currDoc = doc;
 		parsed = false;
-		exports.changeTab(prefs.get('generel/autoChangeTab'));
+		var tabName = prefs.get('generel/autoChangeTab');
+		if (tabName === 'keep') {
+			tabName = prefs.get('generel/lastTab');
+		}
+		exports.changeTab(tabName);
 		parseDoc();
 	}
 
@@ -335,7 +340,7 @@ define(function (require, exports, module) {
 
 		Outliner.init($outlineRoot);
 		Minimap.init($minimapRoot);
-
+		console.log('load complet')
 		var openState = prefs.get('generel/openOnStart');
 		if (openState !== false) {
 			setActive(true);
@@ -367,16 +372,18 @@ define(function (require, exports, module) {
 	exports.changeTab = function(tabName) {
 		if (tabName === 'outline') {
 			$minimapRoot.hide();
-			$outlineRoot.show();
 			Outliner.setViewState(true);
 			Minimap.setViewState(false);
+			$outlineRoot.show();
 			activeTab = tabName;
+			prefs.set('generel/lastTab', activeTab);
 		} else if (tabName === 'minimap') {
 			$outlineRoot.hide();
 			Outliner.setViewState(false);
 			Minimap.setViewState(true);
 			$minimapRoot.show();
 			activeTab = tabName;
+			prefs.set('generel/lastTab', activeTab);
 		}
 	};
 

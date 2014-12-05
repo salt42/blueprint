@@ -10,6 +10,7 @@ define(function (require, exports) {
 		defaultPrefValues = {
 			generelopenOnStart : true,
 			generelautoChangeTab : 'outline',
+			generellastTab : 'outline',
 			outlinedefaultSorting : 'none',
 			outlineunknownTypeChangeTab : true,
 			outlinefontSize : '19',

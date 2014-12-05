@@ -184,8 +184,6 @@ define(function (require, exports) {
 					break;
 			}
 		}
-		//force redraw
-		$root.hide().show();
 	}
 	function updateOutlineRootType(type) {
 		$root.attr('type', type);
