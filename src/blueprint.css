@@ -119,6 +119,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 }
 #blueprint-outliner .headline {
 	position: static;
+	overflow: hidden;
 	white-space: nowrap;
 	padding: 3px;
 	height: 20px;
