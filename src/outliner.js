@@ -3,6 +3,7 @@
 define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
+    	Editor			= brackets.getModule("editor/Editor"),
 		prefs = require('./preferences'),
 		MAIN = require('../main'),
 		$root,
@@ -265,6 +266,7 @@ define(function (require, exports) {
 			outlines[name].init({
 				getTabSize : function () {
 					if (_document) {
+						console.log();
 						return Editor.Editor.getTabSize(_document.file._path);
 					}
 				},
