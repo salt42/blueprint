@@ -265,6 +265,7 @@ define(function (require, exports) {
 				updateScrollOverlay();
 			}
 		});
+		updateScrollOverlay();
 	};
 	exports.onOpenIn = function(viewName, win) {
 		if (viewName === 'window') {
