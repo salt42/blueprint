@@ -3,7 +3,6 @@
 define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
-		ThemeManager  = brackets.getModule("view/ThemeManager"),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		prefs			= require('./preferences'),
 		_document,

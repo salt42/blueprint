@@ -288,12 +288,21 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	color: #cccccc;
 }
 /*default like js*/
-#blueprint-outliner .outline-root li .line .type { color: #888888; }
+#blueprint-outliner .outline-root li .line .type {
+	width: 0.1em;
+	height: 0.7em;
+	display: inline-block;
+}
 #blueprint-outliner .outline-root li .line .name { color: #6eb5d4; }
 #blueprint-outliner .outline-root li .line .params .type { color: #888888; }
 #blueprint-outliner .outline-root li .line .params .name { color: #d0d46e; }
 #blueprint-outliner .outline-root li .line .return { color: #888888; }
 /*js*/
+/*set type colors*/
+#blueprint-outliner .outline-root li .line .type[data-type="FunctionDeclaration"] { background: rgba(118, 255, 0, 0.66); }
+#blueprint-outliner .outline-root li .line .type[data-type="ObjectExpression"] { background: rgba(0, 255, 177, 0.74); }
+#blueprint-outliner .outline-root li .line .type[data-type="Class"] { background: rgba(255, 85, 0, 0.78); }
+#blueprint-outliner .outline-root li .line .type[data-type="FunctionCall"] { background: rgba(255, 255, 0, 0.78); }
 /*php*/
 #blueprint-outliner .outline-root li .line .extends { color: #888888; }
 #blueprint-outliner .outline-root li .line .extends .base-class { color: #d0d46e; }
