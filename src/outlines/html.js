@@ -1,10 +1,10 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
 /*global define, $, brackets */
-define(function (require, exports, modul) {
+define(function (require, exports) {
     "use strict";
 	var	CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
-		EditorManager   = brackets.getModule("editor/EditorManager"),
-		prefs			= require('../preferences'),
+//		EditorManager   = brackets.getModule("editor/EditorManager"),
+//		prefs			= require('../preferences'),
 		dataTree		= [],
 		currentEditorTabSize = 4;
 
@@ -40,8 +40,6 @@ define(function (require, exports, modul) {
 			stream.start = stream.pos;
 			return curr;
 		};
-		//@todo implement callbackForSelectorList | generate a list with selectors
-		var callbackForSelectorList = function(token, lineNumber, style) {}
 		var callback = function(token, lineNumber, style) {
 			switch(style) {
 				case 'tag bracket':
@@ -87,7 +85,7 @@ define(function (require, exports, modul) {
 							startchar : openTagCharPos,
 							childs : [],
 							attr : [],
-						}
+						};
 						currElement.childs.push(element);
 						parentList.push(element);
 						currElement = element;
@@ -128,18 +126,10 @@ define(function (require, exports, modul) {
 		return rootElement;
 	}
 
-	exports.init = function (outliner) {
-		//set dom
-		//register buttons
-		outliner.registerButton('class/button-name', function() {
-			//onclick
-		});
-	};
+	exports.init = function () {};
 	exports.update = function (code, cb) {
-		console.log(EditorManager.getCurrentFullEditor())
 		//currentEditorTabSize = EditorManager.getCurrentFullEditor().getTabSize();
 		dataTree = updateHtml(code, 'text/x-brackets-html');
-		console.log(dataTree)
 		cb(dataTree);
 	};
 

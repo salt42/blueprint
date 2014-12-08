@@ -15,7 +15,7 @@ define(function (require, exports) {
 		outlines = {
 			'html' : require('./outlines/html'),
 			'css' : require('./outlines/css'),
-			'js' : require('./outlines/js/js'),
+			'javascript' : require('./outlines/js/js'),
 			'python' : require('./outlines/python'),
 			'php' : require('./outlines/php'),
 		};
@@ -190,32 +190,14 @@ define(function (require, exports) {
 		$root.attr('type', type);
 	}
 	function forceUpdate() {
-		var mode = _document.getLanguage().getMode(),
-			text = _document.getText();
+		var id = _document.getLanguage()._id,
+			source = _document.getText();
 
-		switch (mode) {
-			case 'text/x-brackets-html':
-				outlines.html.update(text, updateTree);
-				updateOutlineRootType('html');
-				break;
-			case 'javascript':
-				outlines.js.update(text, updateTree);
-				updateOutlineRootType('js');
-				break;
-			case 'css':
-				outlines.css.update(text, updateTree);
-				updateOutlineRootType('css');
-				break;
-			case 'python':
-				outlines.python.update(text, updateTree);
-				updateOutlineRootType('python');
-				break;
-			case 'php':
-				outlines.php.update(text, updateTree);
-				updateOutlineRootType('php');
-				break;
-			default:
-				$root.html('can\'t display "' + mode + '"');
+		if (id in outlines) {
+			outlines[id].update(source, updateTree);
+			updateOutlineRootType(id);
+		} else {
+				$root.html('can\'t display "' + id + '"');
 				return false;
 		}
 		return true;

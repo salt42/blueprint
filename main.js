@@ -108,7 +108,7 @@ define(function (require, exports, module) {
         if (_win && _win.closed) { _win = null; }
         if (!_win) {
 			var path = 'file:///' + modulePath + 'window.html';
-            _win = window.open(path);//'about:blank');
+            _win = window.open(path);
 			_win.onload = function() {
 				copyCssToWindow();
 				cb(_win);
@@ -134,28 +134,20 @@ define(function (require, exports, module) {
 		_win.document.head.appendChild(document.createElement("style"));
 
 		var targetCss = windowCss[windowCss.length - 1];
-		var rule_index = 0; // We'll need this to help us add the rules in order.
+		var rule_index = 0;
 		for (var i=0; i<mainCss.length; i++) {
-				//filter by files
 				if (typeof mainCss[i].href === 'string' &&
 					(mainCss[i].href.slice(-14) !== 'codemirror.css' ||
 				    mainCss[i].href.slice(-20) !== themePath.slice(-20)) ) {
 					continue;
 				}
 			for (var j=0; j<mainCss[i].cssRules.length; j++) {
-				// Loop through the rules in each of the parent document's stylesheets.
 				var r = mainCss[i].cssRules[j];
 				if (r.type == CSSRule.IMPORT_RULE) {
-					// If the current rule is an @import, copy the rules from the stylesheet it imports.
 					for (var k=0; k<r.styleSheet.cssRules.length; k++) {
-						/* FIXME: Assuming a max depth of 1 import for now.
-						This should really be done recursively, but it's a PoC, so hey.
-						*/
-						// Insert the rule from the parent doc's stylesheet into ours.
 						targetCss.insertRule(r.styleSheet.cssRules[k].cssText, rule_index++);
 					}
 				} else {
-					// Insert the rule from the parent doc's stylesheet into ours.
 					targetCss.insertRule(r.cssText, rule_index++);
 				}
 			}
@@ -195,7 +187,6 @@ define(function (require, exports, module) {
 			}
 		});
 
-		//create html   mySidePanelRight
 		$('head').append('<link rel="stylesheet" type="text/css" href="' + modulePath + 'src/blueprint.css">');
 		$panelRight = $('<div id="side-panel-right"></div>'); //right sidebar
 			$wrapper = $('<div id="blueprint-outliner"></div>');
@@ -267,7 +258,6 @@ define(function (require, exports, module) {
 
 	}
 	function changeDocument(doc) {
-		console.log('change doc')
 		lastDoc = currDoc;
 		currDoc = doc;
 		parsed = false;
@@ -340,7 +330,6 @@ define(function (require, exports, module) {
 
 		Outliner.init($outlineRoot);
 		Minimap.init($minimapRoot);
-		console.log('load complet')
 		var openState = prefs.get('generel/openOnStart');
 		if (openState !== false) {
 			setActive(true);
