@@ -80,16 +80,8 @@ function createOutlineDataTree(scopeTree) {
 			var owner,
 				k;
 
-//			if (!('callee' in scope) && !('expressionChain' in scope)) {
-//
-//			} else {
 			if (scope.dataNode.type === 'ObjectExpression') {
 				if (scope.childs.length > 0) {
-//					//check if function in there
-//					for (k in scope.childs) {
-//						scope.childs[k].data
-//					}
-					//scope.dataNode.line ==
 				} else {
 					scope.dataNode = null;
 					return;
@@ -107,9 +99,9 @@ function createOutlineDataTree(scopeTree) {
 						var copy = scope.expressionChain.slice();
 						copy.pop();
 						owner = resolveNameForScope(copy, scope);
-						scope.dataNode.type = 'proto';
+						scope.dataNode.type = 'Prototype';
 						if (owner) {
-							owner.var.value.type = 'class';
+							owner.var.value.type = 'Class';
 							owner.var.value.childs.push(scope.dataNode);
 							scope.skip = true;
 						}
@@ -129,9 +121,9 @@ function createOutlineDataTree(scopeTree) {
 								};
 								//owner.scope.dataNode.type = 'expression';
 								owner.scope.dataNode.childs.push(owner.var.value);
-								scope.dataNode.type ='member';
+								scope.dataNode.type ='MemberFunction';
 							} else {
-								scope.dataNode.type ='member';
+								scope.dataNode.type ='MemberFunction';
 								owner.var.value.childs.push(scope.dataNode);
 							}
 							scope.skip = true;
@@ -169,7 +161,7 @@ function createOutlineDataTree(scopeTree) {
 			if (scope.dataNode === null) {
 				return;
 			}
-			if (scope.dataNode.type === 'proto' || scope.dataNode.type === 'member') {
+			if (scope.dataNode.type === 'Prototype' || scope.dataNode.type === 'MemberFunction') {
 				nameStr = scope.name;
 			} else if (scope.dataNode.type === 'FunctionCall') {
 				nameStr = scope.name;
@@ -323,7 +315,7 @@ function createScope(node, parent, name, chain, callee) {
 		childs : [],
 		paramTag : paramString,
 		dataNode : {
-			type : 'func',
+			type : 'FunctionDeclaration',
 			startline : node.loc.start.line,
 			childs : [],
 			name : name,
@@ -436,7 +428,6 @@ var enter = function (node, parent) {
 		case 'ObjectExpression':
 			var	objChain,
 				callee;
-
 			switch (parent.type) {
 				case 'VariableDeclarator':
 					//add function 2 scope
