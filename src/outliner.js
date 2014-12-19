@@ -48,7 +48,7 @@ define(function (require, exports) {
 			}
 			//open new li and add data-dashes
 			var toggleCss = 'toggle';
-			if (node.childs.length === 0) {
+			if (node.childs && node.childs.length === 0) {
 				toggleCss += ' no-childs';
 			}
 			if (node.type) {
@@ -56,17 +56,16 @@ define(function (require, exports) {
 			}
 			html += '<li ' + dataDash + '><div class="' + toggleCss + '">&nbsp;</div>' + typeStr + '<span class="line">' + node.line + '</span><ul class="childs">';
 
-
 			//iterate over childs
-			for (name in node.childs) {
-				html += recursive(node.childs[name]);
+			for (var i=0;i<node.childs.length;i++) {
+				html += recursive(node.childs[i]);
 			}
 			//close ul li
 			html += '</ul></li>';
 			return html;
 		};
 		var re = '';
-		for (var i in dataTree.childs) {
+		for (var i=0;i<dataTree.childs.length;i++) {
 			re += recursive(dataTree.childs[i]);
 		}
 		appendStringAsNodes($root[0], re);
@@ -248,7 +247,6 @@ define(function (require, exports) {
 			outlines[name].init({
 				getTabSize : function () {
 					if (_document) {
-						console.log();
 						return Editor.Editor.getTabSize(_document.file._path);
 					}
 				},
