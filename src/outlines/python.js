@@ -72,12 +72,12 @@ define(function (require, exports) {
 						}
 						paramStr = paramStr.substr(0, paramStr.length-1);
 						if (funcDef === 'params') {
-							currElement.line = '<span class="type">func</span> <span class="name">' + currElement.name + '</span>';
+							currElement.line = '<span class="type" data-type="FunctionDeclaration"></span> <span class="name">' + currElement.name + '</span>';
 							currElement.line += ' (<span class="params">' + paramStr + '</span> )';
 							funcDef = false;
 						}
 						if (classDef === 'params') {
-							currElement.line = '<span class="type">class</span> <span class="name">' + currElement.name + '</span>';
+							currElement.line = '<span class="type" data-type="Class"></span> <span class="name">' + currElement.name + '</span>';
 							currElement.line += ' (<span class="params">' + paramStr + '</span> )';
 							classDef = false;
 						}

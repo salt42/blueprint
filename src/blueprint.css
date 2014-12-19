@@ -289,12 +289,27 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	color: #cccccc;
 }
 /*default like js*/
-#blueprint-outliner .outline-root li .line .type { color: #888888; }
+#blueprint-outliner .outline-root li .line .type {
+/*
+	width: 0.1em;
+	height: 0.7em;
+	display: inline-block;
+*/
+}
 #blueprint-outliner .outline-root li .line .name { color: #6eb5d4; }
 #blueprint-outliner .outline-root li .line .params .type { color: #888888; }
 #blueprint-outliner .outline-root li .line .params .name { color: #d0d46e; }
 #blueprint-outliner .outline-root li .line .return { color: #888888; }
 /*js*/
+/*set type colors*/
+#blueprint-outliner .outline-root li .line .type[data-type="FunctionDeclaration"]:before { content: "Func"; }
+#blueprint-outliner .outline-root li .line .type[data-type="ObjectExpression"]:before { content: "Obj"; }
+#blueprint-outliner .outline-root li .line .type[data-type="Class"]:before { content: "Class"; }
+#blueprint-outliner .outline-root li .line .type[data-type="FunctionCall"]:before { content: "Call"; }
+#blueprint-outliner .outline-root li .line .type[data-type="Expression"]:before { content: "Exp"; }
+#blueprint-outliner .outline-root li .line .type[data-type="MemberFunction"]:before { content: "MemberFunc"; }
+#blueprint-outliner .outline-root li .line .type[data-type="Prototype"]:before { content: "ProtoFunc"; }
+#blueprint-outliner .outline-root li .line .type[data-type="Interface"]:before { content: "Interface"; }
 /*php*/
 #blueprint-outliner .outline-root li .line .extends { color: #888888; }
 #blueprint-outliner .outline-root li .line .extends .base-class { color: #d0d46e; }

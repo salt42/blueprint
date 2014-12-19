@@ -114,7 +114,7 @@ define(function (require, exports) {
 							define = token;
 							//interface
 							element = {
-								type : 'interface',
+								type : 'Interface',
 								name : '',
 								childs : [],
 								startline : lineNumber,
@@ -127,7 +127,7 @@ define(function (require, exports) {
 						case 'function':
 							define = token;
 							element = {
-								type : 'func',
+								type : 'FunctionDeclaration',
 								name : '',
 								childs : [],
 								startline : lineNumber,
@@ -141,7 +141,7 @@ define(function (require, exports) {
 							define = token;
 							//interface
 							element = {
-								type : 'class',
+								type : 'Class',
 								name : '',
 								childs : [],
 								startline : lineNumber,
@@ -230,7 +230,7 @@ define(function (require, exports) {
 								}
 								paramString = paramString.substr(0, paramString.length-1);
 								currElement.line = '' +
-									'<span class="type">' + currElement.type + '</span> ' +
+									'<span class="type" data-type="' + currElement.type + '"></span> ' +
 									'<span class="name">' + currElement.name + '</span> (' +
 									'<span class="params">' + paramString + '</span> ) ' +
 									'<span class="return">' + parsedComment.returnType + '</span>';
@@ -255,7 +255,7 @@ define(function (require, exports) {
 									implementsString = 'Impl:' + implementsString;
 								}
 								currElement.line = '' +
-									'<span class="type">' + currElement.type + '</span> ' +
+									'<span class="type" data-type="' + currElement.type + '"></span> ' +
 									'<span class="name">' + currElement.name + '</span> ' +
 									'<span class="extends">' + extendsString + '</span> ' +
 									'<span class="implements">' + implementsString + '</span>';
@@ -271,7 +271,7 @@ define(function (require, exports) {
 									extendsString = 'Ext:' + extendsString;
 								}
 								currElement.line = '' +
-									'<span class="type">' + currElement.type + '</span> ' +
+									'<span class="type" data-type="' + currElement.type + '"></span> ' +
 									'<span class="name">' + currElement.name + '</span> ' +
 									'<span class="extends">' + extendsString + '</span>';
 								define = null;

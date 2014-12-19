@@ -13,6 +13,7 @@ define(function (require, exports, module) {
 		modulePath		= ExtensionUtils.getModulePath(module),
 		Resizer			= brackets.getModule('utils/Resizer'),
 		DocumentManager = brackets.getModule('document/DocumentManager'),
+		MainViewManager	= brackets.getModule('view/MainViewManager'),
 		WorkspaceManager= brackets.getModule("view/WorkspaceManager"),
 		Outliner		= require('./src/outliner'),
 		Minimap			= require('./src/minimap'),
@@ -163,15 +164,6 @@ define(function (require, exports, module) {
 		} else {
 			parsed = false;
 		}
-		if (!currDoc) {
-			if (currentView !== 'window') {
-				closeView();
-			}
-		} else if (!lastDoc) {
-			if (currentView !== 'window') {
-				openView();
-			}
-		}
 	}
 	function initHtml() {
         //create quick button
@@ -257,16 +249,31 @@ define(function (require, exports, module) {
 		});
 
 	}
-	function changeDocument(doc) {
-		lastDoc = currDoc;
-		currDoc = doc;
-		parsed = false;
-		var tabName = prefs.get('generel/autoChangeTab');
-		if (tabName === 'keep') {
-			tabName = prefs.get('generel/lastTab');
+
+	function changeDocument(file) {
+		if (!file) {
+			lastDoc = currDoc;
+			currDoc = null;
+			if (currentView !== 'window') {
+				closeView();
+			}
+			return;
+		} else {
+			if (currentView !== 'window') {
+				openView();
+			}
 		}
-		exports.changeTab(tabName);
-		parseDoc();
+		DocumentManager.getDocumentForPath(file._path).done(function(doc) {
+			lastDoc = currDoc;
+			currDoc = doc;
+			parsed = false;
+			var tabName = prefs.get('generel/autoChangeTab');
+			if (tabName === 'keep') {
+				tabName = prefs.get('generel/lastTab');
+			}
+			exports.changeTab(tabName);
+			parseDoc();
+		});
 	}
 
 	//extention rating ping
@@ -346,15 +353,13 @@ define(function (require, exports, module) {
 			}
 		});
 		$(DocumentManager).on('documentSaved', function (e, document) {
-			//if (!Resizer.isVisible($panelRight)) return true;
 			if (currDoc === document) {
 				parsed = false;
 				parseDoc();
 			}
 		});
-		$(DocumentManager).on('currentDocumentChange', function (e, cd) {
-			//if (!Resizer.isVisible($panelRight)) return true;
-			changeDocument(cd);
+		$(MainViewManager).on('currentFileChange', function (e, file) {
+			changeDocument(file);
 		});
     });
 

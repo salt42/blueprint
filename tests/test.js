@@ -3,10 +3,32 @@ define(function (require, exports) {
 		dsaasf = 'dsadsadas',
 		req = requrie('lol'),
 		test = {},
-		exp = {};
+		exp = {},
+		iter;
 
 
-
+	var testObject = {
+		methodeOne: function() {},
+		methodeTow: function() {},
+	};
+	iter.testIter = {
+		meth:function() {},
+	}
+	go({
+		methode: function() {},
+	});
+	outlines[name].init({
+		getTabSize : function () {
+			if (_document) {
+				return Editor.Editor.getTabSize(_document.file._path);
+			}
+		},
+		setEditorLine : setEditorLine,
+		render : updateTree,
+		registerButton : function (buttonName, callBack) {
+			registerButton(name, buttonName, callBack);
+		}
+	}, $root);
 	/*
 	 *	@param {type} a
 	 */
