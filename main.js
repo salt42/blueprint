@@ -361,14 +361,12 @@ define(function (require, exports, module) {
 			}
 		});
 		$(DocumentManager).on('documentSaved', function (e, document) {
-			//if (!Resizer.isVisible($panelRight)) return true;
 			if (currDoc === document) {
 				parsed = false;
 				parseDoc();
 			}
 		});
 		$(MainViewManager).on('currentFileChange', function (e, file) {
-			//if  file === null  === nothing open
 			changeDocument(file);
 		});
     });
