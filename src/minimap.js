@@ -29,7 +29,7 @@ define(function (require, exports) {
 	}
 	// CodeMirror, copyright (c) by Marijn Haverbeke and others
 	// Distributed under an MIT license: http://codemirror.net/LICENSE
-	CodeMirror.runMode = function(string, modespec) {
+	var myRunMode = function(string, modespec) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
 			options,
 			html = '<span class="line-number" value="1"></span>',
@@ -254,7 +254,7 @@ define(function (require, exports) {
 		$('.wrap' ,$minimapRoot).remove();
 		_document = doc;
 
-		var html = CodeMirror.runMode(text, mode);
+		var html = myRunMode(text, mode);
 		$minimapRoot.append('<div class="wrap CodeMirror-scroll"></div>');
 		appendStringAsNodes($('.wrap' ,$minimapRoot)[0], html);
 
