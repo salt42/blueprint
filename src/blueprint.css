@@ -233,13 +233,20 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	opacity: 0.8;
 	float: right;
 }
-#blueprint-outliner .footer .outline-buttons {
-	float: right;
-}
 #blueprint-outliner .footer .button.prefs {
 	background-image: url("../media/settings.svg");
 }
-#blueprint-outliner .footer .button.sort {
+/* outline buttons */
+#blueprint-outliner .footer .outline-buttons {
+	float: right;
+}
+#blueprint-outliner .footer .outline-buttons .button.highlight {
+	background-color: rgba(255, 78, 0, 0.47);
+}
+#blueprint-outliner .footer .outline-buttons .button.sort {
+	background-image: url('../media/az.png');
+}
+#blueprint-outliner .footer .outline-buttons .button.freeze {
 	background-image: url('../media/az.png');
 }
 #blueprint-outliner .outline-root {

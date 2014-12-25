@@ -4,14 +4,16 @@ define(function (require, exports) {
     "use strict";
     var EditorManager   = brackets.getModule("editor/EditorManager"),
     	Editor			= brackets.getModule("editor/Editor"),
-		prefs = require('./preferences'),
-		MAIN = require('../main'),
+		prefs			= require('./preferences'),
+		MAIN			= require('../main'),
+		sortMode		= 'none',
+		newDocFlag		= true,
+		freeze			= false,
+		freezedDocument,
+		_document,
 		$root,
 		$content,
 		$footerOutline,
-		_document,
-		sortMode = 'none',
-		newDocFlag = true,
 		outlines = {
 			'html' : require('./outlines/html'),
 			'css' : require('./outlines/css'),
@@ -30,6 +32,7 @@ define(function (require, exports) {
 	 *	@param {object} dataTree
 	 */
 	function updateTree(dataTree) {
+		if (freeze) { return; }
 		$root.html('');
 		var recursive = function (node) {
 			var html = '',
@@ -186,6 +189,7 @@ define(function (require, exports) {
 		}
 	}
 	function updateOutlineRootType(type) {
+		if (freeze) { return; }
 		$root.attr('type', type);
 	}
 	function forceUpdate() {
@@ -196,8 +200,8 @@ define(function (require, exports) {
 			outlines[id].update(source, updateTree);
 			updateOutlineRootType(id);
 		} else {
-				$root.html('can\'t display "' + id + '"');
-				return false;
+			$root.html('can\'t display "' + id + '"');
+			return false;
 		}
 		return true;
 	}
@@ -209,11 +213,16 @@ define(function (require, exports) {
 
 		$parent.append('<div>outliner</div>');
 
-		$footerOutline = $('<div class="outline-buttons"><span class="button sort" title="Switch sort mode"></span></div>');
+		$footerOutline = $('<div class="outline-buttons">' +
+						   '<span class="button sort" title="Switch sort mode"></span>' +
+						   '<span class="button freeze" title="Switch sort mode"></span></div>');
 		$content.parent().children('.footer').append($footerOutline);
 
 		//events
+		//jump to line
         $($root).on('click', '.line', function () {
+			if (freeze && freezedDocument !== _document) { return; }
+
 			var line = this.parentNode.dataset.startline,
 				char = this.parentNode.dataset.startchar;
 
@@ -222,6 +231,7 @@ define(function (require, exports) {
 			}
 			setEditorLine(parseInt(line), parseInt(char));
 		});
+		//open/close childs
 		$($root).on('click', '.toggle', function (e) {
 			//hide/show
 			if ($(e.target).hasClass('colapsed')) {
@@ -232,19 +242,32 @@ define(function (require, exports) {
 			var $parent = $(e.target).parent('li');
 			$parent.children('.childs').toggle();
 		});
-
-      $('.sort', $footerOutline).click(function () {
+		//sort list
+		$('.sort', $footerOutline).click(function () {
 			if (sortMode === 'none') {
 				sort($content, 'asc');
 			} else if (sortMode === 'asc') {
 				sort($content, 'none');
 			}
 		});
+		//freeze current outline
+		$('.freeze', $footerOutline).click(function () {
+			if (freeze) {
+				$(this).removeClass('highlight');
+				freeze = false;
+				freezedDocument = null;
+				forceUpdate();
+			} else {
+				$(this).addClass('highlight');
+				freeze = true;
+				freezedDocument = _document;
+			}
+		});
 
 		//init outlines
-		for(name in outlines) {
-			/* jslint ignore:start */
-			outlines[name].init({
+		function iHateJSlint(name) {
+			//nice this is a outlinermodule scope
+			return {
 				getTabSize : function () {
 					if (_document) {
 						return Editor.Editor.getTabSize(_document.file._path);
@@ -255,8 +278,10 @@ define(function (require, exports) {
 				registerButton : function (buttonName, callBack) {
 					registerButton(name, buttonName, callBack);
 				}
-			}, $root);
-			/* jslint ignore:end */
+			};
+		}
+		for(name in outlines) {
+			outlines[name].init(iHateJSlint(name), $root);
 		}
 
 		setTimeout(function() { updateCss(); }, 300);
