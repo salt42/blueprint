@@ -1,0 +1,97 @@
+.foo (@bg: #f5f5f5, @color: #900) {
+  background: @bg;
+  color: @color;
+}
+.unimportant {
+  .foo();
+}
+.important {
+  .foo() !important;
+}
+
+
+.screencolor{
+	@media screen {
+		color: green;
+		@media (min-width:768px) {
+			color: red;
+		}
+	}
+	@media tv {
+		color: black;
+	}
+}
+.clearfix {
+  display: block;
+  &[name="dsa"] {
+    content: " ";
+  }
+  &:after {
+    content: " ";
+  }
+}
+.button {
+  &-ok {
+    background-image: url("ok.png");
+  }
+  &-cancel {
+    background-image: url("cancel.png");
+  }
+
+  &-custom {
+    background-image: url("custom.png");
+  }
+}
+.header {
+  .menu {
+    border-radius: 5px;
+    .no-borderradius & {
+      background-image: url('images/button-background.png');
+    }
+  }
+}
+.grand {
+  .parent {
+    & > & {
+      color: red;
+    }
+
+    & & {
+      color: green;
+    }
+
+    && {
+      color: blue;
+    }
+
+    &, &ish {
+      color: cyan;
+    }
+  }
+}
+
+@import 'url/to/file';
+
+
+.bordered {
+  border-top: dotted 1px black;
+  border-bottom: solid 2px black;
+}
+#menu a {
+  color: #111;
+  .bordered;
+}
+#fghj {
+
+}
+@import 'aa/to/file';
+/* nested rules */
+#header {
+  color: black;
+  .navigation {
+    font-size: 12px;
+  }
+  .logo {
+    width: 300px;
+  }
+}

@@ -15,6 +15,7 @@ define(function (require, exports) {
 		outlines = {
 			'html' : require('./outlines/html'),
 			'css' : require('./outlines/css'),
+			'less' : require('./outlines/less'),
 			'javascript' : require('./outlines/js/js'),
 			'python' : require('./outlines/python'),
 			'php' : require('./outlines/php'),
@@ -191,7 +192,6 @@ define(function (require, exports) {
 	function forceUpdate() {
 		var id = _document.getLanguage()._id,
 			source = _document.getText();
-
 		if (id in outlines) {
 			outlines[id].update(source, updateTree);
 			updateOutlineRootType(id);

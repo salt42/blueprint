@@ -287,6 +287,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	line-height: 20px;
 	font-size: 15px;
 	color: #cccccc;
+	word-spacing: 0.1em;
 }
 /*default like js*/
 #blueprint-outliner .outline-root li .line .type {
@@ -310,6 +311,26 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 #blueprint-outliner .outline-root li .line .type[data-type="MemberFunction"]:before { content: "MemberFunc"; }
 #blueprint-outliner .outline-root li .line .type[data-type="Prototype"]:before { content: "ProtoFunc"; }
 #blueprint-outliner .outline-root li .line .type[data-type="Interface"]:before { content: "Interface"; }
+#blueprint-outliner .outline-root li .line .type[data-type="selector"]:before { content: ""; }
+#blueprint-outliner .outline-root li .line .type[data-type="parentSlector"]:before { content: ""; }
+#blueprint-outliner .outline-root li .line .type[data-type="media"]:before { content: ""; }
+#blueprint-outliner .outline-root li .line .type[data-type="mixin"]:before { content: ""; }
+#blueprint-outliner .outline-root li .line .type[data-type="import"]:before { content: ""; }
+/*less*/
+#blueprint-outliner .outline-root[type="less"] .parentSelector { color: orange; }
+#blueprint-outliner .outline-root[type="less"] .media { color: #00ebff; }
+#blueprint-outliner .outline-root[type="less"] .import { color: #00ebff; }
+#blueprint-outliner .outline-root[type="less"] .mixin { color: #00ebff; }
+#blueprint-outliner .outline-root[type="less"] .tag { color: red; }
+#blueprint-outliner .outline-root[type="less"] .class { color: green; }
+#blueprint-outliner .outline-root[type="less"] .id { color: yellow; }
+#blueprint-outliner .outline-root[type="less"] .string { color: #f0f; }
+#blueprint-outliner .outline-root[type="less"] .property { color: #6200ff; }
+#blueprint-outliner .outline-root[type="less"] .attribute { color: #4eff00; }
+#blueprint-outliner .outline-root[type="less"] .number { color: #00ebff; }
+#blueprint-outliner .outline-root[type="less"] .important { color: #ab37ce; }
+#blueprint-outliner .outline-root[type="less"] .def { color: #d19a1f; }
+#blueprint-outliner .outline-root[type="less"] .atom { color: #37ceab; }
 /*php*/
 #blueprint-outliner .outline-root li .line .extends { color: #888888; }
 #blueprint-outliner .outline-root li .line .extends .base-class { color: #d0d46e; }
@@ -326,43 +347,3 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 #blueprint-outliner .outline-root[type="html"] li .line .tag { color: #888888; }
 #blueprint-outliner .outline-root[type="html"] li .line .id { color: #d0d46e; }
 #blueprint-outliner .outline-root[type="html"] li .line .class { color: #6eb5d4; }
-
-/*
-#blueprint-outliner .outline-root li .typeImage {
-	display: inline-block;
-	width: 20px;
-	height: 20px;
-	border-radius: 10px;
-}
-	#blueprint-outliner .outline-root li .typeImage.class {
-		color: #adb9bd;
-		background: #42671c;
-	}
-	#blueprint-outliner .outline-root li .typeImage.proto {
-		color: #adb9bd;
-		background: #42671c;
-	}
-	#blueprint-outliner .outline-root li .typeImage.module {
-		color: #adb9bd;
-		background: #42671c;
-	}
-	#blueprint-outliner .outline-root li .typeImage.func {
-		color: #adb9bd;
-		background: #42671c;
-	}
-*/
-
-
-
-
-#blueprint-outliner .cm-variable,
-#blueprint-outliner .cm-variable-2,
-#blueprint-outliner .cm-variable-3,
-#blueprint-outliner .cm-operator,
-#blueprint-outliner .cm-meta,
-#blueprint-outliner .cm-bracket {
-
-}
-#blueprint-outliner .cm-comment {
-}
-#blueprint-outliner .line-number {}
