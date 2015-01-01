@@ -6,7 +6,7 @@ define(function (require, exports) {
 		$root;
 
 	function update(code) {
-		var mode = CodeMirror.getMode(CodeMirror.defaults, "text/x-scss"),
+		var mode = CodeMirror.getMode(CodeMirror.defaults, "text/x-less"),
 			lines = CodeMirror.splitLines(code),
 			state = CodeMirror.startState(mode),
 			stream,
@@ -28,8 +28,7 @@ define(function (require, exports) {
 			return curr;
 		}
 		function addChild(type, name, html, lineNumber) {
-			var def = '',
-				line = '<span class="type" data-type="' + type + '"></span>';
+			var line = '<span class="type" data-type="' + type + '"></span>';
 
 			switch (type) {
 				case 'mixin':
@@ -86,7 +85,6 @@ define(function (require, exports) {
 					break;
 				case 'variable-3':
 					if (selectorHTML.charAt(selectorHTML.length-1) === ':') {
-						console.log('ahhh')
 						if (selectorHTML.charAt(selectorHTML.length-2) === ':') {
 							selector = selector.slice(0, selector.length-2);
 							selectorHTML = selectorHTML.slice(0, selectorHTML.length-2);
@@ -94,7 +92,6 @@ define(function (require, exports) {
 						} else {
 							selector = selector.slice(0, selector.length-1);
 							selectorHTML = selectorHTML.slice(0, selectorHTML.length-1);
-							console.log('bhhh', selectorHTML)
 							html = '<span class="pseudoClass">:' + token + '</span>';
 						}
 					}
@@ -215,11 +212,7 @@ define(function (require, exports) {
 						STATE = 'inProperty';
 					}
 					break;
-//				case 'string':
-//				case 'variable-2':
-//					if (STATE !== 'none') {
-//						selector += token;
-//					}
+				case 'atom':
 				case 'tag':
 				case 'qualifier':
 				case 'builtin':
@@ -251,10 +244,10 @@ define(function (require, exports) {
 					}
 					if (STATE === 'none') {
 						switch(token) {
-							case '&':
-								STATE = 'inParentSelector';
-								createHtml(token, style);
-								break;
+//							case '&':
+//								STATE = 'inParentSelector';
+//								createHtml(token, style);
+//								break;
 							case '>':
 							case '*':
 							case '[':
