@@ -331,6 +331,8 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 #blueprint-outliner .outline-root[type="less"] .important { color: #ab37ce; }
 #blueprint-outliner .outline-root[type="less"] .def { color: #d19a1f; }
 #blueprint-outliner .outline-root[type="less"] .atom { color: #37ceab; }
+#blueprint-outliner .outline-root[type="less"] .pseudoElement { color: #8e89b7; }
+#blueprint-outliner .outline-root[type="less"] .pseudoClass { color: #432; }
 /*php*/
 #blueprint-outliner .outline-root li .line .extends { color: #888888; }
 #blueprint-outliner .outline-root li .line .extends .base-class { color: #d0d46e; }

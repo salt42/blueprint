@@ -37,7 +37,7 @@ define(function (require, exports) {
 					line += html;
 					break;
 				case 'import':
-					name = '__' + name;
+					name = '__' + name; // __ for better sorting (imports are at top)
 					line += html;
 					break;
 				default:
@@ -55,30 +55,6 @@ define(function (require, exports) {
 		}
 		function createHtml(token, style) {
 			var html = '';
-
-			switch (STATE) {
-				case 'inParentSelector':
-					if (token === '&') {
-						return html += '<span class="parentSelector">&</span>';
-					}
-					break;
-				case 'inMedia':
-					if (token === '@media') {
-						return html += '<span class="media">@media</span>';
-					}
-					break;
-				case 'inImport':
-					if (token === '@import') {
-						return html += '<span class="import">@import</span>';
-					}
-					break;
-				case 'inMixin':
-					if (token === '@mixin') {
-//					if (selectorHTML.length === 0) {
-						return html += '<span class="mixin">@mixin</span>';
-					}
-					break;
-			}
 
 			switch (style) {
 				case 'tag':
@@ -108,6 +84,21 @@ define(function (require, exports) {
 				case 'atom':
 					html = '<span class="atom">' + token + '</span>';
 					break;
+				case 'variable-3':
+					if (selectorHTML.charAt(selectorHTML.length-1) === ':') {
+						console.log('ahhh')
+						if (selectorHTML.charAt(selectorHTML.length-2) === ':') {
+							selector = selector.slice(0, selector.length-2);
+							selectorHTML = selectorHTML.slice(0, selectorHTML.length-2);
+							html = '<span class="pseudoElement">::' + token + '</span>';
+						} else {
+							selector = selector.slice(0, selector.length-1);
+							selectorHTML = selectorHTML.slice(0, selectorHTML.length-1);
+							console.log('bhhh', selectorHTML)
+							html = '<span class="pseudoClass">:' + token + '</span>';
+						}
+					}
+					break;
 				case 'keyword':
 					if (token === "!important") {
 						html = '<span class="important">' + token + '</span>';
@@ -116,7 +107,22 @@ define(function (require, exports) {
 				default:
 					html = token;
 			}
-			return html;
+			switch (token) {
+				case '&':
+					html = '<span class="parentSelector">&</span>';
+					break;
+				case '@media':
+					html = '<span class="media">@media</span>';
+					break;
+				case '@import':
+					html = '<span class="import">@import</span>';
+					break;
+				case '@mixin':
+					html = '<span class="mixin">@mixin</span>';
+					break;
+			}
+			selectorHTML += html;
+			selector += token;
 		}
 		function push(ele) {
 			currElement = ele;
@@ -129,7 +135,7 @@ define(function (require, exports) {
 		}
 		var callback = function(token, lineNumber, style) {
 			if (style === 'comment') { return; }
-			console.log(lineNumber, '"' + token + '"', style);
+//			console.log(lineNumber, '"' + token + '"', style);
 
 			if (STATE !== 'none') {
 				switch (STATE) {
@@ -151,8 +157,7 @@ define(function (require, exports) {
 								resetSTATE();
 								break;
 							default:
-								selectorHTML += createHtml(token, style);
-								selector += token;
+								createHtml(token, style);
 						}
 						break;
 					case 'inMedia':
@@ -163,8 +168,7 @@ define(function (require, exports) {
 							push(addChild('media', selector, selectorHTML, lineNumber));
 							resetSTATE();
 						} else {
-							selectorHTML += createHtml(token, style);
-							selector += token;
+							createHtml(token, style);
 						}
 						break;
 					case 'inImport':
@@ -172,8 +176,7 @@ define(function (require, exports) {
 							addChild('import', selector, selectorHTML, lineNumber);
 							resetSTATE();
 						} else {
-							selectorHTML += createHtml(token, style);
-							selector += token;
+							createHtml(token, style);
 						}
 						break;
 					case 'inMixin':
@@ -184,8 +187,7 @@ define(function (require, exports) {
 							push(addChild('mixin', selector, selectorHTML, lineNumber));
 							resetSTATE();
 						} else {
-							selectorHTML += createHtml(token, style);
-							selector += token;
+							createHtml(token, style);
 						}
 						break;
 					case 'inParentSelector':
@@ -199,8 +201,7 @@ define(function (require, exports) {
 								resetSTATE();
 								break;
 							default:
-								selectorHTML += createHtml(token, style);
-								selector += token;
+								createHtml(token, style);
 						}
 						break;
 				}
@@ -225,39 +226,44 @@ define(function (require, exports) {
 					if (STATE === 'none') {
 						STATE = 'inSelector';
 					}
-					selectorHTML += createHtml(token, style);
-					selector += token;
+					createHtml(token, style);
 					break;
 				case 'def':
 					switch (token) {
 						case '@mixin':
 							STATE = 'inMixin';
-							selectorHTML += createHtml(token, style);
-							selector += token;
+							createHtml(token, style);
 							break;
 						case '@import':
 							STATE = 'inImport';
-							selectorHTML += createHtml(token, style);
-							selector += token;
+							createHtml(token, style);
 							break;
 						case '@media':
 							STATE = 'inMedia';
-							selectorHTML += createHtml(token, style);
-							selector += token;
+							createHtml(token, style);
 					}
 					break;
 				case null:
-					if (token === '&' && STATE === 'none') {
-						STATE = 'inParentSelector';
-						selectorHTML += createHtml(token, style);
-						selector += token;
-						return;
-					}
 					if (token === '}' && elementStack.length > 1) {
 						elementStack.pop();
 						currElement = elementStack.slice(-1)[0];
+						break;
 					}
-					break;
+					if (STATE === 'none') {
+						switch(token) {
+							case '&':
+								STATE = 'inParentSelector';
+								createHtml(token, style);
+								break;
+							case '>':
+							case '*':
+							case '[':
+							case ':':
+								STATE = 'inSelector';
+								createHtml(token, style);
+								break;
+						}
+					}
 			}
 		};
 
@@ -287,7 +293,9 @@ define(function (require, exports) {
 	 *	@param {string} code string
 	 */
 	exports.update = function(code, cb) {
+		console.time('less');
 		var data = update(code);
+		console.timeEnd('less');
 		cb(data);
 	};
 });
