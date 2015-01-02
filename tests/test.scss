@@ -10,6 +10,8 @@
 #bla.bla {}//no space
 
 
+@import 'reset';
+/* @region Variables */
 $font-stack:    Helvetica, sans-serif;
 $primary-color: #333;
 
@@ -21,6 +23,8 @@ body {
   color: $primary-color;
 }
 
+/* @endregion */
+/* @region Nesting */
 nav {
   .ul {
     margin: 0;
@@ -36,7 +40,8 @@ nav {
     text-decoration: none;
   }
 }
-@mixin border-radius($radius);
+/* @endregion */
+/* @region Mixins */
 @mixin border-radius($radius) {
 	-webkit-border-radius: $radius;
 	-moz-border-radius: $radius;
@@ -45,16 +50,37 @@ nav {
 	li {
 
 	}
-	.ii {
-
-	}
 }
+.box { @include border-radius(10px); }
+/* @endregion */
+/* @region Extend/Inheritance */
+.message {
+  border: 1px solid #ccc;
+  padding: 10px;
+  color: #333;
+}
+
+.success {
+  @extend .message;
+  border-color: green;
+}
+
+.error {
+  @extend .message;
+  border-color: red;
+}
+
+/* @endregion */
+/* @region Operators */
+.container { width: 100%; }
 
 
 .box { @include border-radius(10px); }
 ::first-char {}
 [attr="value"] {}
 /* default css */
+/* @endregion */
+/* @region default_css */
 .intro {}
 #firstname {}
 * {}

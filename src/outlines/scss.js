@@ -124,14 +124,34 @@ define(function (require, exports) {
 			currElement = ele;
 			elementStack.push(ele);
 		}
+		function pop() {
+			elementStack.pop();
+			currElement = elementStack.slice(-1)[0];
+		}
 		function resetSTATE() {
 			selector = '';
 			selectorHTML = '';
 			STATE = 'none';
 		}
 		var callback = function(token, lineNumber, style) {
-			if (style === 'comment') { return; }
-//			console.log(lineNumber, '"' + token + '"', style);
+			if (style === 'comment') {
+				if (token.match(/(\/\/|\/\*+)/) !== null) {
+					var words = token.replace(/(\/\/|\/\*+)/, '')
+								.trim()
+								.split(' ');
+
+					if (words[0] === 'region' || words[0] === '@region') {
+						var name = words[1] || '';
+						push(addChild('region',
+								 name,
+								 '<span class="region">' + name + '</span>',
+								 lineNumber));
+					} else if (words[0] === 'endregion' || words[0] === '@endregion') {
+						pop();
+					}
+				}
+				return;
+			}
 
 			if (STATE !== 'none') {
 				switch (STATE) {
@@ -205,20 +225,20 @@ define(function (require, exports) {
 							createHtml(token, style);
 						}
 						break;
-					case 'inParentSelector':
-						switch (token) {
-							case ';':
-								addChild('mixin', selector, selectorHTML, lineNumber);
-								resetSTATE();
-								break;
-							case '{':
-								push(addChild('parentSelector', selector, selectorHTML, lineNumber));
-								resetSTATE();
-								break;
-							default:
-								createHtml(token, style);
-						}
-						break;
+//					case 'inParentSelector':
+//						switch (token) {
+//							case ';':
+//								addChild('mixin', selector, selectorHTML, lineNumber);
+//								resetSTATE();
+//								break;
+//							case '{':
+//								push(addChild('parentSelector', selector, selectorHTML, lineNumber));
+//								resetSTATE();
+//								break;
+//							default:
+//								createHtml(token, style);
+//						}
+//						break;
 				}
 				return;
 			}
@@ -269,8 +289,7 @@ define(function (require, exports) {
 					break;
 				case null:
 					if (token === '}' && elementStack.length > 1) {
-						elementStack.pop();
-						currElement = elementStack.slice(-1)[0];
+						pop();
 						break;
 					}
 					if (STATE === 'none') {
@@ -314,8 +333,4 @@ define(function (require, exports) {
 		var data = update(code);
 		cb(data);
 	};
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> -
