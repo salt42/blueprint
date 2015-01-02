@@ -143,7 +143,7 @@ define(function (require, exports) {
 						var name = words[1] || '';
 						push(addChild('region',
 								 name,
-								 '<span class="region">region: ' + name + '</span>',
+								 '<span class="region">' + name + '</span>',
 								 lineNumber));
 					} else if (words[0] === 'endregion' || words[0] === '@endregion') {
 						pop();
@@ -203,20 +203,6 @@ define(function (require, exports) {
 							resetSTATE();
 						} else {
 							createHtml(token, style);
-						}
-						break;
-					case 'inParentSelector':
-						switch (token) {
-							case ';':
-								addChild('mixin', selector, selectorHTML, lineNumber);
-								resetSTATE();
-								break;
-							case '{':
-								push(addChild('parentSelector', selector, selectorHTML, lineNumber));
-								resetSTATE();
-								break;
-							default:
-								createHtml(token, style);
 						}
 						break;
 				}
