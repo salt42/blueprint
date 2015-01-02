@@ -11,10 +11,7 @@ define(function (require, exports) {
 			state = CodeMirror.startState(mode),
 			stream,
 			rootElement = {
-				childs : [],// the root element just needs childs, the next lines are the required fields for all elements
-				//startline : 1,
-				//name : 'name string for sorting',
-				//line : 'content of the "li>.line" element. can contain html elements',
+				childs : [],
 			},
 			currElement = rootElement,
 			elementStack = [rootElement],
@@ -32,18 +29,17 @@ define(function (require, exports) {
 
 			switch (type) {
 				case 'mixin':
-					line += '<<';
 					line += html;
 					break;
 				case 'import':
-					name = '__' + name; // __ for better sorting (imports are at top)
+					name = '__' + name;
 					line += html;
 					break;
 				default:
 					line += html;
 			}
 			var newEle = {
-				name: name,//@todo remove whitespace at end
+				name: name,
 				line: line,
 				startline: lineNumber,
 				childs: []
@@ -105,9 +101,6 @@ define(function (require, exports) {
 					html = token;
 			}
 			switch (token) {
-				case '&':
-					html = '<span class="parentSelector">&</span>';
-					break;
 				case '@media':
 					html = '<span class="media">@media</span>';
 					break;
@@ -116,6 +109,12 @@ define(function (require, exports) {
 					break;
 				case '@mixin':
 					html = '<span class="mixin">@mixin</span>';
+					break;
+				case '@include':
+					html = '<span class="include">@include</span>';
+					break;
+				case '@extend':
+					html = '<span class="extend">@extend</span>';
 					break;
 			}
 			selectorHTML += html;
@@ -143,12 +142,15 @@ define(function (require, exports) {
 							selector += token;
 						}
 						break;
+					case 'inVariableDefine':
+						if (token === ';') {
+							resetSTATE();
+						} else {
+							//selector += token;
+						}
+						break;
 					case 'inSelector':
 						switch (token) {
-//							case ';':
-//								addChild('mixin', selector, selectorHTML, lineNumber);
-//								resetSTATE();
-//								break;
 							case '{':
 								push(addChild('selector', selector, selectorHTML, lineNumber));
 								resetSTATE();
@@ -176,12 +178,28 @@ define(function (require, exports) {
 							createHtml(token, style);
 						}
 						break;
+					case 'inExtend':
+						if (token === ';') {
+							addChild('extend', selector, selectorHTML, lineNumber);
+							resetSTATE();
+						} else {
+							createHtml(token, style);
+						}
+						break;
 					case 'inMixin':
 						if (token === ';') {
 							addChild('mixin', selector, selectorHTML, lineNumber);
 							resetSTATE();
 						} else if (token === '{') {
 							push(addChild('mixin', selector, selectorHTML, lineNumber));
+							resetSTATE();
+						} else {
+							createHtml(token, style);
+						}
+						break;
+					case 'inInclude':
+						if (token === ';') {
+							addChild('include', selector, selectorHTML, lineNumber);
 							resetSTATE();
 						} else {
 							createHtml(token, style);
@@ -207,12 +225,17 @@ define(function (require, exports) {
 
 			switch (style) {
 //				case 'meta':
-//				case 'property':
-//					if (STATE === 'none') {
-//						STATE = 'inProperty';
-//					}
-//					break;
 //				case 'atom':
+				case 'property':
+					if (STATE === 'none') {
+						STATE = 'inProperty';
+					}
+					break;
+				case 'variable-2':
+					if (STATE === 'none') {
+						STATE = 'inVariableDefine';
+					}
+					break;
 				case 'tag':
 				case 'qualifier':
 				case 'builtin':
@@ -223,21 +246,25 @@ define(function (require, exports) {
 					break;
 				case 'def':
 					switch (token) {
-//						case '@mixin':
-//							STATE = 'inMixin';
-//							createHtml(token, style);
-//							break;
-//						case '@include':
-//							STATE = 'inMixin';
-//							createHtml(token, style);
-//							break;
+						case '@extend':
+							STATE = 'inExtend';
+							createHtml(token, style);
+							break;
+						case '@mixin':
+							STATE = 'inMixin';
+							createHtml(token, style);
+							break;
+						case '@include':
+							STATE = 'inInclude';
+							createHtml(token, style);
+							break;
 						case '@import':
 							STATE = 'inImport';
 							createHtml(token, style);
 							break;
-//						case '@media':
-//							STATE = 'inMedia';
-//							createHtml(token, style);
+						case '@media':
+							STATE = 'inMedia';
+							createHtml(token, style);
 					}
 					break;
 				case null:
@@ -246,21 +273,17 @@ define(function (require, exports) {
 						currElement = elementStack.slice(-1)[0];
 						break;
 					}
-//					if (STATE === 'none') {
-//						switch(token) {
-////							case '&':
-////								STATE = 'inParentSelector';
-////								createHtml(token, style);
-////								break;
-//							case '>':
-//							case '*':
-//							case '[':
-//							case ':':
-//								STATE = 'inSelector';
-//								createHtml(token, style);
-//								break;
-//						}
-//					}
+					if (STATE === 'none') {
+						switch(token) {
+							case '>':
+							case '*':
+							case '[':
+							case ':':
+								STATE = 'inSelector';
+								createHtml(token, style);
+								break;
+						}
+					}
 			}
 		};
 
@@ -270,13 +293,11 @@ define(function (require, exports) {
 			while (!stream.eol()) {
 				var style = mode.token(stream, state),
 					token = getNext();
-				//console.log(style, token, token.length)
 				callback(token, i + 1, style);
 			}
 		}
 
 		window.rootElement = rootElement;
-//		console.table(rootElement.childs);
 		return rootElement;
 	}
 	/*
@@ -295,4 +316,8 @@ define(function (require, exports) {
 		console.timeEnd('less');
 		cb(data);
 	};
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> -

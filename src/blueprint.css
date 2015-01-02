@@ -358,6 +358,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 
 /*python*/
 /*css*/
+<<<<<<< HEAD
 #blueprint-outliner .outline-root[type="css"] .line .id { color: #89d46e; }
 #blueprint-outliner .outline-root[type="css"] .line .class { color: #6eb5d4; }
 #blueprint-outliner .outline-root[type="css"] .line .tag { color: #d0d46e; }
@@ -375,6 +376,31 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 /*#blueprint-outliner .outline-root[type="css"] .line .atom { color: #888888; }*/
 
 
+=======
+#blueprint-outliner .outline-root[type="css"] li .line .id { color: #d0d46e; }
+#blueprint-outliner .outline-root[type="css"] li .line .class { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="css"] li .line .tag { color: #888888; }
+#blueprint-outliner .outline-root[type="css"] li .line .querryType { color: #d0d46e; }
+/*scss*/
+/*#blueprint-outliner .outline-root[type="scss"] .parentSelector { color: orange; }*/
+#blueprint-outliner .outline-root[type="scss"] .media { color: #00ebff; }
+#blueprint-outliner .outline-root[type="scss"] .import { color: #00ebff; }
+#blueprint-outliner .outline-root[type="scss"] .mixin { color: #00ebff; }
+#blueprint-outliner .outline-root[type="scss"] .tag { color: red; }
+#blueprint-outliner .outline-root[type="scss"] .class { color: green; }
+#blueprint-outliner .outline-root[type="scss"] .id { color: yellow; }
+#blueprint-outliner .outline-root[type="scss"] .string { color: #f0f; }
+#blueprint-outliner .outline-root[type="scss"] .property { color: #6200ff; }
+#blueprint-outliner .outline-root[type="scss"] .attribute { color: #4eff00; }
+#blueprint-outliner .outline-root[type="scss"] .number { color: #00ebff; }
+#blueprint-outliner .outline-root[type="scss"] .important { color: #ab37ce; }
+#blueprint-outliner .outline-root[type="scss"] .def { color: #d19a1f; }
+#blueprint-outliner .outline-root[type="scss"] .atom { color: #37ceab; }
+#blueprint-outliner .outline-root[type="scss"] .pseudoElement { color: #8e89b7; }
+#blueprint-outliner .outline-root[type="scss"] .pseudoClass { color: #432; }
+#blueprint-outliner .outline-root[type="scss"] .extend { color: #432; }
+#blueprint-outliner .outline-root[type="scss"] .include { color: #432; }
+>>>>>>> -
 /*html*/
 #blueprint-outliner .outline-root[type="html"] li .line .tag { color: #888888; }
 #blueprint-outliner .outline-root[type="html"] li .line .id { color: #d0d46e; }
