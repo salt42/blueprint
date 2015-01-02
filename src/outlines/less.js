@@ -1,5 +1,5 @@
 /*jslint vars: true, plusplus: true, devel: true, nomen: true, indent: 4 */
-/*global define, brackets, window */
+/*global define, brackets */
 define(function (require, exports) {
     "use strict";
 	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
@@ -11,10 +11,7 @@ define(function (require, exports) {
 			state = CodeMirror.startState(mode),
 			stream,
 			rootElement = {
-				childs : [],// the root element just needs childs, the next lines are the required fields for all elements
-				//startline : 1,
-				//name : 'name string for sorting',
-				//line : 'content of the "li>.line" element. can contain html elements',
+				childs : [],
 			},
 			currElement = rootElement,
 			elementStack = [rootElement],
@@ -43,7 +40,7 @@ define(function (require, exports) {
 					line += html;
 			}
 			var newEle = {
-				name: name,//@todo remove whitespace at end
+				name: name,
 				line: line,
 				startline: lineNumber,
 				childs: []
@@ -125,14 +122,35 @@ define(function (require, exports) {
 			currElement = ele;
 			elementStack.push(ele);
 		}
+		function pop() {
+			elementStack.pop();
+			currElement = elementStack.slice(-1)[0];
+		}
 		function resetSTATE() {
 			selector = '';
 			selectorHTML = '';
 			STATE = 'none';
 		}
+
 		var callback = function(token, lineNumber, style) {
-			if (style === 'comment') { return; }
-//			console.log(lineNumber, '"' + token + '"', style);
+			if (style === 'comment') {
+				if (token.match(/(\/\/|\/\*+)/) !== null) {
+					var words = token.replace(/(\/\/|\/\*+)/, '')
+								.trim()
+								.split(' ');
+
+					if (words[0] === 'region' || words[0] === '@region') {
+						var name = words[1] || '';
+						push(addChild('region',
+								 name,
+								 '<span class="region">region: ' + name + '</span>',
+								 lineNumber));
+					} else if (words[0] === 'endregion' || words[0] === '@endregion') {
+						pop();
+					}
+				}
+				return;
+			}
 
 			if (STATE !== 'none') {
 				switch (STATE) {
@@ -238,16 +256,12 @@ define(function (require, exports) {
 					break;
 				case null:
 					if (token === '}' && elementStack.length > 1) {
-						elementStack.pop();
-						currElement = elementStack.slice(-1)[0];
+						pop();
 						break;
 					}
 					if (STATE === 'none') {
 						switch(token) {
-//							case '&':
-//								STATE = 'inParentSelector';
-//								createHtml(token, style);
-//								break;
+							case '&':
 							case '>':
 							case '*':
 							case '[':
@@ -266,13 +280,10 @@ define(function (require, exports) {
 			while (!stream.eol()) {
 				var style = mode.token(stream, state),
 					token = getNext();
-				//console.log(style, token, token.length)
 				callback(token, i + 1, style);
 			}
 		}
 
-		window.rootElement = rootElement;
-//		console.table(rootElement.childs);
 		return rootElement;
 	}
 	/*
@@ -286,9 +297,7 @@ define(function (require, exports) {
 	 *	@param {string} code string
 	 */
 	exports.update = function(code, cb) {
-		console.time('less');
 		var data = update(code);
-		console.timeEnd('less');
 		cb(data);
 	};
 });
