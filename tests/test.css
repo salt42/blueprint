@@ -7,20 +7,18 @@ div p {}
 div > p {}
 div + p {}
 p ~ ul {}
-[target] {}
-[target=_blank] {}
-[target~=flower] {}
-[target|=en] {}
-a[href^="https"] {}
-a[href$=".pdf"] {}
-a[href*="google"] {}
-a:active {}
-p::first-letter {}
-p:lang(it) {}
-:root {}
-::selection {}
-#news:target {}
+a[target]
+a[target="_blank"] {}
+[title~="flower"] {}
+[class|="top"] {}
+[class^="top"] {}
+[class$="test"] {}
+[class*="te"] {}
 
+a:active {}
+p:lang(it) {}
+p::first-letter {}
+::first-letter {}
 
 @import 'layout.css' (min-width: 50em);
 @media print {
