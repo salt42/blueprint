@@ -311,9 +311,7 @@ define(function (require, exports) {
 	 *	@param {string} code string
 	 */
 	exports.update = function(code, cb) {
-		console.time('scss');
 		var data = update(code);
-		console.timeEnd('scss');
 		cb(data);
 	};
 <<<<<<< HEAD

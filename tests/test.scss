@@ -54,3 +54,33 @@ nav {
 .box { @include border-radius(10px); }
 ::first-char {}
 [attr="value"] {}
+/* default css */
+.intro {}
+#firstname {}
+* {}
+p {}
+div, p {}
+div p {}
+div > p {}
+div + p {}
+p ~ ul {}
+a[target]
+a[target="_blank"] {}
+[title~="flower"] {}
+[class|="top"] {}
+[class^="top"] {}
+[class$="test"] {}
+[class*="te"] {}
+
+a:active {}
+p:lang(it) {}
+p::first-letter {}
+::first-letter {}
+
+@import 'layout.css' (min-width: 50em);
+@media print {
+	#subID {}
+}
+@media print, embossed { }
+@media (min-width: 30em) and (max-width: 60em) { }
+@media print and (color), screen and (color) { }
