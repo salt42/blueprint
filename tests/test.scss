@@ -50,4 +50,7 @@ nav {
 	}
 }
 
+
 .box { @include border-radius(10px); }
+::first-char {}
+[attr="value"] {}
