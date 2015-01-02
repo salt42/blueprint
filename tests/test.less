@@ -2,6 +2,7 @@ tag {}
 .class {}
 #id {}
 
+//@region
 ::first-letter {}
 [name="string"] {}
 
@@ -16,6 +17,7 @@ tag {}
 #dsa:hover {
 
 }
+//endregion
 .foo (@bg: #f5f5f5, @color: #900) {
   background: @bg;
   color: @color;
@@ -111,3 +113,33 @@ tag {}
     width: 300px;
   }
 }
+/* default css */
+.intro {}
+#firstname {}
+* {}
+p {}
+div, p {}
+div p {}
+div > p {}
+div + p {}
+p ~ ul {}
+a[target]
+a[target="_blank"] {}
+[title~="flower"] {}
+[class|="top"] {}
+[class^="top"] {}
+[class$="test"] {}
+[class*="te"] {}
+
+a:active {}
+p:lang(it) {}
+p::first-letter {}
+::first-letter {}
+
+@import 'layout.css' (min-width: 50em);
+@media print {
+	#subID {}
+}
+@media print, embossed { }
+@media (min-width: 30em) and (max-width: 60em) { }
+@media print and (color), screen and (color) { }
