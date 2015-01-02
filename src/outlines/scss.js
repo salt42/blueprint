@@ -131,7 +131,7 @@ define(function (require, exports) {
 		}
 		var callback = function(token, lineNumber, style) {
 			if (style === 'comment') { return; }
-			console.log(lineNumber, '"' + token + '"', style);
+//			console.log(lineNumber, '"' + token + '"', style);
 
 			if (STATE !== 'none') {
 				switch (STATE) {
