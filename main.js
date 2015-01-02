@@ -338,7 +338,7 @@ define(function (require, exports, module) {
 		Outliner.init($outlineRoot);
 		Minimap.init($minimapRoot);
 		var openState = prefs.get('generel/openOnStart');
-		if (openState !== false) {
+		if (openState !== 'false') {
 			setActive(true);
 			switchView(openState);
 		} else {

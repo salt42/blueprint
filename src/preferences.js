@@ -8,7 +8,7 @@ define(function (require, exports) {
 		uiOpenState = false,
 		uiDialog,
 		defaultPrefValues = {
-			generelopenOnStart : true,
+			generelopenOnStart : 'right',
 			generelautoChangeTab : 'outline',
 			generellastTab : 'outline',
 			outlinedefaultSorting : 'none',
@@ -25,8 +25,8 @@ define(function (require, exports) {
 					openOnStart : {
 						type : 'select',
 						description : 'show on start up',
-						values : [false, 'right', 'bottom', 'window'],
-						value : true,
+						values : ['false', 'right', 'bottom', 'window'],
+						value : 'right',
 					},
 					autoChangeTab : {
 						type : 'select',
