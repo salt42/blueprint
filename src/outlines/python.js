@@ -64,7 +64,7 @@ define(function (require, exports) {
 						if (classDef === 'wait4params') { classDef = 'params'; }
 						break;
 					case ')':
-						for(i in currElement._params) {
+						for(i=0;i<currElement._params.length;i++) {
 							paramStr += ' <span class="name">' + currElement._params[i] + '</span>,';
 						}
 						paramStr = paramStr.substr(0, paramStr.length-1);
