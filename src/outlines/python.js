@@ -13,10 +13,7 @@ define(function (require, exports) {
 			state = CodeMirror.startState(mode),
 			stream,
 			rootElement = {
-				childs : [],// the root element just needs childs, the next lines are the required fields for all elements
-				//startline : 1, //
-				//name : 'name string for sorting',
-				//line : 'content of the "li>.line" element. can contain html elements',
+				childs : [],
 			},
 			currElement = rootElement,
 			elementStack = [rootElement];
@@ -157,10 +154,7 @@ define(function (require, exports) {
 						break;
 				}
 			}
-			//foreach found element create a element like rootElement
-			//style can be null, this occurse on space, brackets, etc
 		};
-
 		//loop over lines
 		for (var i = 0, e = lines.length; i < e; ++i) {
 			newLine = true;
@@ -169,14 +163,11 @@ define(function (require, exports) {
 			while (!stream.eol()) {
 				var style = mode.token(stream, state),
 					token = getNext();
-				//console.log(style, token, token.length)
+
 				callback(token, i + 1, style);
 				newLine = false;
 			}
 		}
-
-
-		//console.log(rootElement)
 		return rootElement;
 	}
 	/*
@@ -186,25 +177,12 @@ define(function (require, exports) {
 	exports.init = function(outliner, $ele) {
 		$root = $ele;
 		api = outliner;
-		//set dom
-		//register buttons
-		outliner.registerButton('class/button-name', function() {
-			//onclick
-		});
 	};
 	/*
 	 *	@param {string} code string
 	 */
 	exports.update = function(code, cb) {
 		var data = update(code, api.getTabSize());
-		/**
-			element = {
-				childs : [],
-				startline : 1, // need for sorting and click function
-				name : 'name string', //need for sorting
-				line : 'content of the "li>.line" element. can contain html elements',
-			},
-		 */
 		cb(data);
 	};
 });
