@@ -5,6 +5,12 @@ define(function (require, exports) {
 	var CodeMirror	= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		$root;
 
+	function escapeHTML(s) {
+		return s.replace(/"/g, "'");
+//			s.replace(/&/g, '&amp;')
+//				.replace(/</g, '&lt;')
+//				.replace(/>/g, '&gt;');
+	}
 	function update(code) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, "text/x-less"),
 			lines = CodeMirror.splitLines(code),
@@ -17,7 +23,11 @@ define(function (require, exports) {
 			elementStack = [rootElement],
 			STATE = 'none',
 			selector = '',
-			selectorHTML = '';
+			selectorHTML = '',
+			lastToken = '',
+			tempState,
+			varSelector = '',
+			bracketsCount = 0;
 
 		function getNext() {
 			var curr = stream.current();
@@ -29,7 +39,7 @@ define(function (require, exports) {
 
 			switch (type) {
 				case 'mixin':
-					line += '<<';
+					line += '<span class="mixin"><<</span>';
 					line += html;
 					break;
 				case 'import':
@@ -40,7 +50,7 @@ define(function (require, exports) {
 					line += html;
 			}
 			var newEle = {
-				name: name,
+				name: escapeHTML(name),
 				line: line,
 				startline: lineNumber,
 				childs: []
@@ -77,6 +87,9 @@ define(function (require, exports) {
 				case 'def':
 					html = '<span class="def">' + token + '</span>';
 					break;
+				case 'variable-2':
+					html = '<span class="variable">' + token + '</span>';
+					break;
 				case 'atom':
 					html = '<span class="atom">' + token + '</span>';
 					break;
@@ -96,6 +109,8 @@ define(function (require, exports) {
 				case 'keyword':
 					if (token === "!important") {
 						html = '<span class="important">' + token + '</span>';
+					} else {
+						html = token;
 					}
 					break;
 				default:
@@ -130,6 +145,7 @@ define(function (require, exports) {
 			selector = '';
 			selectorHTML = '';
 			STATE = 'none';
+			bracketsCount = 0;
 		}
 
 		var callback = function(token, lineNumber, style) {
@@ -151,28 +167,39 @@ define(function (require, exports) {
 				}
 				return;
 			}
-
+//console.log(lineNumber, token, style)
 			if (STATE !== 'none') {
+				if (token === '@' && style === 'variable-2') {
+					tempState = STATE;
+					STATE = 'inVarInclude';
+				}
+
 				switch (STATE) {
+					case 'inVarInclude':
+						if (token === '}') {
+							STATE = tempState;
+							createHtml(varSelector + token, 'variable-2');
+							varSelector = '';
+						} else {
+							varSelector += token;
+						}
+						break;
 					case 'inProperty':
 						if (token === ';') {
 							resetSTATE();
 						} else {
-							selector += token;
+							//selector += token;
 						}
 						break;
 					case 'inSelector':
-						switch (token) {
-							case ';':
-								addChild('mixin', selector, selectorHTML, lineNumber);
-								resetSTATE();
-								break;
-							case '{':
-								push(addChild('selector', selector, selectorHTML, lineNumber));
-								resetSTATE();
-								break;
-							default:
-								createHtml(token, style);
+						if (token === ';') {
+							addChild('mixin', selector, selectorHTML, lineNumber);
+							resetSTATE();
+						} else if (token === '{') {
+							push(addChild('selector', selector, selectorHTML, lineNumber));
+							resetSTATE();
+						} else {
+							createHtml(token, style);
 						}
 						break;
 					case 'inMedia':
@@ -205,12 +232,31 @@ define(function (require, exports) {
 							createHtml(token, style);
 						}
 						break;
+					case 'inVariable':
+						if (token === ';') {
+							addChild('variable', selector, selectorHTML, lineNumber);
+							resetSTATE();
+						} else {
+							createHtml(token, style);
+						}
+						break;
+					case 'inNotSupported':
+						if (token === '{') {
+							bracketsCount++;
+						} else if (token === '}') {
+							bracketsCount--;
+							if (bracketsCount === 0) {
+								resetSTATE();
+							}
+						}
+						break;
 				}
 				return;
 			}
 
 			switch (style) {
 				case 'meta':
+				case 'string-2':
 				case 'property':
 					if (STATE === 'none') {
 						STATE = 'inProperty';
@@ -238,7 +284,45 @@ define(function (require, exports) {
 						case '@media':
 							STATE = 'inMedia';
 							createHtml(token, style);
+							break;
+						case '@charset':
+							STATE = 'inNotSupported';
+//							createHtml(token, style);
+							break;
+						case '@document':
+							STATE = 'inNotSupported';
+//							createHtml(token, style);
+							break;
+						case '@font-face':
+							STATE = 'infont-inNotSupported';
+//							createHtml(token, style);
+							break;
+						case '@keyframes':
+							STATE = 'inNotSupported';
+//							createHtml(token, style);
+							break;
+						case '@page':
+							STATE = 'inNotSupported';
+//							createHtml(token, style);
+							break;
+						case '@supports':
+							STATE = 'inNotSupported';
+//							createHtml(token, style);
+							break;
+						case '@namespace':
+							STATE = 'inNotSupported';
+//							createHtml(token, style);
+							break;
+						default:
+							STATE = 'inNotSupported';
+							break;
 					}
+					break;
+				case 'variable-2':
+					if (STATE === 'none') {
+						STATE = 'inVariable';
+					}
+					createHtml(token, style);
 					break;
 				case null:
 					if (token === '}' && elementStack.length > 1) {
@@ -247,6 +331,9 @@ define(function (require, exports) {
 					}
 					if (STATE === 'none') {
 						switch(token) {
+							case '.':
+							case '#':
+							//default css
 							case '&':
 							case '>':
 							case '*':
@@ -267,6 +354,7 @@ define(function (require, exports) {
 				var style = mode.token(stream, state),
 					token = getNext();
 				callback(token, i + 1, style);
+				lastToken = token;
 			}
 		}
 

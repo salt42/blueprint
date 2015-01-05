@@ -14,12 +14,12 @@ define(function (require, exports) {
 		newDocFlag = true,
 		outlines = {
 			'html' : require('./outlines/html'),
-			'css' : require('./outlines/css'),
 			'less' : require('./outlines/less'),
 			'javascript' : require('./outlines/js/js'),
 			'python' : require('./outlines/python'),
 			'php' : require('./outlines/php'),
 		};
+		outlines.css = outlines.less;
 
 	prefs.onChange(function(path) {
 		if (path === 'outline/fontSize') {
