@@ -376,22 +376,26 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 /*#blueprint-outliner .outline-root[type="css"] .line .atom { color: #888888; }*/
 
 /*scss*/
-#blueprint-outliner .outline-root[type="scss"] .media { color: #00ebff; }
-#blueprint-outliner .outline-root[type="scss"] .import { color: #00ebff; }
-#blueprint-outliner .outline-root[type="scss"] .mixin { color: #00ebff; }
-#blueprint-outliner .outline-root[type="scss"] .tag { color: red; }
-#blueprint-outliner .outline-root[type="scss"] .class { color: green; }
-#blueprint-outliner .outline-root[type="scss"] .id { color: yellow; }
-#blueprint-outliner .outline-root[type="scss"] .string { color: #f0f; }
-#blueprint-outliner .outline-root[type="scss"] .property { color: #6200ff; }
-#blueprint-outliner .outline-root[type="scss"] .attribute { color: #4eff00; }
-#blueprint-outliner .outline-root[type="scss"] .number { color: #00ebff; }
-#blueprint-outliner .outline-root[type="scss"] .important { color: #ab37ce; }
-#blueprint-outliner .outline-root[type="scss"] .def { color: #d19a1f; }
-#blueprint-outliner .outline-root[type="scss"] .atom { color: #37ceab; }
-#blueprint-outliner .outline-root[type="scss"] .pseudoElement { color: #8e89b7; }
-
-#blueprint-outliner .outline-root[type="scss"] .pseudoClass { color: #beac4b; }
+#blueprint-outliner .outline-root[type="scss"] .line .tag { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="scss"] .line .class { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="scss"] .line .id { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="scss"] .line .pseudoClass { color: #5ca000; }
+#blueprint-outliner .outline-root[type="scss"] .line .pseudoElement { color: #5ca000; }
+#blueprint-outliner .outline-root[type="scss"] .line .media { color: #d49d6e; }
+#blueprint-outliner .outline-root[type="scss"] .line .import { color: #d66b00; }
+#blueprint-outliner .outline-root[type="scss"] .line .attribute { color: #d46f4b; }
+#blueprint-outliner .outline-root[type="scss"] .line .important { color: #888888; }
+#blueprint-outliner .outline-root[type="scss"] .line .string { color: #888888; }
+#blueprint-outliner .outline-root[type="scss"] .line .number { color: #888888; }
+#blueprint-outliner .outline-root[type="scss"] .line .parentSelector { color: #ad6ed4; }
+#blueprint-outliner .outline-root[type="scss"] .line .property { color: #888888; }
+#blueprint-outliner .outline-root[type="scss"] .line .atom { color: #888888; }
+#blueprint-outliner .outline-root[type="scss"] .line .mixin { color: #d66b00; }
+#blueprint-outliner .outline-root[type="scss"] .line .def { color: #888888; }
+/*fehlen*/
+#blueprint-outliner .outline-root[type="scss"] .line .variable { color: #6e82d4; }
+#blueprint-outliner .outline-root[type="scss"] .line .keyword { color: #888888; }
+/*nur in scss*/
 #blueprint-outliner .outline-root[type="scss"] .extend { color: #978add; }
 #blueprint-outliner .outline-root[type="scss"] .include { color: #9d5e20; }
 
