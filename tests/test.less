@@ -1,51 +1,34 @@
-tag {}
-.class {}
-#id {}
-
-//@region regionName
-::first-letter {}
-[name="string"] {}
-
-#dsa::first-letter {
-	> .test {
-
-	}
+//@region Variables
+@nice-blue: #5B83AD;
+@light-blue: @nice-blue + #111;
+//@endregion
+//@region Mixins
+.bordered {
+  border-top: dotted 1px black;
+  border-bottom: solid 2px black;
 }
-* .dsa {
-
+#menu a {
+  color: #111;
+	zoom:1;
+  .bordered;
 }
-#dsa:hover {
-
-}
-//endregion
-.foo (@bg: #f5f5f5, @color: #900) {
-  background: @bg;
-  color: @color;
-}
-
-.important {
-  .foo() !important;
-}
-
-
-.screencolor{
-	@media screen {
-		color: green;
-		@media (min-width:768px) {
-			color: red;
-		}
-	}
-	@media tv {
-		color: black;
-	}
-}
-.clearfix {
-  display: block;
-  &[name="dsa"] {
-    content: " ";
+//@endregion
+//@region Nested_rules
+#header {
+  color: black;
+  .navigation {
+    font-size: 12px;
   }
-  &:after {
-    content: " ";
+  .logo {
+    width: 300px;
+  }
+}
+//@endregion
+//@region Parent_Selectors
+a {
+  color: blue;
+  &:hover {
+    color: green;
   }
 }
 .button {
@@ -54,18 +37,6 @@ tag {}
   }
   &-cancel {
     background-image: url("cancel.png");
-  }
-
-  &-custom {
-    background-image: url("custom.png");
-  }
-}
-.header {
-  .menu {
-    border-radius: 5px;
-    .no-borderradius & {
-      background-image: url('images/button-background.png');
-    }
   }
 }
 .grand {
@@ -87,33 +58,57 @@ tag {}
     }
   }
 }
+//@endregion
+//@region imports
+@import "library"; // library.less
+@import "typo.css";
 
-@import 'url/to/file';
+//@endregion
+//@region media_querrys
+.screencolor{
+	@media screen {
+		color: green;
+		@media (min-width:768px) {
+			color: red;
+		}
+	}
+	@media tv {
+		color: black;
+	}
+}
 
 
-.bordered {
-  border-top: dotted 1px black;
-  border-bottom: solid 2px black;
+//@endregion
+//@region other
+#dsa::first-letter {
+	> .test {
+
+	}
 }
-#menu a {
-  color: #111;
-  .bordered;
+
+.foo (@bg: #f5f5f5, @color: #900) {
+  background: @bg;
+  color: @color;
 }
-#fghj {
+
+.important {
+  .foo() !important;
+}
+
+@document url('www.google.de') {
 
 }
-@import 'aa/to/file';
-/* nested rules */
-#header {
-  color: black;
-  .navigation {
-    font-size: 12px;
-  }
-  .logo {
-    width: 300px;
-  }
+@mySelector: banner;
+
+// Usage
+.@{mySelector} {
+  font-weight: bold;
+  line-height: 40px;
+  margin: 0 auto;
 }
-/* default css */
+//@endregion
+/* @region default_css */
+tag {}
 .intro {}
 #firstname {}
 * {}
@@ -143,3 +138,4 @@ p::first-letter {}
 @media print, embossed { }
 @media (min-width: 30em) and (max-width: 60em) { }
 @media print and (color), screen and (color) { }
+/*@endregion*/
