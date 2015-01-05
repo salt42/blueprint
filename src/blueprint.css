@@ -88,7 +88,7 @@
 
 
 
-#blueprint-outliner .headline. top-bottons {}
+#blueprint-outliner .headline .top-bottons {}
 #blueprint-outliner .headline .top-bottons .button {
 	float: right;
 	width: 20px;
@@ -203,7 +203,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	left: 0px;
     width: 100%;
 	height: 25px;
-	font-family: 'SourceSansPro',Helvetica,Arial,"Meiryo UI","ＭＳ Ｐゴシック","MS PGothic",sans-serif;
+	font-family: 'SourceSansPro-Medium', "ＭＳ Ｐゴシック", "MS PGothic", monospace;
 	font-size: 11px;
 	line-height: 25px;
 	overflow: hidden;
@@ -252,7 +252,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	overflow: scroll;
 	height: calc(100% - 5px);
 	white-space: nowrap;
-	background: #47484B;
+/*	background: #47484B;*/
 }
 #blueprint-outliner .outline-root ul {
     list-style: none;
@@ -261,6 +261,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 }
 #blueprint-outliner .outline-root li {
     width: auto;
+	font-family: "SourceCodePro-Medium", "ＭＳ ゴシック", "MS Gothic", monospace;
 }
 #blueprint-outliner .outline-root li .toggle {
 	display: inline-block;
@@ -283,6 +284,7 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	background: transparent;
 }
 
+/*
 .saturate {-webkit-filter: saturate(3);}
 .grayscale {-webkit-filter: grayscale(100%);}
 .contrast {-webkit-filter: contrast(160%);}
@@ -292,34 +294,62 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 .sepia {-webkit-filter: sepia(100%);}
 .huerotate {-webkit-filter: hue-rotate(180deg);}
 .rss.opacity {-webkit-filter: opacity(50%);}
+*/
 
 #blueprint-outliner .outline-root li .line {
 	line-height: 20px;
 	font-size: 15px;
 	color: #cccccc;
+	word-spacing: 0.05em;
 }
-/*default like js*/
+/*default*/
 #blueprint-outliner .outline-root li .line .type[data-type] {
-	width: 0.7em;
-	height: 0.7em;
+/*	width: 0.7em;*/
+/*	height: 0.7em;*/
 	display: inline-block;
 	background-size: contain;
-	background-image: url('../media/outlinetypes/0266-question.png');
 }
-#blueprint-outliner .outline-root li .line .name { color: #6eb5d4; }
-#blueprint-outliner .outline-root li .line .params .type { color: #888888; }
-#blueprint-outliner .outline-root li .line .params .name { color: #d0d46e; }
-#blueprint-outliner .outline-root li .line .return { color: #888888; }
+#blueprint-outliner .outline-root .line .name { color: #6eb5d4; }
+#blueprint-outliner .outline-root .line .params .type { color: #888888; }
+#blueprint-outliner .outline-root .line .params .name { color: #d0d46e; }
+#blueprint-outliner .outline-root .line .return { color: #888888; }
+#blueprint-outliner .outline-root .line .region { color: #b1b1b1; }/*89d46e*/
 /*js*/
 /*set type colors*/
-#blueprint-outliner .outline-root li .line .type[data-type="FunctionDeclaration"]:before { content: ""; }
-#blueprint-outliner .outline-root li .line .type[data-type="ObjectExpression"]:before { content: ""; }
-#blueprint-outliner .outline-root li .line .type[data-type="Class"]:before { content: ""; }
-#blueprint-outliner .outline-root li .line .type[data-type="FunctionCall"]:before { content: ""; }
-#blueprint-outliner .outline-root li .line .type[data-type="Expression"]:before { content: ""; }
-#blueprint-outliner .outline-root li .line .type[data-type="MemberFunction"]:before { content: ""; }
-#blueprint-outliner .outline-root li .line .type[data-type="Prototype"]:before { content: ""; }
-#blueprint-outliner .outline-root li .line .type[data-type="Interface"]:before { content: ""; }
+#blueprint-outliner .outline-root .line .type[data-type="FunctionDeclaration"]:before { content: "Func"; }
+#blueprint-outliner .outline-root .line .type[data-type="ObjectExpression"]:before { content: "Obj"; }
+#blueprint-outliner .outline-root .line .type[data-type="Class"]:before { content: "Class"; }
+#blueprint-outliner .outline-root .line .type[data-type="FunctionCall"]:before { content: "Call"; }
+#blueprint-outliner .outline-root .line .type[data-type="Expression"]:before { content: "Exp"; }
+#blueprint-outliner .outline-root .line .type[data-type="MemberFunction"]:before { content: "MemberFunc"; }
+#blueprint-outliner .outline-root .line .type[data-type="Prototype"]:before { content: "ProtoFunc"; }
+#blueprint-outliner .outline-root .line .type[data-type="Interface"]:before { content: "Interface"; }
+#blueprint-outliner .outline-root .line .type[data-type="selector"]:before { content: ""; }
+#blueprint-outliner .outline-root .line .type[data-type="media"]:before { content: ""; }
+#blueprint-outliner .outline-root .line .type[data-type="mixin"]:before { content: ""; }
+#blueprint-outliner .outline-root .line .type[data-type="import"]:before { content: ""; }
+#blueprint-outliner .outline-root .line .type[data-type="region"]:before { content: "region: "; }
+#blueprint-outliner .outline-root .line .type[data-type="variable"]:before { content: ""; }
+/*less*/
+#blueprint-outliner .outline-root[type="less"] .line .tag { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="less"] .line .class { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="less"] .line .id { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="less"] .line .pseudoClass { color: #5ca000; }
+#blueprint-outliner .outline-root[type="less"] .line .pseudoElement { color: #5ca000; }
+#blueprint-outliner .outline-root[type="less"] .line .media { color: #d49d6e; }
+#blueprint-outliner .outline-root[type="less"] .line .import { color: #d66b00; }
+#blueprint-outliner .outline-root[type="less"] .line .attribute { color: #d46f4b; }
+#blueprint-outliner .outline-root[type="less"] .line .important { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .string { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .number { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .keyword { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .variable { color: #6e82d4; }
+#blueprint-outliner .outline-root[type="less"] .line .parentSelector { color: #ad6ed4; }
+#blueprint-outliner .outline-root[type="less"] .line .property { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .atom { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .mixin { color: #d66b00; }
+#blueprint-outliner .outline-root[type="less"] .line .def { color: #888888; }
+
 /*php*/
 #blueprint-outliner .outline-root li .line .extends { color: #888888; }
 #blueprint-outliner .outline-root li .line .extends .base-class { color: #d0d46e; }
@@ -328,51 +358,24 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 
 /*python*/
 /*css*/
-#blueprint-outliner .outline-root[type="css"] li .line .id { color: #d0d46e; }
-#blueprint-outliner .outline-root[type="css"] li .line .class { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="css"] li .line .tag { color: #888888; }
-#blueprint-outliner .outline-root[type="css"] li .line .querryType { color: #d0d46e; }
+#blueprint-outliner .outline-root[type="css"] .line .id { color: #89d46e; }
+#blueprint-outliner .outline-root[type="css"] .line .class { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="css"] .line .tag { color: #d0d46e; }
+#blueprint-outliner .outline-root[type="css"] .line .pseudoClass { color: #5ca000; }
+#blueprint-outliner .outline-root[type="css"] .line .pseudoElement { color: #5ca000; }
+#blueprint-outliner .outline-root[type="css"] .line .media { color: #d66b00; }
+#blueprint-outliner .outline-root[type="css"] .line .import { color: #d66b00; }
+#blueprint-outliner .outline-root[type="css"] .line .def { color: #d66b00; }
+#blueprint-outliner .outline-root[type="css"] .line .attribute { color: #d46f4b; }
+#blueprint-outliner .outline-root[type="css"] .line .important { color: #888888; }
+#blueprint-outliner .outline-root[type="css"] .line .string { color: #888888; }
+#blueprint-outliner .outline-root[type="css"] .line .number { color: #888888; }
+#blueprint-outliner .outline-root[type="css"] .line .keyword { color: #888888; }
+#blueprint-outliner .outline-root[type="css"] .line .property { color: #888888; }
+/*#blueprint-outliner .outline-root[type="css"] .line .atom { color: #888888; }*/
+
+
 /*html*/
 #blueprint-outliner .outline-root[type="html"] li .line .tag { color: #888888; }
 #blueprint-outliner .outline-root[type="html"] li .line .id { color: #d0d46e; }
 #blueprint-outliner .outline-root[type="html"] li .line .class { color: #6eb5d4; }
-
-/*
-#blueprint-outliner .outline-root li .typeImage {
-	display: inline-block;
-	width: 20px;
-	height: 20px;
-	border-radius: 10px;
-}
-	#blueprint-outliner .outline-root li .typeImage.class {
-		color: #adb9bd;
-		background: #42671c;
-	}
-	#blueprint-outliner .outline-root li .typeImage.proto {
-		color: #adb9bd;
-		background: #42671c;
-	}
-	#blueprint-outliner .outline-root li .typeImage.module {
-		color: #adb9bd;
-		background: #42671c;
-	}
-	#blueprint-outliner .outline-root li .typeImage.func {
-		color: #adb9bd;
-		background: #42671c;
-	}
-*/
-
-
-
-
-#blueprint-outliner .cm-variable,
-#blueprint-outliner .cm-variable-2,
-#blueprint-outliner .cm-variable-3,
-#blueprint-outliner .cm-operator,
-#blueprint-outliner .cm-meta,
-#blueprint-outliner .cm-bracket {
-
-}
-#blueprint-outliner .cm-comment {
-}
-#blueprint-outliner .line-number {}

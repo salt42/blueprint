@@ -3,8 +3,8 @@
 * {}
 p {}
 div, p {}
-div p {}
-div > p {}
+#main p {}
+.selection > p {}
 div + p {}
 p ~ ul {}
 a[target]
@@ -27,3 +27,13 @@ p::first-letter {}
 @media print, embossed { }
 @media (min-width: 30em) and (max-width: 60em) { }
 @media print and (color), screen and (color) { }
+
+/* Standard syntax */
+@keyframes mymove {
+    from {top: 0px;}
+    to {top: 200px;}
+}
+@font-face {
+    font-family: myFirstFont;
+    src: url(sansation_light.woff);
+}
