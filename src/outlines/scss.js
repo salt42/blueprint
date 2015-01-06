@@ -24,26 +24,6 @@ define(function (require, exports) {
 		this.resetSTATE();
 	};
 	SCSSparser.prototype.doToken = function(token, lineNumber, style) {
-		console.log(lineNumber, token, style, this.state)
-//		if (style === 'comment') {
-//			if (token.match(/(\/\/|\/\*+)/) !== null) {
-//				var words = token.replace(/(\/\/|\/\*+)/, '')
-//							.trim()
-//							.split(' ');
-//
-//				if (words[0] === 'region' || words[0] === '@region') {
-//					var name = words[1] || '';
-//					this.push(this.addChild('region',
-//							 name,
-//							 '<span class="region">' + name + '</span>',
-//							 lineNumber));
-//				} else if (words[0] === 'endregion' || words[0] === '@endregion') {
-//					this.pop();
-//				}
-//			}
-//			return;
-//		}
-
 		if (this.state !== 'none') {
 			if (token === '#{') {
 				this.tempState = this.state;
@@ -229,7 +209,6 @@ define(function (require, exports) {
 						case '#':
 						case '.':
 						case ':':
-							console.log('start select')
 							this.state = 'inSelector';
 							this.createHtml(token, style);
 							break;
