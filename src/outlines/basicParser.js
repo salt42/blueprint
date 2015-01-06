@@ -6,8 +6,8 @@ define(function (require, exports, module) {
 
 
 	function BasicParser() {
-		this.mode = 'javascript';
-		this.code = '';
+		this._mode = 'javascript';
+		this._code = '';
 		this._lines = [];
 		this._stream = null;
 		this._rootElement = { childs : [] };
@@ -29,7 +29,7 @@ define(function (require, exports, module) {
 			while (!this._stream.eol()) {
 				var style = this._mode.token(this._stream, state),
 					token = this.getNext();
-				this.doToken(token, i + 1, style);
+				this.do(token, i + 1, style);
 			}
 		}
 		return this._rootElement;
@@ -39,14 +39,47 @@ define(function (require, exports, module) {
 		this._stream.start = this._stream.pos;
 		return curr;
 	};
-	BasicParser.prototype.doToken = function(token, lineNumber, style) {
-		console.log('baseParser doToken', lineNumber, token, style);
+	BasicParser.prototype.do = function(token, lineNumber, style) {
+		if (style !== 'comment') {
+			this.doToken(token, lineNumber, style);
+		} else {
+			this.doComment(lineNumber, token);
+		}
 	};
+	/**
+	 * called for each comment
+	 * @param {String} token      pice of code
+	 * @param {Number} lineNumber line number
+	 * @param {string} style      "type" of token
+	 */
+	BasicParser.prototype.doComment = function(lineNumber, token) {
+		var words = token.replace(/(\/\/|\/\*+)/, '')
+					.trim()
+					.split(' ');
+
+		if (words[0] === 'region' || words[0] === '@region') {
+			var name = words[1] || '';
+			this.push(this.addChild('region',
+					 name,
+					 '<span class="region">' + name + '</span>',
+					 lineNumber));
+		} else if (words[0] === 'endregion' || words[0] === '@endregion') {
+			this.pop();
+		}
+	};
+	/**
+	 * called for each token except comments
+	 * @param {String} token      pice of code
+	 * @param {Number} lineNumber line number
+	 * @param {string} style      "type" of token
+	 */
+	BasicParser.prototype.doToken = function(token, lineNumber, style) {};
 	BasicParser.prototype.push = function(ele) {
 		this._elementStack.push(ele);
 	};
 	BasicParser.prototype.pop = function() {
 		if (this._elementStack.length > 1) {
+			console.log('pop')
 			this._elementStack.pop();
 		}
 	};
@@ -64,6 +97,5 @@ define(function (require, exports, module) {
 		this.getCurrent().childs.push(newEle);
 		return newEle;
 	};
-
 	module.exports = BasicParser;
 });
