@@ -10,8 +10,10 @@ define(function (require, exports) {
 		BasicParser.prototype.constructor.call(this);
 
 		this.state = 'none';
+		this.tempState = 'none';
 		this.selector = '';
 		this.selectorHTML = '';
+		this.varSelector = '';
 		this.bracketsCount = 0;
 	}
 	SCSSparser.prototype = Object.create(BasicParser.prototype, SCSSparser.prototype);
@@ -22,39 +24,59 @@ define(function (require, exports) {
 		this.resetSTATE();
 	};
 	SCSSparser.prototype.doToken = function(token, lineNumber, style) {
-		if (style === 'comment') {
-			if (token.match(/(\/\/|\/\*+)/) !== null) {
-				var words = token.replace(/(\/\/|\/\*+)/, '')
-							.trim()
-							.split(' ');
-
-				if (words[0] === 'region' || words[0] === '@region') {
-					var name = words[1] || '';
-					this.push(this.addChild('region',
-							 name,
-							 '<span class="region">' + name + '</span>',
-							 lineNumber));
-				} else if (words[0] === 'endregion' || words[0] === '@endregion') {
-					this.pop();
-				}
-			}
-			return;
-		}
+		console.log(lineNumber, token, style, this.state)
+//		if (style === 'comment') {
+//			if (token.match(/(\/\/|\/\*+)/) !== null) {
+//				var words = token.replace(/(\/\/|\/\*+)/, '')
+//							.trim()
+//							.split(' ');
+//
+//				if (words[0] === 'region' || words[0] === '@region') {
+//					var name = words[1] || '';
+//					this.push(this.addChild('region',
+//							 name,
+//							 '<span class="region">' + name + '</span>',
+//							 lineNumber));
+//				} else if (words[0] === 'endregion' || words[0] === '@endregion') {
+//					this.pop();
+//				}
+//			}
+//			return;
+//		}
 
 		if (this.state !== 'none') {
+			if (token === '#{') {
+				this.tempState = this.state;
+				this.state = 'inVarInclude';
+			}
 			switch (this.state) {
+				case 'inVarInclude':
+					if (token === '}') {
+						this.state = this.tempState;
+						this.createHtml(this.varSelector + token, 'variable-2');
+						this.varSelector = '';
+					} else {
+						this.varSelector += token;
+					}
+					break;
 				case 'inProperty':
 					if (token === ';') {
 						this.resetSTATE();
-					} else {
-						this.selector += token;
+					} else if (token === '}') {
+						this.resetSTATE();
+						this.doToken(token, lineNumber, style);
+						return;
+					}else if (token.match(/:\s*{/g) !== null) {
+						this.bracketsCount = 1;
+						this.state = 'inNotSupported';
 					}
 					break;
 				case 'inVariableDefine':
 					if (token === ';') {
+						//this.addChild('variable', this.selector, this.selectorHTML, lineNumber);
 						this.resetSTATE();
 					} else {
-						//selector += token;
+						//this.createHtml(token, style);
 					}
 					break;
 				case 'inSelector':
@@ -109,6 +131,9 @@ define(function (require, exports) {
 					if (token === ';') {
 						this.addChild('include', this.selector, this.selectorHTML, lineNumber);
 						this.resetSTATE();
+					} else if (token === '{') {
+						this.push(this.addChild('include', this.selector, this.selectorHTML, lineNumber));
+						this.resetSTATE();
 					} else {
 						this.createHtml(token, style);
 					}
@@ -144,6 +169,7 @@ define(function (require, exports) {
 			case 'variable-2':
 				if (this.state === 'none') {
 					this.state = 'inVariableDefine';
+					this.createHtml(token, style);
 				}
 				break;
 			case 'tag':
@@ -185,6 +211,7 @@ define(function (require, exports) {
 						this.createHtml(token, style);
 						break;
 					default:
+						this.resetSTATE();
 						this.state = 'inNotSupported';
 				}
 				break;
@@ -202,6 +229,7 @@ define(function (require, exports) {
 						case '#':
 						case '.':
 						case ':':
+							console.log('start select')
 							this.state = 'inSelector';
 							this.createHtml(token, style);
 							break;
@@ -261,6 +289,9 @@ define(function (require, exports) {
 				break;
 			case 'atom':
 				html = '<span class="atom">' + token + '</span>';
+				break;
+			case 'variable-2':
+				html = '<span class="variable">' + token + '</span>';
 				break;
 			case 'variable-3':
 				if (this.selectorHTML.charAt(this.selectorHTML.length-1) === ':') {
