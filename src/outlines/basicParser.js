@@ -13,10 +13,12 @@ define(function (require, exports, module) {
 		this._rootElement = { childs : [] };
 		this._elementStack = [this._rootElement];
 	}
-
-	BasicParser.prototype.parse = function(mode, code) {
+	BasicParser.prototype.resetParser = function() {
 		this._rootElement = { childs : [] };
 		this._elementStack = [this._rootElement];
+	};
+	BasicParser.prototype.parse = function(mode, code) {
+		this.resetParser();
 		this._mode = CodeMirror.getMode(CodeMirror.defaults, mode);
 		this._code = code;
 		this._lines = CodeMirror.splitLines(this._code);

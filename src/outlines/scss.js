@@ -17,6 +17,10 @@ define(function (require, exports) {
 	SCSSparser.prototype = Object.create(BasicParser.prototype, SCSSparser.prototype);
 	SCSSparser.prototype.constructor = SCSSparser;
 
+	SCSSparser.prototype.resetParser = function() {
+		BasicParser.prototype.resetParser.call(this);
+		this.resetSTATE();
+	};
 	SCSSparser.prototype.doToken = function(token, lineNumber, style) {
 		if (style === 'comment') {
 			if (token.match(/(\/\/|\/\*+)/) !== null) {
@@ -123,6 +127,8 @@ define(function (require, exports) {
 						if (this.bracketsCount === 0) {
 							this.resetSTATE();
 						}
+					} else if (token === ';' && this.bracketsCount === 0) {
+						this.resetSTATE();
 					}
 					break;
 			}
@@ -192,6 +198,7 @@ define(function (require, exports) {
 						case '>':
 						case '*':
 						case '[':
+						case '&':
 						case '#':
 						case '.':
 						case ':':
@@ -201,7 +208,7 @@ define(function (require, exports) {
 					}
 				}
 		}
-	}
+	};
 	SCSSparser.prototype.resetSTATE = function() {
 		this.selector = '';
 		this.selectorHTML = '';
@@ -277,6 +284,9 @@ define(function (require, exports) {
 				html = token;
 		}
 		switch (token) {
+			case '&':
+				html = '<span class="parentSelector">&</span>';
+				break;
 			case '@media':
 				html = '<span class="media">@media</span>';
 				break;
