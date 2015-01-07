@@ -66,7 +66,7 @@ define(function (require, exports) {
 				}
 			}
 			if (style) {
-				if (style === 'string') {
+				if (style === 'string' || style === 'comment') {
 					content = escapeHtml(content);
 				}
 				var className = "cm-" + style.replace(/ +/g, " cm-");
