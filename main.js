@@ -234,11 +234,17 @@ define(function (require, exports, module) {
 		Resizer.makeResizable($panelRight[0], Resizer.DIRECTION_HORIZONTAL, 'left', 100, true);
 
 		//resize events
+		$('#sidebar').on('panelResizeUpdate', function(e) {
+			if (outlinerOpen && currentView === 'right') {
+				$('.main-view .content').css('right', 'calc(' + $panelRight.width() + 'px + 30px)');
+			}
+		});
 		var allroundHandler = function (e, width) {
 			$('.main-view .content').css('right', 'calc(' + width + 'px + 30px)');
 		};
 		$panelRight.on('panelResizeUpdate', allroundHandler);
-		$panelRight.on('panelCollapsed', function () {
+		$panelRight.on('panelCollapsed', function (e) {
+			outlinerOpen = false;
 			$('.main-view .content').css('right', '30px');
 		});
 		$panelRight.on('panelExpanded', function (e, w) {

@@ -156,12 +156,13 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	border-left: 1px solid #000;
 	position: relative;
 	top: 0px;
-	left: 0px;
+	left: 0px !important;
+	right: 0px !important;
 	overflow: hidden;
 	height: calc(100% - 54px);
 }
 /*content for bottom panel*/
-#blueprint-bottomPanel #blueprint-outliner .content {
+#blueprint-bottomPanel #blueprint-outliner>.content {
 	width: calc(100% - 30px);
 	height: calc(100% - 20px);
 }
