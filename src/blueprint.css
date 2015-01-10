@@ -309,27 +309,28 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 /*	height: 0.7em;*/
 	display: inline-block;
 	background-size: contain;
+	color: #888888;
 }
 #blueprint-outliner .outline-root .line .name { color: #6eb5d4; }
 #blueprint-outliner .outline-root .line .params .type { color: #888888; }
-#blueprint-outliner .outline-root .line .params .name { color: #d0d46e; }
+#blueprint-outliner .outline-root .line .params .name { color: #d0d46e; } /*#bec164*/
 #blueprint-outliner .outline-root .line .return { color: #888888; }
 #blueprint-outliner .outline-root .line .region { color: #b1b1b1; }/*89d46e*/
 /*js*/
 /*set type colors*/
-#blueprint-outliner .outline-root .line .type[data-type="FunctionDeclaration"]:before { content: "Func"; }
-#blueprint-outliner .outline-root .line .type[data-type="ObjectExpression"]:before { content: "Obj"; }
-#blueprint-outliner .outline-root .line .type[data-type="Class"]:before { content: "Class"; }
-#blueprint-outliner .outline-root .line .type[data-type="FunctionCall"]:before { content: "Call"; }
-#blueprint-outliner .outline-root .line .type[data-type="Expression"]:before { content: "Exp"; }
-#blueprint-outliner .outline-root .line .type[data-type="MemberFunction"]:before { content: "MemberFunc"; }
-#blueprint-outliner .outline-root .line .type[data-type="Prototype"]:before { content: "ProtoFunc"; }
-#blueprint-outliner .outline-root .line .type[data-type="Interface"]:before { content: "Interface"; }
+#blueprint-outliner .outline-root .line .type[data-type="FunctionDeclaration"]:before { content: "Func\00a0"; }
+#blueprint-outliner .outline-root .line .type[data-type="ObjectExpression"]:before { content: "Obj\00a0"; }
+#blueprint-outliner .outline-root .line .type[data-type="Class"]:before { content: "Class\00a0"; }
+#blueprint-outliner .outline-root .line .type[data-type="FunctionCall"]:before { content: "Call\00a0"; }
+#blueprint-outliner .outline-root .line .type[data-type="Expression"]:before { content: "Exp\00a0"; }
+#blueprint-outliner .outline-root .line .type[data-type="MemberFunction"]:before { content: "Func\00a0"; }
+#blueprint-outliner .outline-root .line .type[data-type="Prototype"]:before { content: "Func\00a0"; }
+#blueprint-outliner .outline-root .line .type[data-type="Interface"]:before { content: "Func\00a0"; }
 #blueprint-outliner .outline-root .line .type[data-type="selector"]:before { content: ""; }
 #blueprint-outliner .outline-root .line .type[data-type="media"]:before { content: ""; }
 #blueprint-outliner .outline-root .line .type[data-type="mixin"]:before { content: ""; }
 #blueprint-outliner .outline-root .line .type[data-type="import"]:before { content: ""; }
-#blueprint-outliner .outline-root .line .type[data-type="region"]:before { content: "region: "; }
+#blueprint-outliner .outline-root .line .type[data-type="region"]:before { content: "region:&nbsp;"; }
 #blueprint-outliner .outline-root .line .type[data-type="variable"]:before { content: ""; }
 /*less*/
 #blueprint-outliner .outline-root[type="less"] .line .tag { color: #6eb5d4; }

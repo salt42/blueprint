@@ -6,29 +6,6 @@ define(function (require, exports) {
 		exp = {},
 		iter;
 
-
-	var testObject = {
-		methodeOne: function() {},
-		methodeTow: function() {},
-	};
-	iter.testIter = {
-		meth:function() {},
-	}
-	go({
-		methode: function() {},
-	});
-	outlines[name].init({
-		getTabSize : function () {
-			if (_document) {
-				return Editor.Editor.getTabSize(_document.file._path);
-			}
-		},
-		setEditorLine : setEditorLine,
-		render : updateTree,
-		registerButton : function (buttonName, callBack) {
-			registerButton(name, buttonName, callBack);
-		}
-	}, $root);
 	/*
 	 *	@param {type} a
 	 */
@@ -41,6 +18,27 @@ define(function (require, exports) {
 			}
 		}
 	};
+	var testname = 'dsadas';
+	testClass.prototype['testname'] = function() {
+		function gdagfs(b) {
+			exports.superNice = function () {
+				$('').on(function(){});
+
+			}
+		}
+	};
+
+	var testObject = {
+		methodeOne: function() {},
+		methodeTow: function() {},
+	};
+	iter.testIter = {
+		meth:function() {},
+	}
+	go({
+		methode: function() {},
+	});
+
 
 	exports.testinit = function(a) {};
 	/*
@@ -60,6 +58,18 @@ define(function (require, exports) {
 	test.expresion.chain.sec = function(){}
 });
 (function() {
-	function test() {}
+/* will not be parsed --------------------*/
 
+	outlines[name].init({
+		getTabSize : function () {
+			if (_document) {
+				return Editor.Editor.getTabSize(_document.file._path);
+			}
+		},
+		setEditorLine : setEditorLine,
+		render : updateTree,
+		registerButton : function (buttonName, callBack) {
+			registerButton(name, buttonName, callBack);
+		}
+	}, $root);
 })();
