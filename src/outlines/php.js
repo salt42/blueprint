@@ -223,16 +223,16 @@ define(function (require, exports) {
 
 								for (i=0;i<currElement._params.length;i++) {
 									var paramComment = parsedComment.params[currElement._params[i].name];
-									var typeTag = (paramComment && paramComment.type)?' <span class="type">&lt;' +
+									var typeTag = (paramComment && paramComment.type)?'<span class="type">&lt;' +
 										paramComment.type + '&gt;</span>': '';
-									var nameTag = ' <span class="name">' + currElement._params[i].name + '</span>,';
+									var nameTag = '<span class="name">' + currElement._params[i].name + '</span>,';
 									paramString += typeTag + nameTag;
 								}
 								paramString = paramString.substr(0, paramString.length-1);
 								currElement.line = '' +
-									'<span class="type" data-type="' + currElement.type + '"></span> ' +
-									'<span class="name">' + currElement.name + '</span> (' +
-									'<span class="params">' + paramString + '</span> ) ' +
+									'<span class="type" data-type="' + currElement.type + '"></span>' +
+									'<span class="name">' + currElement.name + '</span>(' +
+									'<span class="params">' + paramString + '</span>)' +
 									'<span class="return">' + parsedComment.returnType + '</span>';
 								define = null;
 								STATE = null;
@@ -240,39 +240,40 @@ define(function (require, exports) {
 								curlyCount = 1;
 							} else if (define === 'class') {
 								//close define here
-								for (i in currElement._extends) {
+								for (i=0;i<currElement._extends.length;i++) {
 									extendsString += '<span class="base-class">' + currElement._extends[i] + '</span>,';
 								}
 								extendsString = extendsString.substr(0, extendsString.length-1);
 								if (extendsString.length > 0) {
-									extendsString = 'Ext:' + extendsString;
+									extendsString = ' Ext:' + extendsString;
 								}
-								for (i in currElement._implements) {
+								for (i=0;i<currElement._implements.length;i++) {
 									implementsString += '<span class="interface">' + currElement._implements[i] + '</span>,';
 								}
 								implementsString = implementsString.substr(0, implementsString.length-1);
 								if (implementsString.length > 0) {
-									implementsString = 'Impl:' + implementsString;
+									implementsString = ' Impl:' + implementsString;
 								}
 								currElement.line = '' +
-									'<span class="type" data-type="' + currElement.type + '"></span> ' +
-									'<span class="name">' + currElement.name + '</span> ' +
-									'<span class="extends">' + extendsString + '</span> ' +
+									'<span class="type" data-type="' + currElement.type + '"></span>' +
+									'<span class="name">' + currElement.name + '</span>' +
+									'<span class="extends">' + extendsString + '</span>' +
 									'<span class="implements">' + implementsString + '</span>';
 								define = null;
 								STATE = null;
 								curlyCount = 1;
 							} else if (define === 'interface') {
-								for (i in currElement._extends) {
+								for (i=0;i<currElement._extends.length;i++) {
 									extendsString += '<span class="base-class">' + currElement._extends[i] + '</span>,';
 								}
 								extendsString = extendsString.substr(0, extendsString.length-1);
 								if (extendsString.length > 0) {
-									extendsString = 'Ext:' + extendsString;
+									extendsString = ' Ext:' + extendsString;
 								}
+								console.log(extendsString)
 								currElement.line = '' +
-									'<span class="type" data-type="' + currElement.type + '"></span> ' +
-									'<span class="name">' + currElement.name + '</span> ' +
+									'<span class="type" data-type="' + currElement.type + '"></span>' +
+									'<span class="name">' + currElement.name + '</span>' +
 									'<span class="extends">' + extendsString + '</span>';
 								define = null;
 								STATE = null;

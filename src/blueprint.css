@@ -100,7 +100,9 @@
 #blueprint-outliner .headline .top-bottons .button[name="close"] { background: url('../media/close.png'); margin-right: 5px;  }
 #side-panel-right #blueprint-outliner .headline .top-bottons .button[name="right"],
 body>#blueprint-outliner .headline .top-bottons .button[name="window"],
-#blueprint-bottomPanel #blueprint-outliner .headline .top-bottons .button[name="bottom"] { display: none }
+#blueprint-bottomPanel #blueprint-outliner .headline .top-bottons .button[name="bottom"] {
+	display: none
+}
 
 
 #side-panel-right {
@@ -310,98 +312,92 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 	display: inline-block;
 	background-size: contain;
 	color: #888888;
+	margin-right: 4px;
 }
-#blueprint-outliner .outline-root .line .name { color: #6eb5d4; }
-#blueprint-outliner .outline-root .line .params .type { color: #888888; }
-#blueprint-outliner .outline-root .line .params .name { color: #d0d46e; } /*#bec164*/
-#blueprint-outliner .outline-root .line .return { color: #888888; }
-#blueprint-outliner .outline-root .line .region { color: #b1b1b1; }/*89d46e*/
-/*js*/
-/*set type colors*/
-#blueprint-outliner .outline-root .line .type[data-type="FunctionDeclaration"]:before { content: "Func\00a0"; }
-#blueprint-outliner .outline-root .line .type[data-type="ObjectExpression"]:before { content: "Obj\00a0"; }
-#blueprint-outliner .outline-root .line .type[data-type="Class"]:before { content: "Class\00a0"; }
-#blueprint-outliner .outline-root .line .type[data-type="FunctionCall"]:before { content: "Call\00a0"; }
-#blueprint-outliner .outline-root .line .type[data-type="Expression"]:before { content: "Exp\00a0"; }
-#blueprint-outliner .outline-root .line .type[data-type="MemberFunction"]:before { content: "Func\00a0"; }
-#blueprint-outliner .outline-root .line .type[data-type="Prototype"]:before { content: "Func\00a0"; }
-#blueprint-outliner .outline-root .line .type[data-type="Interface"]:before { content: "Func\00a0"; }
+
+#blueprint-outliner .outline-root .line .type[data-type="FunctionDeclaration"]:before { content: "Func"; }
+#blueprint-outliner .outline-root .line .type[data-type="ObjectExpression"]:before { content: "Obj"; }
+#blueprint-outliner .outline-root .line .type[data-type="Class"]:before { content: "Class"; }
+#blueprint-outliner .outline-root .line .type[data-type="FunctionCall"]:before { content: "Call"; }
+#blueprint-outliner .outline-root .line .type[data-type="Expression"]:before { content: "Exp"; }
+#blueprint-outliner .outline-root .line .type[data-type="MemberFunction"]:before { content: "Func"; }
+#blueprint-outliner .outline-root .line .type[data-type="Prototype"]:before { content: "Func"; }
+#blueprint-outliner .outline-root .line .type[data-type="Interface"]:before { content: "Interface"; }
+#blueprint-outliner .outline-root .line .type[data-type="Module"]:before { content: "Module"; }
 #blueprint-outliner .outline-root .line .type[data-type="selector"]:before { content: ""; }
 #blueprint-outliner .outline-root .line .type[data-type="media"]:before { content: ""; }
 #blueprint-outliner .outline-root .line .type[data-type="mixin"]:before { content: ""; }
 #blueprint-outliner .outline-root .line .type[data-type="import"]:before { content: ""; }
-#blueprint-outliner .outline-root .line .type[data-type="region"]:before { content: "region:&nbsp;"; }
+#blueprint-outliner .outline-root .line .type[data-type="region"]:before { content: "region:"; }
 #blueprint-outliner .outline-root .line .type[data-type="variable"]:before { content: ""; }
-/*less*/
-#blueprint-outliner .outline-root[type="less"] .line .tag { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="less"] .line .class { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="less"] .line .id { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="less"] .line .pseudoClass { color: #5ca000; }
-#blueprint-outliner .outline-root[type="less"] .line .pseudoElement { color: #5ca000; }
-#blueprint-outliner .outline-root[type="less"] .line .media { color: #d49d6e; }
-#blueprint-outliner .outline-root[type="less"] .line .import { color: #d66b00; }
-#blueprint-outliner .outline-root[type="less"] .line .attribute { color: #d46f4b; }
-#blueprint-outliner .outline-root[type="less"] .line .important { color: #888888; }
-#blueprint-outliner .outline-root[type="less"] .line .string { color: #888888; }
-#blueprint-outliner .outline-root[type="less"] .line .number { color: #888888; }
-#blueprint-outliner .outline-root[type="less"] .line .keyword { color: #888888; }
-#blueprint-outliner .outline-root[type="less"] .line .variable { color: #6e82d4; }
-#blueprint-outliner .outline-root[type="less"] .line .parentSelector { color: #ad6ed4; }
-#blueprint-outliner .outline-root[type="less"] .line .property { color: #888888; }
-#blueprint-outliner .outline-root[type="less"] .line .atom { color: #888888; }
-#blueprint-outliner .outline-root[type="less"] .line .mixin { color: #d66b00; }
-#blueprint-outliner .outline-root[type="less"] .line .def { color: #888888; }
-
+/* defaults */
+/* js, php, python */
+#blueprint-outliner .outline-root .line .name { color: #6eb5d4; }
+#blueprint-outliner .outline-root .line .params .type { color: #888888; }
+#blueprint-outliner .outline-root .line .params .name { color: #b8b053; }
+#blueprint-outliner .outline-root .line .return { color: #888888; }
+#blueprint-outliner .outline-root .line .region { color: #b1b1b1; }
 /*php*/
-#blueprint-outliner .outline-root li .line .extends { color: #888888; }
-#blueprint-outliner .outline-root li .line .extends .base-class { color: #d0d46e; }
-#blueprint-outliner .outline-root li .line .implements { color: #888888; }
-#blueprint-outliner .outline-root li .line .implements .interface { color: #d0d46e; }
-
+#blueprint-outliner .outline-root[type="php"] .line .extends { color: #888888; }
+#blueprint-outliner .outline-root[type="php"] .line .extends .base-class { color: #b8b053; }
+#blueprint-outliner .outline-root[type="php"] .line .implements { color: #888888; }
+#blueprint-outliner .outline-root[type="php"] .line .implements .interface { color: #b8b053; }
 /*python*/
 /*css*/
-
 #blueprint-outliner .outline-root[type="css"] .line .id { color: #89d46e; }
 #blueprint-outliner .outline-root[type="css"] .line .class { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="css"] .line .tag { color: #d0d46e; }
+#blueprint-outliner .outline-root[type="css"] .line .tag { color: #b8b053; }
 #blueprint-outliner .outline-root[type="css"] .line .pseudoClass { color: #5ca000; }
 #blueprint-outliner .outline-root[type="css"] .line .pseudoElement { color: #5ca000; }
 #blueprint-outliner .outline-root[type="css"] .line .media { color: #d66b00; }
 #blueprint-outliner .outline-root[type="css"] .line .import { color: #d66b00; }
 #blueprint-outliner .outline-root[type="css"] .line .def { color: #d66b00; }
-#blueprint-outliner .outline-root[type="css"] .line .attribute { color: #d46f4b; }
-#blueprint-outliner .outline-root[type="css"] .line .important { color: #888888; }
+#blueprint-outliner .outline-root[type="css"] .line .attribute { color: #19afb5; }
+#blueprint-outliner .outline-root[type="css"] .line .important { color: #b64242; }
 #blueprint-outliner .outline-root[type="css"] .line .string { color: #888888; }
 #blueprint-outliner .outline-root[type="css"] .line .number { color: #888888; }
 #blueprint-outliner .outline-root[type="css"] .line .keyword { color: #888888; }
 #blueprint-outliner .outline-root[type="css"] .line .property { color: #888888; }
-/*#blueprint-outliner .outline-root[type="css"] .line .atom { color: #888888; }*/
-
+/*less*/
+#blueprint-outliner .outline-root[type="less"] .line .id { color: #89d46e; }
+#blueprint-outliner .outline-root[type="less"] .line .class { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="less"] .line .tag { color: #b8b053; }
+#blueprint-outliner .outline-root[type="less"] .line .pseudoClass { color: #5ca000; }
+#blueprint-outliner .outline-root[type="less"] .line .pseudoElement { color: #5ca000; }
+#blueprint-outliner .outline-root[type="less"] .line .media { color: #d66b00; }
+#blueprint-outliner .outline-root[type="less"] .line .import { color: #d66b00; }
+#blueprint-outliner .outline-root[type="less"] .line .mixin { color: #d66b00; }
+#blueprint-outliner .outline-root[type="less"] .line .def { color: #d66b00; }
+#blueprint-outliner .outline-root[type="less"] .line .attribute { color: #19afb5; }
+#blueprint-outliner .outline-root[type="less"] .line .important { color: #b64242; }
+#blueprint-outliner .outline-root[type="less"] .line .variable { color: #fcae00; }
+#blueprint-outliner .outline-root[type="less"] .line .parentSelector { color: #fcae00; }
+#blueprint-outliner .outline-root[type="less"] .line .string { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .number { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .keyword { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .property { color: #888888; }
+#blueprint-outliner .outline-root[type="less"] .line .atom { color: #888888; }
 /*scss*/
-#blueprint-outliner .outline-root[type="scss"] .line .tag { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="scss"] .line .id { color: #89d46e; }
 #blueprint-outliner .outline-root[type="scss"] .line .class { color: #6eb5d4; }
-#blueprint-outliner .outline-root[type="scss"] .line .id { color: #6eb5d4; }
+#blueprint-outliner .outline-root[type="scss"] .line .tag { color: #b8b053; }
 #blueprint-outliner .outline-root[type="scss"] .line .pseudoClass { color: #5ca000; }
 #blueprint-outliner .outline-root[type="scss"] .line .pseudoElement { color: #5ca000; }
-#blueprint-outliner .outline-root[type="scss"] .line .media { color: #d49d6e; }
+#blueprint-outliner .outline-root[type="scss"] .line .media { color: #d66b00; }
 #blueprint-outliner .outline-root[type="scss"] .line .import { color: #d66b00; }
-#blueprint-outliner .outline-root[type="scss"] .line .attribute { color: #d46f4b; }
-#blueprint-outliner .outline-root[type="scss"] .line .important { color: #888888; }
+#blueprint-outliner .outline-root[type="scss"] .line .mixin { color: #d66b00; }
+#blueprint-outliner .outline-root[type="scss"] .line .attribute { color: #19afb5; }
+#blueprint-outliner .outline-root[type="scss"] .line .important { color: #b64242; }
 #blueprint-outliner .outline-root[type="scss"] .line .string { color: #888888; }
 #blueprint-outliner .outline-root[type="scss"] .line .number { color: #888888; }
 #blueprint-outliner .outline-root[type="scss"] .line .parentSelector { color: #ad6ed4; }
 #blueprint-outliner .outline-root[type="scss"] .line .property { color: #888888; }
 #blueprint-outliner .outline-root[type="scss"] .line .atom { color: #888888; }
-#blueprint-outliner .outline-root[type="scss"] .line .mixin { color: #d66b00; }
 #blueprint-outliner .outline-root[type="scss"] .line .def { color: #888888; }
-/*fehlen*/
-#blueprint-outliner .outline-root[type="scss"] .line .variable { color: #6e82d4; }
-#blueprint-outliner .outline-root[type="scss"] .line .keyword { color: #888888; }
-/*nur in scss*/
 #blueprint-outliner .outline-root[type="scss"] .extend { color: #978add; }
 #blueprint-outliner .outline-root[type="scss"] .include { color: #9d5e20; }
 
 /*html*/
-#blueprint-outliner .outline-root[type="html"] li .line .tag { color: #888888; }
-#blueprint-outliner .outline-root[type="html"] li .line .id { color: #d0d46e; }
+#blueprint-outliner .outline-root[type="html"] li .line .tag { color: #b8b053; }
+#blueprint-outliner .outline-root[type="html"] li .line .id { color: #89d46e; }
 #blueprint-outliner .outline-root[type="html"] li .line .class { color: #6eb5d4; }

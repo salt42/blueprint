@@ -65,17 +65,17 @@ define(function (require, exports) {
 						break;
 					case ')':
 						for(i=0;i<currElement._params.length;i++) {
-							paramStr += ' <span class="name">' + currElement._params[i] + '</span>,';
+							paramStr += '<span class="name">' + currElement._params[i] + '</span>,';
 						}
 						paramStr = paramStr.substr(0, paramStr.length-1);
 						if (funcDef === 'params') {
-							currElement.line = '<span class="type" data-type="FunctionDeclaration"></span> <span class="name">' + currElement.name + '</span>';
-							currElement.line += ' (<span class="params">' + paramStr + '</span> )';
+							currElement.line = '<span class="type" data-type="FunctionDeclaration"></span><span class="name">' + currElement.name + '</span>';
+							currElement.line += '(<span class="params">' + paramStr + '</span>)';
 							funcDef = false;
 						}
 						if (classDef === 'params') {
-							currElement.line = '<span class="type" data-type="Class"></span> <span class="name">' + currElement.name + '</span>';
-							currElement.line += ' (<span class="params">' + paramStr + '</span> )';
+							currElement.line = '<span class="type" data-type="Class"></span><span class="name">' + currElement.name + '</span>';
+							currElement.line += '(<span class="params">' + paramStr + '</span>)';
 							classDef = false;
 						}
 						break;

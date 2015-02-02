@@ -68,11 +68,11 @@ var enter = function(node, parent) {
 					if (parent.callee.type == 'Identifier') {
 						if (parent.callee.name == 'define') {
 							//define module - require/commonjs/brackets ... etc
-							name = 'define Module';
+							name = 'Module';
 						}
 					} else if (parent.callee.type == 'FunctionExpression') {
 						//eventuel ein js module (function(){})();
-						name = 'js Module';
+						name = 'Module';
 					}
 					break;
 			}
@@ -128,36 +128,36 @@ var enter = function(node, parent) {
 				if (paramName in params) {
 					type = params[paramName].type;
 				}
-				var typeTag = (type)?' <span class="type">&lt;' + type + '&gt;</span>': '';
-				var nameTag = ' <span class="name">' + paramName + '</span>,';
+				var typeTag = (type)?'<span class="type">&lt;' + type + '&gt;</span>': '';
+				var nameTag = '<span class="name">' + paramName + '</span>,';
 				paramString += typeTag + nameTag;
 			}
 			paramString = paramString.substr(0, paramString.length-1);
 			//check 4 class
 			if (name in foundClasses) {
-				res.type = 'class';
+				res.type = 'Class';
 //				res.typeImage = '<span class="typeImage class"></span>';
 				foundClasses[name] = res;
 				parents[parents.length-1].childs.push(res);//same
 			} else if(methodeList.indexOf(node) != -1) {
 				var clas = foundClasses[objName];
 				clas.childs.push(res);//same
-				res.type = 'proto';
+				res.type = 'Prototype';
 //				res.type = '<span class="typeImage proto"></span>';
 				//add to class
-			} else if (name == 'define Module' || name == 'js Module') {
+			} else if (name == 'Module') {
 				res.type = name;
 //				res.type = '<span class="typeImage module"></span>';
 				name = '';
 				parents[parents.length-1].childs.push(res);//same
 			} else {
-				res.type = 'func';
+				res.type = 'FunctionDeclaration';
 //				res.type = '<span class="typeImage func"></span>';
 				parents[parents.length-1].childs.push(res);//same
 			}
-			res.line = '' + '<span class="type">' + res.type + '</span> ' +
+			res.line = '' + '<span class="type" data-type="' + res.type + '"></span>' +
 				'<span class="name">' + name +
-				'</span> (<span class="params">' + paramString + '</span>) ' +
+				'</span>(<span class="params">' + paramString + '</span>)' +
 				'<span class="return">' + returnType + '</span>';
 			parents.push(res);
 

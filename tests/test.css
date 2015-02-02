@@ -1,4 +1,8 @@
-.intro {}
+.intro {
+	background: #fff!important;
+	background: #fff !important;
+	background: #fff  !important;
+}
 #firstname {}
 * {}
 p {}
