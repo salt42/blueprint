@@ -1,9 +1,9 @@
 {
     "name": "blueprint.outliner",
     "title": "BluePrint Beta",
-    "description": "Code minimap and hierarchic outline viewer for JavaScript, HTML, CSS, PHP and python.",
+    "description": "Code minimap and hierarchic outline viewer for JavaScript, HTML, CSS, LESS, SCSS, PHP and python.",
 	"keywords": [
-       "hierarchic", "outliner", "minimap", "python", "javascript", "js", "html", "css", "php"
+       "hierarchic", "outliner", "minimap", "python", "javascript", "js", "html", "css", "less", "scss", "sass", "php", "outline"
     ],
 	"repository": {
         "type": "git",
@@ -16,8 +16,8 @@
         "url": "https://github.com/salt42"
     },
 	"license": "MIT",
-    "version": "0.9.1",
+    "version": "0.9.2",
     "engines": {
-        "brackets": ">=0.44.0"
+        "brackets": ">=1.0.0"
     }
 }
