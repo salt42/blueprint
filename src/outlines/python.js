@@ -8,7 +8,7 @@ define(function (require, exports) {
 
 
 	function update(code, tabsSize) {
-		var mode = CodeMirror.getMode(CodeMirror.defaults, 'css'),
+		var mode = CodeMirror.getMode(CodeMirror.defaults, 'python'),
 			lines = CodeMirror.splitLines(code),
 			state = CodeMirror.startState(mode),
 			stream,
@@ -64,6 +64,7 @@ define(function (require, exports) {
 						if (classDef === 'wait4params') { classDef = 'params'; }
 						break;
 					case ')':
+						if(!funcDef && !classDef) break;
 						for(i=0;i<currElement._params.length;i++) {
 							paramStr += '<span class="name">' + currElement._params[i] + '</span>,';
 						}
@@ -79,6 +80,15 @@ define(function (require, exports) {
 							classDef = false;
 						}
 						break;
+					case ':':
+						if(!classDef) break;
+						if (classDef === 'wait4params') {
+							currElement.line = '<span class="type" data-type="Class"></span><span class="name">' + currElement.name + '</span>';
+							currElement.line += '(<span class="params">' + '' + '</span>)';
+							classDef = false;
+						}
+						break;
+						
 				}
 			} else {
 				switch(style) {
@@ -94,7 +104,12 @@ define(function (require, exports) {
 								break;
 						}
 						break;
-					case 'tag':
+					case 'variable':
+						if(funcDef=='params' || classDef=='params') {
+							currElement._params.push(token);
+						}
+						break;
+					case 'def':
 						if (funcDef) {
 							switch(funcDef) {
 								case 'name':
@@ -141,16 +156,18 @@ define(function (require, exports) {
 									currElement._params.push(token);
 									break;
 							}
-						} else {
-							switch(token) {
-								case 'def':
-									funcDef = 'name';
-									break;
-								case 'class':
-									classDef = 'name';
-									break;
-							}
 						}
+						break;
+					case'keyword': 
+						switch(token) {
+							case 'def':
+								funcDef = 'name';
+								break;
+							case 'class':
+								classDef = 'name';
+								break;
+						}
+						
 						break;
 				}
 			}
