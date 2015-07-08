@@ -1,0 +1,22 @@
+<projects>
+    <project>
+		<enabled><![CDATA[0]]></enabled>
+		<id><![CDATA[project_19]]></id>
+		<!-- comment -->
+		<title><![CDATA[palin text bla bla]]></title>
+		<summaryTitle><![CDATA[text]]></summaryTitle>
+		<thumb><![CDATA[social_media.jpg]]></thumb>
+		<thumbAlt><![CDATA[Image description]]></thumbAlt>
+		<thumbSummary>
+			<![CDATA[Hdsadsaner]]>
+		</thumbSummary>
+		<images>
+			<image>
+				<file><![CDATA[nemo.jpg]]></file>
+				<alt><![CDATA[Image description]]></alt>
+			</image>
+		</images>
+		<summary>
+            <![CDATA[<a href="#"]>test html</a>]]>
+		</summary>
+	</project>
