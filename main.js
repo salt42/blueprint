@@ -358,13 +358,13 @@ define(function (require, exports, module) {
 				exports.changeTab('minimap');
 			}
 		});
-		$(DocumentManager).on('documentSaved', function (e, document) {
+		DocumentManager.on('documentSaved', function (e, document) {
 			if (currDoc === document) {
 				parsed = false;
 				parseDoc();
 			}
 		});
-		$(MainViewManager).on('currentFileChange', function (e, file) {
+		MainViewManager.on('currentFileChange', function (e, file) {
 			changeDocument(file);
 		});
     });

@@ -259,7 +259,7 @@ define(function (require, exports) {
 		appendStringAsNodes($('.wrap' ,$minimapRoot)[0], html);
 
 		var currentEditor = doc._masterEditor;
-		$(currentEditor).on('scroll', function() {
+		currentEditor.on('scroll', function() {
 			if (dragState === false) {
 				updateScrollOverlay();
 			}
