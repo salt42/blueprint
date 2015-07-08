@@ -5,6 +5,7 @@ define(function (require, exports) {
     var EditorManager   = brackets.getModule("editor/EditorManager"),
 		CodeMirror		= brackets.getModule("thirdparty/CodeMirror2/lib/codemirror"),
 		prefs			= require('./preferences'),
+        escapeElement   = document.createElement("div"),
 		_document,
 		$content,
 		$root,
@@ -22,13 +23,12 @@ define(function (require, exports) {
 		"/": '&#x2F;'
 	};
 
-	function escapeHtml(string) {
-		return String(string).replace(/[&<>"'\/]/g, function (s) {
-			return entityMap[s];
-		});
-	}
-	// CodeMirror, copyright (c) by Marijn Haverbeke and others
-	// Distributed under an MIT license: http://codemirror.net/LICENSE
+
+    function htmlEscape(str) {
+        escapeElement.innerText = escapeElement.textContent = str;
+        return escapeElement.innerHTML;
+    }
+
 	var myRunMode = function(string, modespec) {
 		var mode = CodeMirror.getMode(CodeMirror.defaults, modespec),
 			options,
@@ -36,7 +36,6 @@ define(function (require, exports) {
 			lineNumber = 1,
 			tabSize = (options && options.tabSize) || CodeMirror.defaults.tabSize,
 			col = 0;
-
 
 		var callback = function(text, style) {
 			if (text == "\n") {
@@ -66,11 +65,7 @@ define(function (require, exports) {
 				}
 			}
 			if (style) {
-				if (style === 'string' || style === 'comment') {
-					content = escapeHtml(content);
-				}
-				var className = "cm-" + style.replace(/ +/g, " cm-");
-				html += '<span class="' + className + '">' + content + '</span>';
+                html += "<span class=\"cm-" + htmlEscape(style) + "\">" + htmlEscape(text) + "</span>";
 			} else {
 				html += content;
 			}
