@@ -203,6 +203,41 @@ define(function (require, exports) {
 		}
 		return true;
 	}
+	function fold(level) {
+		var currLevel = 0,
+			$childs = $root.children('li'),
+			i;
+
+		var rec = function($curr) {
+			var i = 0,
+				$childs = $curr.children('.childs').children('li'),
+				$toggle = $curr.children('.toggle');
+
+			if (currLevel >= level) {
+				//hide
+				if (!$toggle.hasClass('colapsed')) {
+					$toggle.addClass('colapsed');
+					$curr.children('.childs').hide();
+				}
+			} else {
+				//show
+				if ($toggle.hasClass('colapsed')) {
+					$toggle.removeClass('colapsed');
+					$curr.children('.childs').show();
+				}
+			}
+			currLevel++;
+			for (;i<$childs.length;i++) {
+				rec($($childs.get(i)) );
+			}
+			currLevel--;
+		};
+		for (i=0;i<$childs.length;i++) {
+			rec( $($childs.get(i)) );
+		}
+
+		//fold(level, currLevel + 1);
+	}
 	exports.init = function($parent) {
 		var name;
 
@@ -226,6 +261,25 @@ define(function (require, exports) {
 		});
 		$($root).on('click', '.toggle', function (e) {
 			//hide/show
+            if (e.ctrlKey) {
+                //collapse/open all with same level
+                var parents = $(this).parents(),
+                    count = 0;
+
+                for (var i = 0 ; i < parents.length; i++) {
+                    if (parents[i].classList.contains("childs")) {
+                        count++;
+                        if (parents[i].nodeName === "DIV") {
+                            break;
+                        }
+                    }
+                }
+                if (!$(e.target).hasClass('colapsed')) {
+                    count--;
+                }
+                fold(count);
+                return;
+            }
 			if ($(e.target).hasClass('colapsed')) {
 				$(e.target).removeClass('colapsed');
 			} else {
@@ -288,5 +342,13 @@ define(function (require, exports) {
 			$footerOutline.hide();
 		}
 	};
-
+	exports.fold = function (level) {
+		if (typeof level === 'number' && level >= 0 && level <= deepest) {
+			//fold by number
+		} else if (level) {
+			//show all
+		} else {
+			//fold all
+		}
+	};
 });
