@@ -48,9 +48,8 @@ define(function (require, exports, module) {
 	};
 	/**
 	 * called for each comment
-	 * @param {String} token      pice of code
 	 * @param {Number} lineNumber line number
-	 * @param {string} style      "type" of token
+	 * @param {String} token      pice of code
 	 */
 	BasicParser.prototype.doComment = function(lineNumber, token) {
 		var words = token.replace(/(\/\/|\/\*+)/, '')
@@ -73,7 +72,9 @@ define(function (require, exports, module) {
 	 * @param {Number} lineNumber line number
 	 * @param {string} style      "type" of token
 	 */
-	BasicParser.prototype.doToken = function(token, lineNumber, style) {};
+	BasicParser.prototype.doToken = function(token, lineNumber, style) {
+        console.error("function 'doToken' musst be implemented in concret parser");
+    };
 	BasicParser.prototype.push = function(ele) {
 		this._elementStack.push(ele);
 	};

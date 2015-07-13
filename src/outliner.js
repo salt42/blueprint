@@ -17,6 +17,7 @@ define(function (require, exports) {
 			'less' : require('./outlines/less'),
 			'scss' : require('./outlines/scss'),
 			'javascript' : require('./outlines/js/js'),
+			'json' : require('./outlines/json'),
 			'python' : require('./outlines/python'),
 			'php' : require('./outlines/php'),
 		};

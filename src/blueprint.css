@@ -337,6 +337,8 @@ body>#blueprint-outliner .headline .top-bottons .button[name="window"],
 #blueprint-outliner .outline-root .line .params .name { color: #b8b053; }
 #blueprint-outliner .outline-root .line .return { color: #888888; }
 #blueprint-outliner .outline-root .line .region { color: #b1b1b1; }
+/*JSON*/
+#blueprint-outliner .outline-root[type="json"] .line .type { color: #888888; }
 /*php*/
 #blueprint-outliner .outline-root[type="php"] .line .extends { color: #888888; }
 #blueprint-outliner .outline-root[type="php"] .line .extends .base-class { color: #b8b053; }
